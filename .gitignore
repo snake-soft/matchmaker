@@ -1,0 +1,10 @@
+env
+*.pyc
+__ pycache __
+/.pydevproject
+*~
+/.directory
+.settings/
+/.project
+/config/settings/secrets.py
+/config/db.sqlite3
