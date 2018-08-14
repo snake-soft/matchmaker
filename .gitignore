@@ -8,3 +8,4 @@ __ pycache __
 /.project
 /config/settings/secrets.py
 /config/db.sqlite3
+/test.py

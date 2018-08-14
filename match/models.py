@@ -37,6 +37,9 @@ class Match(models.Model):
         verbose_name="Finish-Date",
         )
 
+    class Meta:
+        verbose_name_plural = "Matches"
+
     def __str__(self):
         return str("%s: %s (%s) vs. %s (%s)" % (
             self.id,
