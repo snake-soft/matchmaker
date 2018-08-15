@@ -1,0 +1,8 @@
+<h1>Articles</h1>
+<ul>
+{% for player in object_list %}
+    <li>{{ player.nick }}{{player.games_played}}</li>
+{% empty %}
+    <li>No player yet.</li>
+{% endfor %}
+</ul>

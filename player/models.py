@@ -14,19 +14,17 @@ class Player(models.Model):
 
     def new_result(self, goal_diff, enemy):
         elo = Elo(self.rating)
-        self.rating = elo.new_result(enemy.get_team_rating(), goal_diff)
+        self.rating = elo.new_result(enemy.team_rating, goal_diff)
         self.save()
 
-    def get_games_played(self):
-        return 1
-
-    def get_player_rating(self):
+    @property
+    def player_rating(self):
         return self.rating
 
     def __str__(self):
         return str("%s (Player Rating: %s)" % (
             self.nick,
-            int(self.get_player_rating() + 0.5)
+            int(self.player_rating() + 0.5)
             ))
 
 

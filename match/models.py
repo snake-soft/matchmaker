@@ -52,29 +52,42 @@ class Match(models.Model):
                 self.secondteam
                 )
 
-    class Meta:
-        verbose_name_plural = "Matches"
+    def save(self):
+        if self.firstteam.id is self.secondteam.id:
+            raise ValidationError(
+                "%s can't play against itself" % (
+                    str(self.firstteam.id) + "",
+                    ),
+                params={'value': self.firstteam.id},
+                )
+        else:
+            self.new_result()
+            super().save()
 
     def __str__(self):
-        return str("%s: %s (%s) vs. %s (%s)" % (
+        return str("ID%s: %s vs. %s (%s:%s)" % (
             self.id,
-            self.firstteam.teamname,
+            self.firstteam.get_team_name_or_members(),
+            self.secondteam.get_team_name_or_members(),
             self.firstteam_goals,
-            self.secondteam.teamname,
             self.secondteam_goals,
             ))
 
+    class Meta:
+        verbose_name_plural = "Matches"
 
-def result_pre_save(**kwargs):
-    if kwargs['instance'].firstteam.id is kwargs['instance'].secondteam.id:
-        raise ValidationError(
-            "%s can't play against itself" % (
-                str(kwargs['instance'].firstteam.id) + "",
-                ),
-            params={'value': kwargs['instance'].firstteam.id},
-            )
-    else:
-        kwargs['instance'].new_result()
-
-
-models.signals.pre_save.connect(result_pre_save, sender=Match)
+#===============================================================================
+# def result_pre_save(**kwargs):
+#     if kwargs['instance'].firstteam.id is kwargs['instance'].secondteam.id:
+#         raise ValidationError(
+#             "%s can't play against itself" % (
+#                 str(kwargs['instance'].firstteam.id) + "",
+#                 ),
+#             params={'value': kwargs['instance'].firstteam.id},
+#             )
+#     else:
+#         kwargs['instance'].new_result()
+# 
+# 
+# models.signals.pre_save.connect(result_pre_save, sender=Match)
+#===============================================================================
