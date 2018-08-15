@@ -4,7 +4,11 @@ from django.core.validators import MinValueValidator
 
 
 class Team(models.Model):
-    teamname = models.CharField(max_length=50, verbose_name="Teamname")
+    """ Teams are Season-based -> every season there are new values """
+    teamname = models.CharField(
+        max_length=50, verbose_name="Teamname",
+        blank=True
+        )
     players = models.ManyToManyField(Player)
 
     tscore = models.PositiveSmallIntegerField(
@@ -20,6 +24,9 @@ class Team(models.Model):
             self.tscore += 2
         self.save()
 
+    def get_games_played(self):
+        return 1
+
     def get_team_score(self):
         ''' calculate based on matches '''
         return self.tscore
@@ -28,10 +35,17 @@ class Team(models.Model):
         """ Calculates the team strength out of the Player Elo """
         return sum([x.get_player_rating() for x in self.players.all()])
 
+    def get_team_name_or_members(self):
+        if self.teamname:
+            return self.teamname
+        else:
+            return ', '.join([x.nick for x in self.players.all()])
+
     def __str__(self):
+        self.get_team_name_or_members()
         return str(
             "%s (TeamScore: %s; TeamRating: %s Members: %s)" % (
-                self.teamname,
+                self.get_team_name_or_members(),
                 int(self.get_team_score() + 0.5),
                 int(self.get_team_rating() + 0.5),
                 ", ".join([x.nick for x in self.players.all()])

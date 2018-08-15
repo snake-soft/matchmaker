@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 
 
 class Player(models.Model):
+    """ Player stats are long-term statistics that are not deleted """
     nick = models.CharField(max_length=50, verbose_name="Nickname")
 
     rating = models.FloatField(
@@ -15,6 +16,9 @@ class Player(models.Model):
         elo = Elo(self.rating)
         self.rating = elo.new_result(enemy.get_team_rating(), goal_diff)
         self.save()
+
+    def get_games_played(self):
+        return 1
 
     def get_player_rating(self):
         return self.rating
@@ -82,19 +86,11 @@ class Elo:
         # Original score: win 1, draw 0.5, lose 0
         score = 0.5 + goal_diff / 10
 
-        #=======================================================================
-        # if goal_diff == 0:  # Draw
-        #     score = 0.5  # normally not possible
-        # elif goal_diff < 0:  # Lose
-        #     score = 0.5 + goal_diff / 10  # goal_div is negative
-        # else:  # Win
-        #     score = 0.5 + goal_diff / 10
-        #=======================================================================
-
         # Original k: default->20, elo>2400->10, less30matches->40, <18yo->40
         # Here k is mapped to the range of possible k-values (40-10)
         k = __class__.mapper(old, 0, 2400, 40, 10)
         return old + k * (score - exp)
 
     def __str__(self):
+        ''' I love chess but against hard enemys my brain hurts '''
         return str(int(self.elo + 0.5))

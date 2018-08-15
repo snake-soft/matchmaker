@@ -9,8 +9,8 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
-
 import os
+from pathlib import Path
 
 __all__ = ['BASE_DIR', 'INSTALLED_APPS', 'MIDDLEWARE', 'ROOT_URLCONF',
            'TEMPLATES', 'WSGI_APPLICATION', 'DATABASES',
@@ -19,7 +19,8 @@ __all__ = ['BASE_DIR', 'INSTALLED_APPS', 'MIDDLEWARE', 'ROOT_URLCONF',
            'STATICFILES_DIRS']
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = str(Path(__file__).resolve().parent.parent.parent)
 
 
 # Quick-start development settings - unsuitable for production
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR + '/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
