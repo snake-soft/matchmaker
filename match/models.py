@@ -37,6 +37,21 @@ class Match(models.Model):
         verbose_name="Finish-Date",
         )
 
+    def new_result(self):
+        self.firstteam.new_result(self.firstteam_goals, self.secondteam_goals)
+        for x in self.firstteam.players.all():
+            x.new_result(
+                self.firstteam_goals - self.secondteam_goals,
+                self.secondteam
+                )
+
+        self.secondteam.new_result(self.secondteam_goals, self.firstteam_goals)
+        for x in self.secondteam.players.all():
+            x.new_result(
+                self.secondteam_goals - self.firstteam_goals,
+                self.secondteam
+                )
+
     class Meta:
         verbose_name_plural = "Matches"
 
@@ -50,7 +65,7 @@ class Match(models.Model):
             ))
 
 
-def validate_different_teams(**kwargs):
+def result_pre_save(**kwargs):
     if kwargs['instance'].firstteam.id is kwargs['instance'].secondteam.id:
         raise ValidationError(
             "%s can't play against itself" % (
@@ -58,6 +73,8 @@ def validate_different_teams(**kwargs):
                 ),
             params={'value': kwargs['instance'].firstteam.id},
             )
+    else:
+        kwargs['instance'].new_result()
 
 
-models.signals.pre_save.connect(validate_different_teams, sender=Match)
+models.signals.pre_save.connect(result_pre_save, sender=Match)

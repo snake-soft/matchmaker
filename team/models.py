@@ -7,11 +7,18 @@ class Team(models.Model):
     teamname = models.CharField(max_length=50, verbose_name="Teamname")
     players = models.ManyToManyField(Player)
 
-    tscore = models.FloatField(
+    tscore = models.PositiveSmallIntegerField(
         verbose_name="Team Score",
         default=0,
         validators=[MinValueValidator(0.0)],
         )
+
+    def new_result(self, own_goals, foreign_goals):
+        if own_goals == foreign_goals:
+            self.tscore += 1
+        elif own_goals > foreign_goals:
+            self.tscore += 2
+        self.save()
 
     def get_team_score(self):
         ''' calculate based on matches '''
@@ -25,8 +32,8 @@ class Team(models.Model):
         return str(
             "%s (TeamScore: %s; TeamRating: %s Members: %s)" % (
                 self.teamname,
-                self.get_team_score(),
-                self.get_team_rating(),
+                int(self.get_team_score() + 0.5),
+                int(self.get_team_rating() + 0.5),
                 ", ".join([x.nick for x in self.players.all()])
                 )
             )
