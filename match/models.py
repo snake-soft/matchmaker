@@ -1,10 +1,9 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from team.models import Team
-
 
 class Match(models.Model):
+    from team.models import Team
     firstteam = models.ForeignKey(
         Team,
         related_name='Team1',
@@ -75,6 +74,11 @@ class Match(models.Model):
 
     class Meta:
         verbose_name_plural = "Matches"
+
+
+class stats:
+    
+
 
 #===============================================================================
 # def result_pre_save(**kwargs):
