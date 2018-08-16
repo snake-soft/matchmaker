@@ -35,6 +35,17 @@ class Match(models.Model):
         verbose_name="Finish-Date",
         )
 
+    @property
+    def goal_difference(self):
+        return self.firstteam_goals - self.secondteam_goals
+
+    @property
+    def rematches(self):
+        ret = []
+        ret += self.__class__.objects.filter(firstteam=self.firstteam).filter(secondteam=self.secondteam)
+        ret += self.__class__.objects.filter(firstteam=self.secondteam).filter(secondteam=self.firstteam)
+        return [x for x in sorted(ret, key=lambda x: x.pk) if x.pk is not self.pk]
+
     def new_result(self):
         for x in self.firstteam.players.all():
             x.new_result(

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+	{% block title %}
+		Player overview
+		{% if room.id_%}
+			 {{room.name}}
+		{%endif%}
+	{% endblock %}
+{% block var_link %}{% endblock %}
+
+{% block content %}
+{% load humanize %}
+<h1>Match overview</h1>
+<div class="table-responsive">
+<table id="player-overview" class="table table-striped table-bordered table-hover" >
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Time</th>
+			<th>First team</th>
+			<th>Second team</th>
+			<th>Result</th>
+			<th>Difference</th>
+		</tr>
+	</thead>
+{% for match in object_list %}
+    <tr>
+    	<th></th>
+    	<td title="{{match.date_time}}"><a href="/match/{{match.pk}}">{{ match.date_time|naturaltime }}</a></td>
+    	<td title="{{match.firstteam}}"><a href="/team/{{match.firstteam.pk}}/">{{match.firstteam.name}}</a></td>
+    	<td title="{{match.secondteam}}"><a href="/team/{{match.secondteam.pk}}/">{{ match.secondteam.name }}</a></td>
+    	<td><a href="/match/{{match.pk}}">{{ match.firstteam_goals}}:{{ match.secondteam_goals}}</a></td>
+    	<td><a href="/match/{{match.pk}}">{{ match.goal_difference}}</a></td>
+{% empty %}
+    <li>No player yet.</li>
+{% endfor %}
+</table>
+</div>
+{% endblock %} 
