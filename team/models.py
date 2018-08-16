@@ -1,4 +1,7 @@
 from django.db import models
+from datetime import date
+from django.utils import timezone
+import pytz
 
 from match.models import Match
 
@@ -13,13 +16,6 @@ class Team(models.Model):
         blank=True
         )
     players = models.ManyToManyField('player.Player')
-
-    def new_result(self, own_goals, foreign_goals):
-        if own_goals == foreign_goals:
-            self.tscore += 1
-        elif own_goals > foreign_goals:
-            self.tscore += 2
-        self.save()
 
     @property
     def team_score(self):
@@ -38,9 +34,12 @@ class Team(models.Model):
         else:
             return ', '.join([x.nick for x in self.players.all()])
 
-    def get_win_draw_lose(self):
+    def get_win_draw_lose(self, start_date=False, end_date=False):
         win, draw, lose = [], [], []
-        matches = [x for x in Match.objects.filter(firstteam_id=self.pk)]
+        start_date = start_date if start_date else date(2000, 1, 1)
+        end_date = end_date if end_date else date(3000, 1, 1)
+        matches = Match.objects.filter(firstteam_id=self.pk, date_time__range=(start_date, end_date))
+        print("Team1: ", matches)
         for match in matches:
             result = match.firstteam_goals - match.secondteam_goals
             if result > 0:
@@ -50,7 +49,8 @@ class Team(models.Model):
             elif result < 0:
                 lose.append(match)
 
-        matches = [x for x in Match.objects.filter(secondteam_id=self.pk)]
+        matches = Match.objects.filter(secondteam_id=self.pk, date_time__range=(start_date, end_date))
+        print("Team2: ", matches)
         for match in matches:
             result = match.secondteam_goals - match.firstteam_goals
             if result > 0:
@@ -59,7 +59,6 @@ class Team(models.Model):
                 draw.append(match)
             elif result < 0:
                 lose.append(match)
-
         return (win, draw, lose)
 
     def __str__(self):
