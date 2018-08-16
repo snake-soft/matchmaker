@@ -3,9 +3,8 @@ from django.core.exceptions import ValidationError
 
 
 class Match(models.Model):
-    from team.models import Team
     firstteam = models.ForeignKey(
-        Team,
+        'team.Team',
         related_name='Team1',
         on_delete=models.CASCADE,
         default=None,
@@ -13,7 +12,7 @@ class Match(models.Model):
         )
 
     secondteam = models.ForeignKey(
-        Team,
+        'team.Team',
         related_name='Team2',
         on_delete=models.CASCADE,
         default=None,
@@ -74,24 +73,3 @@ class Match(models.Model):
 
     class Meta:
         verbose_name_plural = "Matches"
-
-
-class stats:
-    
-
-
-#===============================================================================
-# def result_pre_save(**kwargs):
-#     if kwargs['instance'].firstteam.id is kwargs['instance'].secondteam.id:
-#         raise ValidationError(
-#             "%s can't play against itself" % (
-#                 str(kwargs['instance'].firstteam.id) + "",
-#                 ),
-#             params={'value': kwargs['instance'].firstteam.id},
-#             )
-#     else:
-#         kwargs['instance'].new_result()
-# 
-# 
-# models.signals.pre_save.connect(result_pre_save, sender=Match)
-#===============================================================================

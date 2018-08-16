@@ -17,14 +17,13 @@ class Player(models.Model):
         self.rating = elo.new_result(enemy.team_rating, goal_diff)
         self.save()
 
-    @property
-    def player_rating(self):
-        return self.rating
+    def player_rating(self, as_int=False):
+        return int(self.rating + 0.5) if as_int else self.rating
 
     def __str__(self):
         return str("%s (Player Rating: %s)" % (
             self.nick,
-            int(self.player_rating() + 0.5)
+            self.player_rating(as_int=True)
             ))
 
 
