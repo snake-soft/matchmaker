@@ -16,6 +16,10 @@ class Team(models.Model):
     players = models.ManyToManyField('player.Player')
 
     @property
+    def name(self):
+        return self.get_team_name_or_members()
+
+    @property
     def team_score(self):
         ''' calculate based on matches '''
         results = self.get_win_draw_lose()

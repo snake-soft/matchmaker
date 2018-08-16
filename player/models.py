@@ -19,6 +19,10 @@ class Player(models.Model):
         self.rating = elo.new_result(enemy.team_rating, goal_diff)
         self.save()
 
+    @property
+    def rating_as_int(self):
+        return self.player_rating(as_int=True)
+
     def player_rating(self, as_int=False):
         return int(self.rating + 0.5) if as_int else self.rating
 

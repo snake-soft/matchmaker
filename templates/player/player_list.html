@@ -1,8 +1,38 @@
-<h1>Articles</h1>
-<table>
+{% extends 'base.html' %}
+	{% block title %}
+		Player overview
+		{% if room.id_%}
+			 {{room.name}}
+		{%endif%}
+	{% endblock %}
+{% block var_link %}{% endblock %}
+
+{% block content %}
+<h1>Player overview</h1>
+<!-- https://www.w3schools.com/howto/howto_js_sort_table.asp -->
+<div class="table-responsive">
+<table id="player-overview" class="table table-striped table-bordered table-hover" >
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Player Name</th>
+			<th>Strength</th>
+			<th>Win</th>
+			<th>Draw</th>
+			<th>Lost</th>
+		</tr>
+	</thead>
 {% for player in object_list %}
-    <li>{{ player.nick }}{{player.games_played}}</li>
+    <tr>
+    	<th></th>
+    	<td><a href="/player/{{player.pk}}">{{ player.nick }}</td>
+    	<td>{{ player.rating_as_int}}</td>
+    	<td>{{ player.get_win_draw_lose.0 | length }}</td>
+    	<td>{{ player.get_win_draw_lose.1 | length }}</td>
+    	<td>{{ player.get_win_draw_lose.2 | length }}</td>
 {% empty %}
     <li>No player yet.</li>
 {% endfor %}
-</ul>
+</table>
+</div>
+{% endblock %} 

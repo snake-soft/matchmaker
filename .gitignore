@@ -9,3 +9,4 @@ __ pycache __
 /config/settings/secrets.py
 /config/db.sqlite3
 /test.py
+/static_root/
