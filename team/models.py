@@ -28,7 +28,11 @@ class Team(models.Model):
     @property
     def team_rating(self):
         """ Calculates the team strength out of the Player Elo """
-        return sum([x.player_rating() for x in self.players.all()])
+        return sum([x.player_rating() for x in self.players.all()]) / len(self.players.all())
+
+    @property
+    def team_rating_as_int(self):
+        return int(self.team_rating + 0.5)
 
     def get_team_name_or_members(self):
         if self.teamname:

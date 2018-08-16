@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from player.views import PlayerList, PlayerDetails
+from team.views import TeamList, TeamDetails
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,4 +24,6 @@ urlpatterns = [
     path('player/', PlayerList.as_view()),
     path('player/<pk>/', PlayerDetails.as_view(), name="playerdetails"),
 
+    path('team/', TeamList.as_view(), name="teamlist"),
+    path('team/<pk>/', TeamDetails.as_view(), name="teamdetails"),
 ]

@@ -14,7 +14,8 @@
 	<thead>
 		<tr>
 			<th>ID</th>
-			<th>Player Name</th>
+			<th>Team Name</th>
+			<th>Score</th>
 			<th>Strength</th>
 			<th>Win</th>
 			<th>Draw</th>
@@ -23,8 +24,9 @@
 	</thead>
     <tr>
     	<th>{{ object.pk }}</th>
-    	<td>{{ object.nick }}</td>
-    	<td>{{ object.rating_as_int}}</td>
+    	<td>{{ object.name }}</td>
+    	<td>{{ object.team_score }}</td>
+    	<td>{{ object.team_rating_as_int}}</td>
     	<td class="win"><a href="#">{{ object.get_win_draw_lose.0 | length }}</a>
     		<ul>
     		{% for match in object.get_win_draw_lose.0 %}
