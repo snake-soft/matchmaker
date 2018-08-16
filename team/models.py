@@ -1,7 +1,5 @@
 from django.db import models
 from datetime import date
-from django.utils import timezone
-import pytz
 
 from match.models import Match
 
@@ -38,8 +36,10 @@ class Team(models.Model):
         win, draw, lose = [], [], []
         start_date = start_date if start_date else date(2000, 1, 1)
         end_date = end_date if end_date else date(3000, 1, 1)
-        matches = Match.objects.filter(firstteam_id=self.pk, date_time__range=(start_date, end_date))
-        print("Team1: ", matches)
+        matches = Match.objects.filter(
+            firstteam_id=self.pk,
+            date_time__range=(start_date, end_date)
+            )
         for match in matches:
             result = match.firstteam_goals - match.secondteam_goals
             if result > 0:
@@ -49,8 +49,10 @@ class Team(models.Model):
             elif result < 0:
                 lose.append(match)
 
-        matches = Match.objects.filter(secondteam_id=self.pk, date_time__range=(start_date, end_date))
-        print("Team2: ", matches)
+        matches = Match.objects.filter(
+            secondteam_id=self.pk,
+            date_time__range=(start_date, end_date)
+            )
         for match in matches:
             result = match.secondteam_goals - match.firstteam_goals
             if result > 0:
@@ -59,7 +61,7 @@ class Team(models.Model):
                 draw.append(match)
             elif result < 0:
                 lose.append(match)
-        return (win, draw, lose)
+        return win, draw, lose
 
     def __str__(self):
         return str(

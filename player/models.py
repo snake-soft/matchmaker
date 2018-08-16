@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 
+from team.models import Team
+
 
 class Player(models.Model):
     """ Player stats are long-term statistics that are not deleted """
@@ -19,6 +21,18 @@ class Player(models.Model):
 
     def player_rating(self, as_int=False):
         return int(self.rating + 0.5) if as_int else self.rating
+
+    def teams(self):
+        return Team.objects.filter(players=self.pk)
+
+    def get_win_draw_lose(self):
+        win, draw, lose = [], [], []
+        for team in self.teams():
+            team_results = team.get_win_draw_lose()
+            win += team_results[0]
+            draw += team_results[1]
+            lose += team_results[2]
+        return win, draw, lose
 
     def __str__(self):
         return str("%s (Player Rating: %s)" % (
@@ -86,7 +100,8 @@ class Elo:
         # Original k: default->20, elo>2400->10, less30matches->40, <18yo->40
         # Here k is mapped to the range of possible k-values (40-10)
         k = __class__.mapper(old, 0, 2400, 40, 10)
-        return old + k * (score - exp)
+        new_elo = old + k * (score - exp)
+        return new_elo if new_elo >= 0 else 0
 
     def __str__(self):
         ''' I love chess but against hard enemys my brain hurts '''
