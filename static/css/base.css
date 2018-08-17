@@ -5,11 +5,7 @@ body, html {
 	margin: 0;
 }
 body{
-	background: #d4e4ef; /* Old browsers */
-	background: -moz-linear-gradient(top, #d4e4ef 0%, #86aecc 100%); /* FF3.6-15 */
-	background: -webkit-linear-gradient(top, #d4e4ef 0%,#86aecc 100%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(to bottom, #d4e4ef 0%,#86aecc 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d4e4ef', endColorstr='#86aecc',GradientType=0 ); /* IE6-9 */
+	background: #a8c296; /* Old browsers */
 }
 * {
 	box-sizing: border-box;
@@ -30,23 +26,11 @@ body {
   padding: 0px;
 }
 
-table {
-    counter-reset: rowNumber;
-}
-
-table tr {
-    counter-increment: rowNumber;
-}
-
-table tr td:first-child::before {
-    content: counter(rowNumber);
-    min-width: 1em;
-    margin-right: 0.5em;
-}
-
-.win ul, .draw ul, .lost ul{
+ul, .win ul, .draw ul, .lost ul{
 	list-style-type: none;
+	padding-left: 0;
 }
 .win *{color: green;}
 .draw *{color: #575757;}
 .lose *{color: red;}
+

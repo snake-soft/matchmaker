@@ -13,10 +13,9 @@
 	<link rel="stylesheet" href="{% static "bootstrap-4.1.2-dist/css/bootstrap.min.css" %}">
 	<link rel="stylesheet" href="{% static "fontawesome-free-5.1.0-web/css/all.css" %}">
 
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.css"/>
- 
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.js"></script>
-
+	<link rel="stylesheet" type="text/css" href="{% static "DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}"/>
+	<script type="text/javascript" src="{% static "DataTables-1.10.18/js/jquery.dataTables.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "DataTables-1.10.18/js/dataTables.bootstrap4.min.js" %}"></script>
 
 	<link rel="shortcut icon" type="image/png" href="{% static "images/favicon.ico" %}"/>
 	<script>
@@ -30,15 +29,31 @@
 </head>
 <body>
 <nav style="margin-bottom: 20px;" class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="/">Control</a>
+  <a class="navbar-brand" href="/">Start</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
+
+	<li class="nav-item dropdown">
+	        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	          New
+	        </a>
+	        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+	          <a class="dropdown-item" href="#">Match</a>
+	          <a class="dropdown-item" href="#">Team</a>
+	          <a class="dropdown-item" href="#">Player</a>
+	          <!-- <div class="dropdown-divider"></div>
+          		<a class="dropdown-item" href="#">Something else here</a>
+	          </div>  -->
+      </li>
+      <li class="nav-item <!--active-->" title="Finds the best Teamconstellation based on player strength">
+        <a class="nav-link" href="/matchmaker/">Matchmaker<span class="sr-only">(current)</span></a>
+      </li>
+
       <li class="nav-item <!--active-->">
-        <a class="nav-link" href="/match/">Match <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="/match/">Match<span class="sr-only">(current)</span></a>
       </li>
      
       <li class="nav-item">

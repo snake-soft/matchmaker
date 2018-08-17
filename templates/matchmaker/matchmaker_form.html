@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}
+Matchmaker
+{% endblock %}
+{% block var_link %}{% endblock %}
+
+{% block content %}
+{% load join_by_attr %}
+<p>Hint: You can choose more players than actually playing.</p>
+<div id="matchmaker">
+	<form method="get" target={{request.path}}>
+		<table class="table table-striped table-bordered table-hover">
+		    {{ matchmaker_form.as_table }}
+		</table>
+	    <input type="submit" value="Calculate Teams" />
+	</form>
+</div>
+
+<div id="matchmaker-result">
+<table class="table table-striped table-bordered table-hover" >
+	<thead>
+		<tr>
+			<th colspan=3>First team</th>
+			<th colspan=3>Second team</th>
+			<th colspan=1></th>
+		</tr>
+		<tr>
+			<th>{{ constellations.0.team1.players|length }} player{{ constellations.0.team1.players|pluralize:"s" }}</th>
+			<th>Teamname</th>
+			<th>Rating</th>
+
+			<th>{{ constellations.0.team2.players|length }} player{{ constellations.0.team2.players|pluralize:"s" }}</th>
+			<th>Team</th>
+			<th>Rating</th>
+
+			<th>Difference</th>
+		</tr>
+	</thead>
+{% for constellation in constellations %}
+
+    <tr>
+		<td>{{ constellation.team1.players|join_by_attr:"nick" }}</td>
+		<td>{{ constellation.team1.team.name }}</td>
+		<td>{{ constellation.team1.strength }}</td>
+
+		<td>{{ constellation.team2.players|join_by_attr:"nick" }}</td>
+		<td>{{ constellation.team2.team.name }}</td>
+		<td>{{ constellation.team2.strength }}</td>
+
+		<td>{{ constellation.difference }}</td>
+    </tr>
+{% empty %}
+    <li>No constellations .</li>
+{% endfor %}
+</table>
+
+
+</div>
+{% endblock %} 

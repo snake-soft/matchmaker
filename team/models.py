@@ -1,9 +1,11 @@
 from django.db import models
 from datetime import date
+from django.core.exceptions import ValidationError
 
 from match.models import Match
 
 
+# CHECK IF AN IDENTICAL TEAM EXISTS
 class Team(models.Model):
     """ Teams are Season-based
     -> every season there are new values
@@ -70,6 +72,28 @@ class Team(models.Model):
             elif result < 0:
                 lose.append(match)
         return win, draw, lose
+
+    @classmethod
+    def players_have_team(cls, player_obj_lst):
+        for team in cls.objects.all():
+            if any(map(lambda v: v in player_obj_lst, team.players.all())):
+                return team
+        return None
+
+    def save(self):
+        import pdb; pdb.set_trace()  # <---------
+        #=======================================================================
+        # if self.players_has_team(self.players):
+        #     raise ValidationError(
+        #         "This team already exists" % (
+        #             str(self.firstteam.id) + "",
+        #             ),
+        #         params={'value': self.firstteam.id},
+        #         )
+        # else:
+        #     super().save()
+        #=======================================================================
+        super().save()
 
     def __str__(self):
         return str(
