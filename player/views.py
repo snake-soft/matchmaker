@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
 
 from .models import Player
 
@@ -10,3 +9,13 @@ class PlayerList(ListView):
 
 class PlayerDetails(DetailView):
     model = Player
+
+class PlayerCreate(CreateView):
+    model = Player
+    fields = ['nick']
+
+    def get_initial(self):
+        self.success_url = self.request.path
+
+    def post(self, request):
+        return super().post(request)

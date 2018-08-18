@@ -31,4 +31,3 @@ class MatchCreate(CreateView):
         request.session['last_firstteam'] = int(request.POST['firstteam'])
         request.session['last_secondteam'] = int(request.POST['secondteam'])
         return super().post(request)
-        # import pdb; pdb.set_trace()  # <---------

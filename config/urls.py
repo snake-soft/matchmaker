@@ -15,8 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from player.views import PlayerList, PlayerDetails
-from team.views import TeamList, TeamDetails
+from player.views import PlayerList, PlayerDetails, PlayerCreate
+from team.views import TeamList, TeamDetails, TeamCreate
 from match.views import MatchList, MatchDetails, MatchCreate
 from matchmaker.views import MatchmakerView
 from core.views import StartView
@@ -29,11 +29,12 @@ urlpatterns = [
 
     path('player/', PlayerList.as_view()),
     path('player/<pk>/', PlayerDetails.as_view(), name="playerdetails"),
+    path('new/player/', PlayerCreate.as_view(), name="playernew"),
     #new/player
 
     path('team/', TeamList.as_view(), name="teamlist"),
     path('team/<pk>/', TeamDetails.as_view(), name="teamdetails"),
-    #new/team
+    path('new/team/', TeamCreate.as_view(), name="teamnew"),
 
     path('match/', MatchList.as_view(), name="matchlist"),
     path('match/<pk>/', MatchDetails.as_view(), name="matchdetails"),
