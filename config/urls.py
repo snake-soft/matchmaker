@@ -17,14 +17,14 @@ from django.contrib import admin
 from django.urls import path
 from player.views import PlayerList, PlayerDetails
 from team.views import TeamList, TeamDetails
-from match.views import MatchList, MatchDetails
-from core.views import ControlView
+from match.views import MatchList, MatchDetails, MatchCreate
 from matchmaker.views import MatchmakerView
+from core.views import StartView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('', ControlView.as_view(), name="basecontrols"),
+    path('', StartView.as_view(), name="start"),
     path('matchmaker/', MatchmakerView.as_view(), name="matchmaker"),
 
     path('player/', PlayerList.as_view()),
@@ -37,5 +37,6 @@ urlpatterns = [
 
     path('match/', MatchList.as_view(), name="matchlist"),
     path('match/<pk>/', MatchDetails.as_view(), name="matchdetails"),
+    path('new/match/', MatchCreate.as_view(), name="matchnew"),
     #new/match
 ]

@@ -1,8 +1,7 @@
 from django.shortcuts import render
-from django.views.generic import CreateView
-from match.models import Match
+from django.views import View
 
 
-class ControlView(CreateView):
-    model = Match
-    fields = ['firstteam', 'secondteam', 'firstteam_goals', 'secondteam_goals']
+class StartView(View):
+    def get(self, request):
+        return render(request, template_name="start.html")

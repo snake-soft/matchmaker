@@ -40,7 +40,7 @@ class Team(models.Model):
         if self.teamname:
             return self.teamname
         else:
-            return ', '.join([x.nick for x in self.players.all()])
+            return '<%s>' % (', '.join([x.nick for x in self.players.all()]))
 
     def get_win_draw_lose(self, start_date=False, end_date=False):
         win, draw, lose = [], [], []
@@ -75,15 +75,23 @@ class Team(models.Model):
 
     @classmethod
     def players_have_team(cls, player_obj_lst):
+        def list_compare(old, new):
+            """ return{'rem':[miss in new], 'add':[miss in old]} """
+            return {
+                'rem': [x for x in old if x not in new],
+                'add': [x for x in new if x not in old]
+                }
         for team in cls.objects.all():
-            if any(map(lambda v: v in player_obj_lst, team.players.all())):
+            compared = list_compare(player_obj_lst, team.players.all())
+            if len(compared['rem']) is 0 and len(compared['add']) is 0:
                 return team
         return None
 
     def save(self):
+        super().save()
         import pdb; pdb.set_trace()  # <---------
         #=======================================================================
-        # if self.players_has_team(self.players):
+        # if __class__.players_have_team(self.players):
         #     raise ValidationError(
         #         "This team already exists" % (
         #             str(self.firstteam.id) + "",
@@ -93,7 +101,6 @@ class Team(models.Model):
         # else:
         #     super().save()
         #=======================================================================
-        super().save()
 
     def __str__(self):
         return str(

@@ -15,14 +15,11 @@ class ConstellationFactory:
         return ceil(self.count / 2), self.count - ceil(self.count / 2)
 
     def get_constellations(self):
-        ret = []
+        ret = []  # [(t1, t2)]
         if self.teamsize[0] - self.teamsize[1] is 0:
-            combinations = tuple(comb(self.players, self.teamsize[0]))
-            for t1 in combinations:
-                non_t1 = tuple(x for x in self.players if x not in t1)
-                import pdb; pdb.set_trace()  # <---------
-                ret.append(Constellation(t1, non_t1))
-            #import pdb; pdb.set_trace()  # <---------
+            possible_teams = tuple(comb(self.players, self.teamsize[0]))
+            possible_matches = tuple(comb(possible_teams, 2))
+            ret = [Constellation(x[0], x[1]) for x in possible_matches]
         else:
             for t1 in tuple(comb(self.players, self.teamsize[0])):
                 non_t1 = [x for x in self.players if x not in t1]
