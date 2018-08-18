@@ -6,7 +6,9 @@ from team.models import Team
 
 class Player(models.Model):
     """ Player stats are long-term statistics that are not deleted """
-    nick = models.CharField(max_length=50, verbose_name="Nickname")
+    nick = models.CharField(
+        max_length=50, verbose_name="Nickname", unique=True
+        )
 
     rating = models.FloatField(
         verbose_name="Player Rating",

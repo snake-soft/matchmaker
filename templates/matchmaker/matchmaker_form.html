@@ -22,7 +22,7 @@ Matchmaker
 		<tr>
 			<th colspan=3>First team</th>
 			<th colspan=3>Second team</th>
-			<th colspan=1></th>
+			<th colspan=2></th>
 		</tr>
 		<tr>
 			<th>{{ constellations.0.team1.players|length }} player{{ constellations.0.team1.players|pluralize:"s" }}</th>
@@ -34,20 +34,22 @@ Matchmaker
 			<th>Rating</th>
 
 			<th>Difference</th>
+			<th>Play this match</th>
 		</tr>
 	</thead>
 {% for constellation in constellations %}
 
     <tr>
 		<td>{{ constellation.team1.players|join_by_attr:"nick" }}</td>
-		<td>{{ constellation.team1.team.name }}</td>
+		<td>{% if constellation.team1.team.name %}<a href='/team/{{ constellation.team1.team.id }}/'>{{ constellation.team1.team.name }}</a>{% else %}<a href='/new/team/?players={{constellation.team1.player_ids|join:","}}'>|create|</a> {% endif %}</td>
 		<td>{{ constellation.team1.strength }}</td>
 
 		<td>{{ constellation.team2.players|join_by_attr:"nick" }}</td>
-		<td>{{ constellation.team2.team.name }}</td>
+		<td>{% if constellation.team2.team.name %}<a href='/team/{{ constellation.team2.team.id }}/'>{{ constellation.team2.team.name }}</a>{% else %}<a href='/new/team/?players={{constellation.team2.player_ids|join:","}}'>|create|</a> {% endif %}</td>
 		<td>{{ constellation.team2.strength }}</td>
 
 		<td>{{ constellation.difference }}</td>
+		<td>{% if constellation.team1.team.name and constellation.team2.team.name %}<a href='/new/match/?firstteam={{constellation.team1.team.id}}&secondteam={{constellation.team2.team.id}}'>Start</a>{% endif %}</td>
     </tr>
 {% empty %}
     <li>No constellations .</li>

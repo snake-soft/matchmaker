@@ -25,6 +25,11 @@ class MatchCreate(CreateView):
 
         initial['secondteam'] = self.request.session['last_secondteam'] \
             if 'last_secondteam' in self.request.session else ''
+        # import pdb; pdb.set_trace()  # <---------
+        if 'firstteam' in self.request.GET:
+            initial['firstteam'] = int(self.request.GET['firstteam'])
+        if 'secondteam' in self.request.GET:
+            initial['secondteam'] = int(self.request.GET['secondteam'])
         return initial
 
     def post(self, request):

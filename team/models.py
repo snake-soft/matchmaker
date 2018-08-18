@@ -13,7 +13,8 @@ class Team(models.Model):
     """
     teamname = models.CharField(
         max_length=50, verbose_name="Teamname",
-        blank=True
+        blank=True,
+        unique=True,
         )
     players = models.ManyToManyField('player.Player')
 
@@ -89,7 +90,6 @@ class Team(models.Model):
 
     def save(self):
         super().save()
-        import pdb; pdb.set_trace()  # <---------
         #=======================================================================
         # if __class__.players_have_team(self.players):
         #     raise ValidationError(

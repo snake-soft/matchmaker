@@ -15,6 +15,7 @@
 		<tr>
 			<th>ID</th>
 			<th>Player Name</th>
+			<th>Teams</th>
 			<th>Strength</th>
 			<th>Win</th>
 			<th>Draw</th>
@@ -24,6 +25,12 @@
     <tr>
     	<th>{{ object.pk }}</th>
     	<td>{{ object.nick }}</td>
+    	<td><ul>
+    		{% for team in object.teams %}
+    			<li><a href='/team/{{team.id}}/'>{{ team.name }} ({{team.team_rating_as_int}})</a></li>
+    		{%endfor%}
+    	</ul>
+    	</td>
     	<td>{{ object.rating_as_int}}</td>
     	<td class="win"><a href="#">{{ object.get_win_draw_lose.0 | length }}</a>
     		<ul>

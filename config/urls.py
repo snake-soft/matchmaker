@@ -27,17 +27,17 @@ urlpatterns = [
     path('', StartView.as_view(), name="start"),
     path('matchmaker/', MatchmakerView.as_view(), name="matchmaker"),
 
-    path('player/', PlayerList.as_view()),
-    path('player/<pk>/', PlayerDetails.as_view(), name="playerdetails"),
-    path('new/player/', PlayerCreate.as_view(), name="playernew"),
+    path('player/', PlayerList.as_view(), name='player-list'),
+    path('player/<pk>/', PlayerDetails.as_view(), name="player-details"),
+    path('new/player/', PlayerCreate.as_view(), name="player-new"),
     #new/player
 
-    path('team/', TeamList.as_view(), name="teamlist"),
-    path('team/<pk>/', TeamDetails.as_view(), name="teamdetails"),
-    path('new/team/', TeamCreate.as_view(), name="teamnew"),
+    path('team/', TeamList.as_view(), name="team-list"),
+    path('team/<pk>/', TeamDetails.as_view(), name="team-details"),
+    path('new/team/', TeamCreate.as_view(), name="team-new"),
 
-    path('match/', MatchList.as_view(), name="matchlist"),
-    path('match/<pk>/', MatchDetails.as_view(), name="matchdetails"),
-    path('new/match/', MatchCreate.as_view(), name="matchnew"),
+    path('match/', MatchList.as_view(), name="match-list"),
+    path('match/<pk>/', MatchDetails.as_view(), name="match-details"),
+    path('new/match/', MatchCreate.as_view(), name="match-new"),
     #new/match
 ]

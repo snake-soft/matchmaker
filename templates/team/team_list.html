@@ -8,6 +8,7 @@
 {% block var_link %}{% endblock %}
 
 {% block content %}
+{% load join_by_attr %}
 <h1>Teams overview</h1>
 <!-- https://www.w3schools.com/howto/howto_js_sort_table.asp -->
 <div class="table-responsive">
@@ -16,6 +17,7 @@
 		<tr>
 			<th>#</th>
 			<th>Team Name</th>
+			<th>Members</th>
 			<th>Score</th>
 			<th>Strength</th>
 			<th>Win</th>
@@ -27,6 +29,7 @@
     <tr>
     	<th></th>
     	<td><a href="/team/{{team.pk}}">{{ team.name }}</td>
+    	<td>{{ team.players.all|join_by_attr:"nick" }}</td>
     	<td>{{ team.team_score }}</td>
     	<td>{{ team.team_rating_as_int}}</td>
     	<td>{{ team.get_win_draw_lose.0 | length }}</td>

@@ -15,16 +15,31 @@ class ConstellationFactory:
         return ceil(self.count / 2), self.count - ceil(self.count / 2)
 
     def get_constellations(self):
-        ret = []  # [(t1, t2)]
-        if self.teamsize[0] - self.teamsize[1] is 0:
-            possible_teams = tuple(comb(self.players, self.teamsize[0]))
-            possible_matches = tuple(comb(possible_teams, 2))
-            ret = [Constellation(x[0], x[1]) for x in possible_matches]
-        else:
-            for t1 in tuple(comb(self.players, self.teamsize[0])):
-                non_t1 = [x for x in self.players if x not in t1]
-                for t2 in tuple(comb(non_t1, self.teamsize[1])):
-                    ret.append(Constellation(t1, t2,))
+        def team_calculator(players, t1_size, t2_size):
+            combi1 = tuple(comb(players, t1_size))
+            combi2 = tuple(comb(players, t2_size))
+            used, ret = [], []
+
+            for t1 in combi1:
+                if t1 not in used:
+                    for t2 in combi2:
+                        if t2 not in used and not any([x for x in t2 if x in t1]):
+                            ret.append(Constellation(t1, t2))
+                            used.append(t1)
+            return ret
+
+        ret = team_calculator(self.players, self.teamsize[0], self.teamsize[1])
+        #=======================================================================
+        # if self.teamsize[0] - self.teamsize[1] is 0:  # ERROR when 4 players
+        #     possible_teams = tuple(comb(self.players, self.teamsize[0]))
+        #     possible_matches = tuple(comb(possible_teams, 2))
+        #     ret = [Constellation(x[0], x[1]) for x in possible_matches]
+        # else:
+        #     for t1 in tuple(comb(self.players, self.teamsize[0])):
+        #         non_t1 = [x for x in self.players if x not in t1]
+        #         for t2 in tuple(comb(non_t1, self.teamsize[1])):
+        #             ret.append(Constellation(t1, t2,))
+        #=======================================================================
         return sorted(ret, key=lambda x: x.difference)
 
 
@@ -51,6 +66,10 @@ class ConstellationTeam:
     def __init__(self, players):
         self.players = players
         self.team = Team.players_have_team(self.players)
+
+    @property
+    def player_ids(self):
+        return [x.id for x in self.players]
 
     @property
     def strength(self):
