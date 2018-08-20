@@ -5,6 +5,7 @@ body, html {
 	margin: 0;
 }
 body{
+	font-size:1em;
 	background: #a8c296; /* Old browsers */
 }
 * {
@@ -34,3 +35,33 @@ ul, .win ul, .draw ul, .lost ul{
 .draw *{color: #575757;}
 .lose *{color: red;}
 
+
+@media (min-width: 858px) {
+    html {
+        font-size: 1em;
+    }
+}
+
+@media (min-width: 780px) {
+    html {
+        font-size: 1em;
+    }
+}
+
+@media (min-width: 702px) {
+    html {
+        font-size: 1em;
+    }
+}
+
+@media (min-width: 724px) {
+    html {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 623px) {
+    html {
+        font-size: 1em;
+    }
+}

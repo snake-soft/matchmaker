@@ -29,17 +29,6 @@ class ConstellationFactory:
             return ret
 
         ret = team_calculator(self.players, self.teamsize[0], self.teamsize[1])
-        #=======================================================================
-        # if self.teamsize[0] - self.teamsize[1] is 0:  # ERROR when 4 players
-        #     possible_teams = tuple(comb(self.players, self.teamsize[0]))
-        #     possible_matches = tuple(comb(possible_teams, 2))
-        #     ret = [Constellation(x[0], x[1]) for x in possible_matches]
-        # else:
-        #     for t1 in tuple(comb(self.players, self.teamsize[0])):
-        #         non_t1 = [x for x in self.players if x not in t1]
-        #         for t2 in tuple(comb(non_t1, self.teamsize[1])):
-        #             ret.append(Constellation(t1, t2,))
-        #=======================================================================
         return sorted(ret, key=lambda x: x.difference)
 
 
