@@ -19,6 +19,10 @@ class Team(models.Model):
     players = models.ManyToManyField('player.Player')
 
     @property
+    def is_single_player(self):
+        return True if len(self.players) is 1 else False
+
+    @property
     def name(self):
         return self.get_team_name_or_members()
 
@@ -90,6 +94,7 @@ class Team(models.Model):
 
     def save(self):
         super().save()
+        
         #=======================================================================
         # if __class__.players_have_team(self.players):
         #     raise ValidationError(

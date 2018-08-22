@@ -40,6 +40,13 @@ class Player(models.Model):
             lose += team_results[2]
         return win, draw, lose
 
+    def save(self):
+        if len(__class__.objects.filter(nick__iexact=self.nick)):
+            raise ValueError("Player %s exists already." % (self.nick))
+        if len(Team.objects.filter(teamname__iexact=self.nick)):
+            raise ValueError("Team %s exists already." % (self.nick))
+        super().save()
+
     def __str__(self):
         return str("%s (Player Rating: %s)" % (
             self.nick,
