@@ -82,6 +82,7 @@ class Team(models.Model):
     def players_have_team(cls, player_obj_lst):
         def list_compare(old, new):
             """ return{'rem':[miss in new], 'add':[miss in old]} """
+            ''' better: sorted(old, key==id) == sorted(new, key==id)'''
             return {
                 'rem': [x for x in old if x not in new],
                 'add': [x for x in new if x not in old]
@@ -92,27 +93,41 @@ class Team(models.Model):
                 return team
         return None
 
-    def save(self):
+#===============================================================================
+#     def save(self, *args, **kwargs):
+#         if self.id == None: # new item should be created.
+#             # manually check a unique togeher, because django can't do this with a M2M field.
+#             # Obsolete if unique_together work with ManyToMany: http://code.djangoproject.com/ticket/702
+#             exist = __class__.on_site.filter(id=self.foobar).count()
+#             if exist != 0:
+#                 from django.db import IntegrityError
+#                 # We can use attributes from this model instance, because it needs to have a primary key
+#                 # value before a many-to-many relationship can be used.
+#                 site = Players.objects.get_current()
+#                 raise IntegrityError(
+#                     "MyModel item with same foobar field exist on site %r" % site
+#                 )
+# 
+#         return super(MyModel, self).save(*args, **kwargs)
+#===============================================================================
+
+
+    def save(self, *args, **kwargs):
         super().save()
-        
-        #=======================================================================
-        # if __class__.players_have_team(self.players):
-        #     raise ValidationError(
-        #         "This team already exists" % (
-        #             str(self.firstteam.id) + "",
-        #             ),
-        #         params={'value': self.firstteam.id},
-        #         )
-        # else:
-        #     super().save()
-        #=======================================================================
+        import pdb; pdb.set_trace()  # <---------
+        if __class__.players_have_team(self.players):
+            self.delete()
+            raise ValidationError("This team already exists")
+        else:
+            pass
+            super().save()
 
     def __str__(self):
         return str(
             "%s (TeamScore: %s; TeamRating: %s Members: %s)" % (
                 self.get_team_name_or_members(),
                 int(self.team_score + 0.5),
-                int(self.team_rating + 0.5),
-                ", ".join([x.nick for x in self.players.all()])
+                "0",# int(self.team_rating + 0.5), # 
+                "0"# ", ".join([x.nick for x in self.players.all()])
                 )
             )
