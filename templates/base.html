@@ -17,10 +17,25 @@
 	<script type="text/javascript" src="{% static "DataTables-1.10.18/js/jquery.dataTables.min.js" %}"></script>
 	<script type="text/javascript" src="{% static "DataTables-1.10.18/js/dataTables.bootstrap4.min.js" %}"></script>
 
+	<link  href="{% static "Datepicker-1.0/datepicker.css" %}" rel="stylesheet">
+	<script src="{% static "Datepicker-1.0/datepicker.js" %}"></script>
+	
 	<link rel="shortcut icon" type="image/png" href="{% static "images/favicon.ico" %}"/>
 	<script>
 		var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
-		{%if room.id_%}var roomid = {{ room.id_ }}{%endif%}
+		$(document).ready(function() {
+			$('[data-toggle="datepicker"]').datepicker();
+		    $('#id_from').datepicker({
+		    		weekStart: 1,
+		    		date: date: new Date({{ from|date:"Y" }}, {{ from|date:"m" }}, {{ from|date:"d" }}),
+		    		format: 'yyyy-mm-dd',
+		    });
+		    $('#id_to').datepicker({
+		    		weekStart: 1,
+		    		date: {{ to|date:"Y-m-d" }},
+		    		format: 'yyyy-mm-dd',
+		    });
+		} );
 	</script>
 	<script src="{% static "js/base.js" %}"></script>
 	<link rel="stylesheet" href="{% static "css/base.css" %}"/>
@@ -65,7 +80,9 @@
       </li>
     </ul>
   </div>
+  <div class="nav-item"><form>{{time_range_form}}<input type="submit" value="Filter" /></form></div>
 </nav>
+
 	<div class="container">
 		<div class="row">
 		 <div class="col-12 col-md-12">

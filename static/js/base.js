@@ -27,5 +27,7 @@ $(document).ready(function() {
             cell.innerHTML = i+1;
         } );
     } ).draw();
-    
+    $('[data-toggle="datepicker"]').datepicker({
+    		weekStart: 1,
+    });
 } );
