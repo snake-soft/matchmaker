@@ -1,7 +1,9 @@
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse
+from django import forms
 
 from .models import Team
+from .forms import TeamCreateForm
 
 
 class TeamList(ListView):
@@ -14,7 +16,7 @@ class TeamDetails(DetailView):
 
 class TeamCreate(CreateView):
     model = Team
-    fields = ['teamname', 'players']
+    form_class = TeamCreateForm
 
     def get_initial(self):
         self.success_url = reverse('team-list')
