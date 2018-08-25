@@ -26,8 +26,8 @@
     <tr>
     	<th></th>
     	<td title="{{match.date_time|naturaltime}}"><a href="/match/{{match.pk}}">{{ match.date_time }}</a></td>
-    	<td title="{{match.firstteam}}"><a href="/team/{{match.firstteam.pk}}/">{{match.firstteam.name}}</a></td>
-    	<td title="{{match.secondteam}}"><a href="/team/{{match.secondteam.pk}}/">{{ match.secondteam.name }}</a></td>
+    	<td title="{{match.firstteam.verbose_name}}"><a href="/team/{{match.firstteam.pk}}/">{{match.firstteam.name}}</a></td>
+    	<td title="{{match.secondteam.verbose_name}}"><a href="/team/{{match.secondteam.pk}}/">{{ match.secondteam.name }}</a></td>
     	<td><a href="/match/{{match.pk}}">{{ match.firstteam_goals}}:{{ match.secondteam_goals}}</a></td>
     	<td><a href="/match/{{match.pk}}">{{ match.goal_difference}}</a></td>
 {% empty %}
