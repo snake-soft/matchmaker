@@ -10,7 +10,9 @@
 {% block content %}
 {% load humanize %}
 <form method="post">{% csrf_token %}
-    {{ form.as_p }}
+	<table class="table table-striped table-bordered table-hover">
+    	{{ form.as_table }}
+    </table>
     <input type="submit" value="Save" />
 </form>
 {% endblock %} 

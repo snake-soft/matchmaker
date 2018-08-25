@@ -6,7 +6,6 @@ Matchmaker
 
 {% block content %}
 {% load join_by_attr %}
-<p>Hint: You can choose more players than actually playing.</p>
 <div id="matchmaker">
 	<form method="get">
 		<table class="table table-striped table-bordered table-hover">
@@ -16,6 +15,7 @@ Matchmaker
 	</form>
 </div>
 
+{% if constellations %}
 <div id="matchmaker-result">
 <table class="table table-striped table-bordered table-hover" >
 	<thead>
@@ -55,7 +55,6 @@ Matchmaker
     <li>No constellations .</li>
 {% endfor %}
 </table>
-
-
 </div>
+{% endif %}
 {% endblock %} 
