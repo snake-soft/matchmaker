@@ -37,6 +37,7 @@ class Match(models.Model):
 
     @property
     def goal_difference(self):
+        """ positiv=win_firstteam, negativ=win_secondteam """
         return self.firstteam_goals - self.secondteam_goals
 
     @property

@@ -22,6 +22,8 @@
 			<th>Win</th>
 			<th>Draw</th>
 			<th>Lost</th>
+			<th>Close win</th>
+			<th>Close lose</th>
 		</tr>
 	</thead>
     <tr>
@@ -55,6 +57,29 @@
     	<td class="lost"><a href="#">{{ object.get_win_draw_lose.2 | length }}</a>
     		<ul>
     		{% for match in object.get_win_draw_lose.2 %}
+    			<li>
+    			<a href="/match/{{match.pk}}/">
+    			#{{ match.pk }}: {{match.firstteam.name}} vs. {{match.secondteam.name}} ({{match.firstteam_goals}}:{{match.secondteam_goals}})
+    			</a>
+    			</li>
+    		{% endfor %}
+    		</ul>
+    		</td>
+
+    	<td class="close_lose"><a href="#">{{ object.close_win_lose.0 | length }}</a>
+    		<ul>
+    		{% for match in object.close_win_lose.0 %}
+    			<li>
+    			<a href="/match/{{match.pk}}/">
+    			#{{ match.pk }}: {{match.firstteam.name}} vs. {{match.secondteam.name}} ({{match.firstteam_goals}}:{{match.secondteam_goals}})
+    			</a>
+    			</li>
+    		{% endfor %}
+    		</ul>
+    		</td>
+    	<td class="close_lose"><a href="#">{{ object.close_win_lose.1 | length }}</a>
+    		<ul>
+    		{% for match in object.close_win_lose.1 %}
     			<li>
     			<a href="/match/{{match.pk}}/">
     			#{{ match.pk }}: {{match.firstteam.name}} vs. {{match.secondteam.name}} ({{match.firstteam_goals}}:{{match.secondteam_goals}})

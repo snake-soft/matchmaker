@@ -10,6 +10,17 @@ class TeamList(ListView):
     model = Team
 
 
+class TeamListRealtime(ListView):
+    model = Team
+    template_name = 'team/team_list_realtime.html'
+    '''
+    Faktoren temporär zu ändern:
+    Player Elo
+    Team Score
+    Team Win Draw Lose
+    '''
+
+
 class TeamDetails(DetailView):
     model = Team
 
@@ -30,3 +41,4 @@ class TeamCreate(CreateView):
 
     def post(self, request):
         return super().post(request)
+

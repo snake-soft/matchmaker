@@ -82,6 +82,21 @@ class Team(models.Model):
                 lose.append(match)
         return win, draw, lose
 
+    @property
+    def close_win_lose(self):
+        close_win, close_lose = [], []
+        for match in Match.objects.filter(firstteam=self):
+            if match.goal_difference is 1:
+                close_win.append(match)
+            elif match.goal_difference is -1:
+                close_lose.append(match)
+        for match in Match.objects.filter(secondteam=self):
+            if match.goal_difference is 1:
+                close_lose.append(match)
+            elif match.goal_difference is -1:
+                close_win.append(match)
+        return (close_win, close_lose)
+
     @classmethod
     def players_have_team(cls, player_obj_lst):
         def list_compare(old, new):

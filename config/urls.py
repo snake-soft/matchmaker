@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from player.views import PlayerList, PlayerDetails, PlayerCreate
-from team.views import TeamList, TeamDetails, TeamCreate
+from team.views import TeamList, TeamDetails, TeamCreate, TeamListRealtime
 from match.views import MatchList, MatchDetails, MatchCreate
 from matchmaker.views import MatchmakerView
 from core.views import StartView
@@ -35,6 +35,7 @@ urlpatterns = [
     path('team/', TeamList.as_view(), name="team-list"),
     path('team/<pk>/', TeamDetails.as_view(), name="team-details"),
     path('new/team/', TeamCreate.as_view(), name="team-new"),
+    path('realtime/team/', TeamListRealtime.as_view(), name="team-realtime"),
 
     path('match/', MatchList.as_view(), name="match-list"),
     path('match/<pk>/', MatchDetails.as_view(), name="match-details"),
