@@ -1,8 +1,6 @@
 {% load static %}{% csrf_token %}{% load humanize %}
-<?xml version="1.0" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 	<title>{% block title %}{% endblock %}</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -27,7 +25,7 @@
 			$('[data-toggle="datepicker"]').datepicker();
 		    $('#id_from').datepicker({
 		    		weekStart: 1,
-		    		date: date: new Date({{ from|date:"Y" }}, {{ from|date:"m" }}, {{ from|date:"d" }}),
+		    		date: new Date({{ from|date:"Y" }}, {{ from|date:"m" }}, {{ from|date:"d" }}),
 		    		format: 'yyyy-mm-dd',
 		    });
 		    $('#id_to').datepicker({

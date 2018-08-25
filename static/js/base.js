@@ -12,7 +12,18 @@ $.ajaxSetup({
 	}
 });
 
-$(document).ready(function() {
+function loadMatchRealtime() {
+	$.get("/realtime/team/",{
+		firstteam: $('#id_firstteam').find(":selected").val(),
+		secondteam: $('#id_secondteam').find(":selected").val(),
+		firstteam_goals: $('#id_firstteam_goals').val(),
+		secondteam_goals: $('#id_secondteam_goals').val(),
+	}).done(function(data) {
+		$("#match-realtime").html(data);
+	});
+};
+
+function loadDataTables(){
     var t = $('#player-overview').DataTable( {
         "columnDefs": [ {
             "searchable": false,
@@ -27,7 +38,13 @@ $(document).ready(function() {
             cell.innerHTML = i+1;
         } );
     } ).draw();
-    $('[data-toggle="datepicker"]').datepicker({
-    		weekStart: 1,
-    });
+}
+
+$(document).ready(function() {
+	loadDataTables();
+    
+    $('#id_firstteam,#id_secondteam,#id_firstteam_goals,#id_secondteam_goals').on('change',function(){
+    	loadMatchRealtime()
+	});
 } );
+

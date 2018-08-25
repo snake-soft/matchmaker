@@ -7,6 +7,7 @@ body, html {
 body{
 	font-size:1em;
 	background: #a8c296; /* Old browsers */
+	overflow-y: scroll;
 }
 * {
 	box-sizing: border-box;
