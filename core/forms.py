@@ -1,4 +1,4 @@
-from django import forms #import Form, ModelForm, inlineformset_factory, DateField
+from django import forms
 
 
 class TimeRangeForm(forms.Form):
@@ -12,15 +12,3 @@ class TimeRangeForm(forms.Form):
             widget=forms.DateInput(attrs={"data-toggle": "datepicker"}),
             initial=request.session["to"]
             )
-
-
-#===============================================================================
-# class MatchForm(forms.ModelForm):
-#     class Meta:
-#         model = Match
-#         fields = ['firstteam', 'secondteam', 'firstteam_goals', 'secondteam_goals']
-# 
-# 
-# TeamForm = forms.inlineformset_factory(Match, Team)
-# PlayerForm = forms.inlineformset_factory(Match, Player)
-#===============================================================================
