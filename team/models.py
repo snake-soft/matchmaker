@@ -17,6 +17,7 @@ class Team(models.Model):
         unique=True,
         )
     players = models.ManyToManyField('player.Player')
+    realtime = None
 
     @property
     def is_single_player(self):

@@ -1,8 +1,4 @@
-{% load join_by_attr %}
-
-{% block head %}
-<script>$(document).ready(function() {loadDataTables()} );</script>
-{% endblock%}
+{% load join_by_attr signed %}
 
 {% if object_list %}
 <div class="table-responsive">
@@ -23,13 +19,31 @@
     	<th></th>
     	<td>{{ team.name }}</td>
     	<td>{{ team.players.all|join_by_attr:"nick" }}</td>
-    	<td>{{ team.team_score }}</td>
+    	<td>{{ team.team_score }}
+			{% for rt in realtime %}{% if rt.own_team.pk == team.pk %}
+				<br />{{ rt.team_score }}
+				<br />{{rt.team_score_diff|signed}}
+			{% endif%}{% endfor %}
+    	</td>
+
     	<td>{{ team.team_rating_as_int}}</td>
-    	<td>{{ team.get_win_draw_lose.0 | length }}:{{ team.get_win_draw_lose.1 | length }}:{{ team.get_win_draw_lose.2 | length }}</td>
-    	<td>{{ team.close_win_lose.0 | length }}:{{ team.close_win_lose.1 | length }}</td>
+    	<td>{{ team.get_win_draw_lose.0 | length }}:{{ team.get_win_draw_lose.1 | length }}:{{ team.get_win_draw_lose.2 | length }}
+			{% for rt in realtime %}{% if rt.own_team.pk == team.pk %}
+		    	<br />{{ rt.team_wdl.0 | length }}:{{ rt.team_wdl.1 | length }}:{{ rt.team_wdl.2 | length }}
+		    	<br />({{ rt.team_wdl_diff.0|signed }}:{{ rt.team_wdl_diff.1|signed }}:{{ rt.team_wdl_diff.2|signed }})
+			{% endif%}{% endfor %}
+    	</td>
+    	
+    	<td>{{ team.close_win_lose.0 | length }}:{{ team.close_win_lose.1 | length }}
+			{% for rt in realtime %}{% if rt.own_team.pk == team.pk %}
+		    	<br />{{ rt.close_wl.0 | length }}:{{ rt.close_wl.1 | length }}
+		    	<br />({{ rt.close_wl_diff.0|signed }}:{{ rt.close_wl_diff.1|signed }})
+			{% endif%}{% endfor %}
+		</td>
 {% empty %}
     <li>No player yet.</li>
 {% endfor %}
 </table>
 </div>
+<script>loadDataTables()</script>
 {% endif %}

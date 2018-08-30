@@ -19,6 +19,82 @@ class TeamListRealtime(ListView):
     Team Score
     Team Win Draw Lose
     '''
+    def get_context_data(self, *args, **kwargs):
+        context = super(__class__, self).get_context_data(*args, **kwargs)
+        context['realtime'] = [
+            self.TeamRealtimeValues(
+                Team.objects.get(pk=int(self.request.GET['firstteam'])),
+                Team.objects.get(pk=int(self.request.GET['secondteam'])),
+                int(self.request.GET['firstteam_goals']),
+                int(self.request.GET['secondteam_goals']),
+                ),
+            self.TeamRealtimeValues(
+                Team.objects.get(pk=int(self.request.GET['secondteam'])),
+                Team.objects.get(pk=int(self.request.GET['firstteam'])),
+                int(self.request.GET['secondteam_goals']),
+                int(self.request.GET['firstteam_goals']),
+                )
+            ]
+        return context
+
+    class TeamRealtimeValues:
+        def __init__(self, own_team, enemy, own_goals, enemy_goals):
+            self.own_team = own_team
+            self.enemy = enemy
+            self.own_goals = own_goals
+            self.enemy_goals = enemy_goals
+
+        def team_score(self):
+            score = self.own_team.team_score
+            if self.own_goals > self.enemy_goals:
+                score += 2
+            elif self.own_goals == self.enemy_goals:
+                score += 1
+            return score
+
+        def team_score_diff(self):
+            return self.team_score() - self.own_team.team_score
+
+        def team_wdl(self):  # ok
+            wdl = self.own_team.get_win_draw_lose()
+            if self.own_goals > self.enemy_goals:
+                wdl[0].append("Realtime")
+            elif self.own_goals == self.enemy_goals:
+                wdl[1].append("Realtime")
+            elif self.own_goals < self.enemy_goals:
+                wdl[2].append("Realtime")
+            return wdl
+
+        def team_wdl_diff(self):  # ok
+            wdl = self.team_wdl()
+            wdl_orig = self.own_team.get_win_draw_lose()
+            return [
+                len(wdl[0]) - len(wdl_orig[0]),
+                len(wdl[1]) - len(wdl_orig[1]),
+                len(wdl[2]) - len(wdl_orig[2])
+                ]
+
+        def strength(self):
+            return self.own_team.team_rating()
+
+        def strength_diff(self):
+            return self.own_team.team_rating()
+
+        def close_wl(self):
+            close_wl = self.own_team.close_win_lose
+            if self.own_goals - self.enemy_goals == 1:
+                close_wl[0].append("Realtime")
+            elif self.own_goals - self.enemy_goals == -1:
+                close_wl[1].append("Realtime")
+            return close_wl
+
+        def close_wl_diff(self):
+            close_wl = self.close_wl()
+            close_wl_orig = self.own_team.close_win_lose
+            return [
+                len(close_wl[0]) - len(close_wl_orig[0]),
+                len(close_wl[1]) - len(close_wl_orig[1])
+                ]
 
 
 class TeamDetails(DetailView):
