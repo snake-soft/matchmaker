@@ -9,10 +9,6 @@
 border: 0;
 padding:0;
 }
-#match-form input{
-width: 50px;
-height: 40px;
-}
 /* Spin Buttons modified */
 #id_firstteam_goals input[type="number"].mod::-webkit-outer-spin-button, 
 #id_firstteam_goals input[type="number"].mod::-webkit-inner-spin-button {
@@ -26,6 +22,25 @@ height: 40px;
     border-left: 1px solid #bbb;
     opacity: .5; /* shows Spin Buttons per default (Chrome >= 39) */
 }
+#match-form, #match-form input, #match-form select{
+	text-align: center;
+}
+#id_firstteam, #id_secondteam{
+	height: 50px;
+	width: 100%;
+}
+#id_firstteam_goals, #id_secondteam_goals{
+	height: 50px;
+	width: 33%;
+}
+.plus, .minus{
+	width:33%;
+	height:50px;
+}
+.middle{
+	line-height: 3em;
+	font-weight: bolder;
+}
 </style>
 {% endblock %}
 
@@ -35,17 +50,18 @@ height: 40px;
 	<table id="match-form" class="table table-bordered table-hover">
     	<tr>
 			<td>{{ form.firstteam }}</td>
-			<td>vs.</td>
+			<td class="middle">vs.</td>
 			<td>{{ form.secondteam }}</td>
     	</tr>
+    	<tr><td colspan=3 style="height: 10px"></td></tr>
     	<tr>
-			<td>{{ form.firstteam_goals }}</td>
-			<td>:</td>
-			<td>{{ form.secondteam_goals }}</td>
+			<td><input class="plus" type="button" value="+" onclick="increment($('#id_firstteam_goals'))" />{{ form.firstteam_goals }}<input class="plus" type="button" value="-" onclick="decrement($('#id_firstteam_goals'))" /></td>
+			<td class="middle">:</td>
+			<td><input class="plus" type="button" value="+" onclick="increment($('#id_secondteam_goals'))" />{{ form.secondteam_goals }}<input class="plus" type="button" value="-" onclick="decrement($('#id_secondteam_goals'))" /></td>
     	</tr>
     	
     </table>
-    <input type="submit" value="Save" />
+    <input type="submit" value="Save !!!" />
 </form>
-<div id="match-realtime"></div>
+<div id="match-realtime" style="margin-top:40px"></div>
 {% endblock %} 
