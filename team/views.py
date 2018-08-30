@@ -24,36 +24,48 @@ class TeamListRealtime(ListView):
         context = super(__class__, self).get_context_data(*args, **kwargs)
         firstteam = Team.objects.get(pk=int(self.request.GET['firstteam']))
         secondteam = Team.objects.get(pk=int(self.request.GET['secondteam']))
-        context['team_realtime'] = [
-            self.TeamRealtimeValues(
-                firstteam,
-                secondteam,
-                int(self.request.GET['firstteam_goals']),
-                int(self.request.GET['secondteam_goals']),
-                ),
-            self.TeamRealtimeValues(
-                secondteam,
-                firstteam,
-                int(self.request.GET['secondteam_goals']),
-                int(self.request.GET['firstteam_goals']),
-                )
-            ]
+
         context['player_realtime'] = []
-        for player in firstteam.players.all():
+        for player in firstteam.players.all():  # BEFORE TEAM REALTIME!
             context['player_realtime'].append(self.PlayerRealtimeValues(
                 player,
                 secondteam,
                 int(self.request.GET['firstteam_goals']) - int(self.request.GET['secondteam_goals'])
                 )
             )
+        for player in secondteam.players.all():  # BEFORE TEAM REALTIME!
+            context['player_realtime'].append(self.PlayerRealtimeValues(
+                player,
+                firstteam,
+                int(self.request.GET['secondteam_goals']) - int(self.request.GET['firstteam_goals'])
+                )
+            )
+
+        context['team_realtime'] = [
+            self.TeamRealtimeValues(
+                firstteam,
+                secondteam,
+                int(self.request.GET['firstteam_goals']),
+                int(self.request.GET['secondteam_goals']),
+                context['player_realtime'],
+                ),
+            self.TeamRealtimeValues(
+                secondteam,
+                firstteam,
+                int(self.request.GET['secondteam_goals']),
+                int(self.request.GET['firstteam_goals']),
+                context['player_realtime'],
+                )
+            ]
         return context
 
     class TeamRealtimeValues:
-        def __init__(self, own_team, enemy, own_goals, enemy_goals):
+        def __init__(self, own_team, enemy, own_goals, enemy_goals, player_rt):
             self.own_team = own_team
             self.enemy = enemy
             self.own_goals = own_goals
             self.enemy_goals = enemy_goals
+            self.player_realtimes = player_rt
 
         def team_score(self):
             score = self.own_team.team_score
@@ -102,17 +114,22 @@ class TeamListRealtime(ListView):
                 ]
 
         def strength(self):
-            return self.own_team.team_rating()
+            tmp = []
+            for player in self.own_team.players.all():
+                for player_rt in self.player_realtimes:
+                    if player.pk == player_rt.player.pk:
+                        tmp.append(player_rt.elo)
+            return int(sum(tmp) / len(tmp) + 0.5)
 
         def strength_diff(self):
-            return self.own_team.team_rating()
+            return int(self.strength() - self.own_team.team_rating)
 
     class PlayerRealtimeValues:
         def __init__(self, player, enemy_team, goal_diff):
             self.player = player
             self.enemy_team = enemy_team
             self.goal_diff = goal_diff
-            self.elo = self._new_elo() + 0.5
+            self.elo = self._new_elo()
             self.elo_as_int = int(self.elo + 0.5)
 
         def _new_elo(self):
@@ -123,7 +140,7 @@ class TeamListRealtime(ListView):
                 )
 
         def elo_diff(self):
-            return int((self.player.rating - self.elo) + 0.5)
+            return int((self.elo - self.player.rating) + 0.5)
 
 
 class TeamDetails(DetailView):
