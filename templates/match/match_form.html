@@ -9,19 +9,6 @@
 border: 0;
 padding:0;
 }
-/* Spin Buttons modified */
-#id_firstteam_goals input[type="number"].mod::-webkit-outer-spin-button, 
-#id_firstteam_goals input[type="number"].mod::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    background: #fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAKUlEQVQYlWNgwAT/sYhhKPiPT+F/LJgEsHv37v+EMGkmkuImoh2NoQAANlcun/q4OoYAAAAASUVORK5CYII=) no-repeat center center;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 1em;
-    border-left: 1px solid #bbb;
-    opacity: .5; /* shows Spin Buttons per default (Chrome >= 39) */
-}
 #match-form, #match-form input, #match-form select{
 	text-align: center;
 }
@@ -63,5 +50,7 @@ padding:0;
     </table>
     <input type="submit" value="Save !!!" />
 </form>
-<div id="match-realtime" style="margin-top:40px"></div>
+<div class="container-fluid">
+	<div id="match-realtime" class="row" style="margin-top:40px"></div>
+</div>
 {% endblock %} 
