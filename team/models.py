@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
 from django.core.exceptions import ValidationError
+from django.db.models import Sum
 
 from match.models import Match
 
@@ -15,7 +16,7 @@ class Team(models.Model):
         max_length=50, verbose_name="Teamname",
         blank=True,
         unique=True,
-        )
+    )
     players = models.ManyToManyField('player.Player')
     realtime = None
 
@@ -45,11 +46,11 @@ class Team(models.Model):
     @property
     def verbose_name(self):
         return str("%s (TeamScore: %s; TeamRating: %s Members: %s)" % (
-                self.get_team_name_or_members(),
-                int(self.team_score + 0.5),
-                int(self.team_rating + 0.5),
-                ", ".join([x.nick for x in self.players.all()])
-                ))
+            self.get_team_name_or_members(),
+            int(self.team_score + 0.5),
+            int(self.team_rating + 0.5),
+            ", ".join([x.nick for x in self.players.all()])
+        ))
 
     @property
     def team_rating_as_int(self):
@@ -68,7 +69,7 @@ class Team(models.Model):
         matches = Match.objects.filter(
             firstteam_id=self.pk,
             date_time__range=(start_date, end_date)
-            )
+        )
         for match in matches:
             result = match.firstteam_goals - match.secondteam_goals
             if result > 0:
@@ -81,7 +82,7 @@ class Team(models.Model):
         matches = Match.objects.filter(
             secondteam_id=self.pk,
             date_time__range=(start_date, end_date)
-            )
+        )
         for match in matches:
             result = match.secondteam_goals - match.firstteam_goals
             if result > 0:
@@ -91,6 +92,18 @@ class Team(models.Model):
             elif result < 0:
                 lose.append(match)
         return win, draw, lose
+
+    @property
+    def team_win(self):
+        return self.get_win_draw_lose()[0]
+
+    @property
+    def team_draw(self):
+        return self.get_win_draw_lose()[1]
+
+    @property
+    def team_lose(self):
+        return self.get_win_draw_lose()[2]
 
     @property
     def close_win_lose(self):
@@ -109,22 +122,44 @@ class Team(models.Model):
 
         return (close_win, close_lose)
 
+    @property
+    def close_win(self):
+        return self.close_win_lose[0]
+
+    @property
+    def close_lose(self):
+        return self.close_win_lose[1]
+
+    @property
+    def close_wl_factor(self):
+        return len(self.close_win) - len(self.close_lose)
+
+    @property
+    def goal_own_foreign(self):
+        own, foreign = 0, 0
+        matches = Match.objects.filter(
+            firstteam_id=self.pk,
+        ).aggregate(Sum('firstteam_goals'))
+        own
+        import pdb; pdb.set_trace()  # <---------
+        return own, foreign
+
     @classmethod
     def players_have_team(cls, player_obj_lst):
         for team in cls.objects.all():
             if sorted(player_obj_lst, key=id)\
-             == sorted(team.players.all(), key=id):
+                    == sorted(team.players.all(), key=id):
                 return team
         return None
 
     def save(self, *args, **kwargs):
         super().save()
         # Problem: Cannot access unsaved m2m need modelform
-        #=======================================================================
+        #======================================================================
         # if __class__.players_have_team(self.players):
         #     self.delete()
         #     raise ValidationError("This team already exists")
-        #=======================================================================
+        #======================================================================
 
     def __str__(self):
         return self.get_team_name_or_members()
