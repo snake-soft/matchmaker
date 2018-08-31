@@ -46,6 +46,8 @@ class Player(models.Model):
         if len(Team.objects.filter(teamname__iexact=self.nick)):
             raise ValueError("Team %s exists already." % (self.nick))
         super().save()
+        team = Team.objects.create(teamname=self.nick)
+        team.players.add(self)
 
     def __str__(self):
         return str("%s (Player Rating: %s)" % (
