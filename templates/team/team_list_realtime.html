@@ -49,7 +49,7 @@
 				<br />={{ team_realtime|dict_get:team.id|attrib_get:'team_win' | length }}:{{ team_realtime|dict_get:team.id|attrib_get:'team_draw' | length }}:{{ team_realtime|dict_get:team.id|attrib_get:'team_lose' | length }}
 			</td>
 		{% else %}
-			<td>{{ team.team_score }}</td>
+			<td>{{ team.team_win | length }}:{{ team.team_draw | length }}:{{ team.team_lose | length }}</td>
 		{% endif%}
 
 		<!-- Team Close Win Lose -->
@@ -59,7 +59,7 @@
 				<br />={{ team_realtime|dict_get:team.id|attrib_get:'close_win' | length }}:{{ team_realtime|dict_get:team.id|attrib_get:'close_lose' | length }}
 			</td>
 		{% else %}
-			<td>{{ team.team_score }}</td>
+			<td>{{ team.close_win | length }}:{{ team.close_lose | length }}</td>
 		{% endif%}
 		
 		<!-- Goals Own Foreign -->

@@ -17,7 +17,14 @@ class Team(models.Model):
         unique=True,
     )
     players = models.ManyToManyField('player.Player')
-    realtime = None
+
+    frm = date(2000, 1, 1)
+    to = date(3000, 1, 1)
+
+    @classmethod
+    def set_from_to(cls, frm, to):
+        cls.frm = frm
+        cls.to = to
 
     @property
     def is_single_player(self):
@@ -61,13 +68,11 @@ class Team(models.Model):
         else:
             return '<%s>' % (', '.join([x.nick for x in self.players.all()]))
 
-    def get_win_draw_lose(self, start_date=False, end_date=False):
+    def get_win_draw_lose(self):
         win, draw, lose = [], [], []
-        start_date = start_date if start_date else date(2000, 1, 1)
-        end_date = end_date if end_date else date(3000, 1, 1)
         matches = Match.objects.filter(
             firstteam_id=self.pk,
-            date_time__range=(start_date, end_date)
+            date_time__range=(self.frm, self.to)
         )
         for match in matches:
             result = match.firstteam_goals - match.secondteam_goals
@@ -80,7 +85,7 @@ class Team(models.Model):
 
         matches = Match.objects.filter(
             secondteam_id=self.pk,
-            date_time__range=(start_date, end_date)
+            date_time__range=(self.frm, self.to)
         )
         for match in matches:
             result = match.secondteam_goals - match.firstteam_goals
@@ -107,13 +112,19 @@ class Team(models.Model):
     @property
     def close_win_lose(self):
         close_win, close_lose = [], []
-        for match in Match.objects.filter(firstteam=self):
+        for match in Match.objects.filter(
+            firstteam=self,
+            date_time__range=(self.frm, self.to)
+             ):
             if match.goal_difference is 1:
                 close_win.append(match)
             elif match.goal_difference is -1:
                 close_lose.append(match)
 
-        for match in Match.objects.filter(secondteam=self):
+        for match in Match.objects.filter(
+            secondteam=self,
+            date_time__range=(self.frm, self.to)
+             ):
             if match.goal_difference is 1:
                 close_lose.append(match)
             elif match.goal_difference is -1:
@@ -136,18 +147,30 @@ class Team(models.Model):
     @property
     def goal_own_foreign(self):
         own, foreign = 0, 0
-        sum_ = Match.objects.filter(firstteam_id=self.pk).aggregate(Sum('firstteam_goals'))['firstteam_goals__sum']
+        sum_ = Match.objects.filter(
+            firstteam_id=self.pk,
+            date_time__range=(self.frm, self.to)
+            ).aggregate(Sum('firstteam_goals'))['firstteam_goals__sum']
         own += sum_ if sum_ else 0
 
-        sum_ = Match.objects.filter(secondteam_id=self.pk).aggregate(Sum('secondteam_goals'))['secondteam_goals__sum']
+        sum_ = Match.objects.filter(
+            secondteam_id=self.pk,
+            date_time__range=(self.frm, self.to)
+            ).aggregate(Sum('secondteam_goals'))['secondteam_goals__sum']
         own += sum_ if sum_ else 0
 
-        sum_ = Match.objects.filter(firstteam_id=self.pk).aggregate(Sum('secondteam_goals'))['secondteam_goals__sum']
+        sum_ = Match.objects.filter(
+            firstteam_id=self.pk,
+            date_time__range=(self.frm, self.to)
+            ).aggregate(Sum('secondteam_goals'))['secondteam_goals__sum']
         foreign += sum_ if sum_ else 0
 
-        sum_ = Match.objects.filter(secondteam_id=self.pk).aggregate(Sum('firstteam_goals'))['firstteam_goals__sum']
-        foreign += sum_ if sum_ else 0
+        sum_ = Match.objects.filter(
+            secondteam_id=self.pk,
+            date_time__range=(self.frm, self.to)
+            ).aggregate(Sum('firstteam_goals'))['firstteam_goals__sum']
 
+        foreign += sum_ if sum_ else 0
         return own, foreign
 
     @property
@@ -160,7 +183,7 @@ class Team(models.Model):
 
     @property
     def goal_factor(self):
-        if self.goal_own == 0 and self.goal_foreign ==0:
+        if self.goal_own == 0 and self.goal_foreign == 0:
             return -1000
         return self.goal_own - self.goal_foreign
 
@@ -175,11 +198,11 @@ class Team(models.Model):
     def save(self, *args, **kwargs):
         super().save()
         # Problem: Cannot access unsaved m2m need modelform
-        #======================================================================
+        # =====================================================================
         # if __class__.players_have_team(self.players):
         #     self.delete()
         #     raise ValidationError("This team already exists")
-        #======================================================================
+        # =====================================================================
 
     def __str__(self):
         return self.get_team_name_or_members()

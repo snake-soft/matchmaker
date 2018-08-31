@@ -9,6 +9,6 @@ class TimeRangeForm(forms.Form):
             initial=request.session["from"],
             )
         self.fields["to"] = forms.DateField(
-            widget=forms.DateInput(attrs={"data-toggle": "datepicker"}),
+            widget=forms.DateInput(attrs={"data-toggle": "datepicker", }),
             initial=request.session["to"]
             )

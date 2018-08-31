@@ -1,9 +1,8 @@
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse
-from django import forms
 
 from .models import Team
-from player.models import Player, Elo
+from player.models import Elo
 from .forms import TeamCreateForm
 
 
@@ -17,8 +16,12 @@ class TeamListRealtime(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(__class__, self).get_context_data(*args, **kwargs)
-        self.request.session['last_firstteam'] = int(self.request.GET['firstteam'])
-        self.request.session['last_secondteam'] = int(self.request.GET['secondteam'])
+        self.request.session['last_firstteam'] = int(
+            self.request.GET['firstteam']
+            )
+        self.request.session['last_secondteam'] = int(
+            self.request.GET['secondteam']
+            )
         firstteam = Team.objects.get(pk=int(self.request.GET['firstteam']))
         secondteam = Team.objects.get(pk=int(self.request.GET['secondteam']))
 
@@ -42,6 +45,7 @@ class TeamListRealtime(ListView):
 
         context['team_realtime'] = {}
         obj = self.TeamRealtimeValues(
+            self.request,
             firstteam,
             secondteam,
             int(self.request.GET['firstteam_goals']),
@@ -50,6 +54,7 @@ class TeamListRealtime(ListView):
         )
         context['team_realtime'][obj.pk] = obj
         obj = self.TeamRealtimeValues(
+            self.request,
             secondteam,
             firstteam,
             int(self.request.GET['secondteam_goals']),
@@ -60,10 +65,20 @@ class TeamListRealtime(ListView):
         return context
 
     class TeamRealtimeValues:
-        def __init__(self, own_team, enemy, own_goals, enemy_goals, player_rt):
+        def __init__(self, request, own_team, enemy, own_goals, enemy_goals,
+                     player_rt):
+            self.request = request
             self.own_team = own_team
+            self.own_team.set_from_to(
+                self.request.session['from'],
+                self.request.session['to']
+                )
             self.pk = own_team.pk
             self.enemy = enemy
+            self.enemy.set_from_to(
+                self.request.session['from'],
+                self.request.session['to']
+                )
             self.own_goals = own_goals
             self.enemy_goals = enemy_goals
             self.player_realtimes = player_rt
