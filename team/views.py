@@ -17,6 +17,8 @@ class TeamListRealtime(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(__class__, self).get_context_data(*args, **kwargs)
+        self.request.session['last_firstteam'] = int(self.request.GET['firstteam'])
+        self.request.session['last_secondteam'] = int(self.request.GET['secondteam'])
         firstteam = Team.objects.get(pk=int(self.request.GET['firstteam']))
         secondteam = Team.objects.get(pk=int(self.request.GET['secondteam']))
 
