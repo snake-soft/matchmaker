@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from player.views import PlayerList, PlayerDetails, PlayerCreate
 from team.views import TeamList, TeamDetails, TeamCreate, TeamListRealtime
+from core.views import DateSetView
 from match.views import MatchList, MatchDetails, MatchCreate
 from matchmaker.views import MatchmakerView
 from core.views import StartView
@@ -25,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('', StartView.as_view(), name="start"),
+    path('set/date/', DateSetView.as_view(), name="set-date"),
     path('matchmaker/', MatchmakerView.as_view(), name="matchmaker"),
 
     path('player/', PlayerList.as_view(), name='player-list'),

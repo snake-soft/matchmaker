@@ -29,20 +29,6 @@ function loadMatchRealtime() {
 };
 
 function loadDataTables(){
-    var t = $('#player-overview').DataTable( {
-        "columnDefs": [ {
-            "searchable": false,
-            "orderable": false,
-            "targets": 0
-        } ],
-        "order": [[ 1, 'asc' ]]
-    } );
- 
-    t.on( 'order.dt search.dt', function () {
-        t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-            cell.innerHTML = i+1;
-        } );
-    } ).draw();
 
     var t = $('#teams-realtime').DataTable( {
     	"searching": false,
@@ -51,7 +37,20 @@ function loadDataTables(){
     	} ],
     	"order": [[ 3, 'desc' ]]
     } );
-    
+    t.on( 'order.dt search.dt', function () {
+    	t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+    		cell.innerHTML = i+1;
+    	} );
+    } ).draw();
+
+    var t = $('#player-overview').DataTable( {
+    	"columnDefs": [ {
+    		"searchable": false,
+    		"orderable": true,
+    		"targets": 0
+    	} ],
+    	"order": [[ 1, 'asc' ]]
+    } );
     t.on( 'order.dt search.dt', function () {
     	t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
     		cell.innerHTML = i+1;

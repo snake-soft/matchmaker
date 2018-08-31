@@ -15,25 +15,9 @@
 	<script type="text/javascript" src="{% static "DataTables-1.10.18/js/jquery.dataTables.min.js" %}"></script>
 	<script type="text/javascript" src="{% static "DataTables-1.10.18/js/dataTables.bootstrap4.min.js" %}"></script>
 
-	<link  href="{% static "Datepicker-1.0/datepicker.css" %}" rel="stylesheet">
-	<script src="{% static "Datepicker-1.0/datepicker.js" %}"></script>
-	
 	<link rel="shortcut icon" type="image/png" href="{% static "images/favicon.ico" %}"/>
 	<script>
 		var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
-		$(document).ready(function() {
-			$('[data-toggle="datepicker"]').datepicker();
-		    $('#id_from').datepicker({
-		    		weekStart: 1,
-		    		date: new Date({{ from|date:"Y" }}, {{ from|date:"m" }}, {{ from|date:"d" }}),
-		    		format: 'yyyy-mm-dd',
-		    });
-		    $('#id_to').datepicker({
-		    		weekStart: 1,
-		    		date: {{ to|date:"Y-m-d" }},
-		    		format: 'yyyy-mm-dd',
-		    });
-		} );
 	</script>
 	<script src="{% static "js/base.js" %}"></script>
 	<link rel="stylesheet" href="{% static "css/base.css" %}"/>
@@ -57,13 +41,7 @@
 	        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 	          <a class="dropdown-item" href="/new/team/">Team</a>
 	          <a class="dropdown-item" href="/new/player/">Player</a>
-	          <!-- <div class="dropdown-divider"></div>
-          		<a class="dropdown-item" href="#">Something else here</a>
-	          </div>  -->
       </li>
-      <!-- <li class="nav-item active" title="Finds the best Teamconstellation based on player strength">
-        <a class="nav-link" href="/matchmaker/">Matchmaker<span class="sr-only">(current)</span></a>
-      </li> -->
 
       <li class="nav-item <!--active-->">
         <a class="nav-link" href="/match/">Match<span class="sr-only">(current)</span></a>
@@ -77,17 +55,17 @@
         <a class="nav-link" href="/player/">Player</a>
       </li>
     </ul>
-    
-    <form class="form-inline my-2 my-lg-0">
-      <!-- <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"> -->
+
+    <form class="form-inline my-2 my-lg-0" method="post" action="/set/date/">{% csrf_token %}
       <label for="id_from">From:{{time_range_form.from}}</label>
       <label for="id_to">To:{{time_range_form.to}}</label>
+      <input type="hidden" name="next" value="{{ request.path }}">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Filter</button>
     </form>
-    
   </div>
 </nav>
-
+{{request.session.from}}
+{{request.session.to}}
 	<div class="container">
 		<div class="row">
 		 <div class="col-12 col-md-12">
