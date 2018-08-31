@@ -63,7 +63,13 @@
 		{% endif%}
 		
 		<!-- Goals Own Foreign -->
-		
+		{% if team.id in team_realtime.keys %}
+			<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'goal_factor'}}">{{ team.goal_own }}:{{ team.goal_foreign }}
+				<br />={{ team_realtime|dict_get:team.id|attrib_get:'goal_own' }}:{{ team_realtime|dict_get:team.id|attrib_get:'goal_foreign' }} ({{ team_realtime|dict_get:team.id|attrib_get:'goal_factor'}})
+			</td>
+		{% else %}
+		<td data-order="{{team.goal_factor}}">{{ team.goal_own }}:{{ team.goal_foreign }}</td>
+		{% endif%}
 		
 {% endfor %}
 </table>

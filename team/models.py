@@ -1,6 +1,5 @@
 from django.db import models
 from datetime import date
-from django.core.exceptions import ValidationError
 from django.db.models import Sum
 
 from match.models import Match
@@ -137,12 +136,33 @@ class Team(models.Model):
     @property
     def goal_own_foreign(self):
         own, foreign = 0, 0
-        matches = Match.objects.filter(
-            firstteam_id=self.pk,
-        ).aggregate(Sum('firstteam_goals'))
-        own
-        import pdb; pdb.set_trace()  # <---------
+        sum_ = Match.objects.filter(firstteam_id=self.pk).aggregate(Sum('firstteam_goals'))['firstteam_goals__sum']
+        own += sum_ if sum_ else 0
+
+        sum_ = Match.objects.filter(secondteam_id=self.pk).aggregate(Sum('secondteam_goals'))['secondteam_goals__sum']
+        own += sum_ if sum_ else 0
+
+        sum_ = Match.objects.filter(firstteam_id=self.pk).aggregate(Sum('secondteam_goals'))['secondteam_goals__sum']
+        foreign += sum_ if sum_ else 0
+
+        sum_ = Match.objects.filter(secondteam_id=self.pk).aggregate(Sum('firstteam_goals'))['firstteam_goals__sum']
+        foreign += sum_ if sum_ else 0
+
         return own, foreign
+
+    @property
+    def goal_own(self):
+        return self.goal_own_foreign[0]
+
+    @property
+    def goal_foreign(self):
+        return self.goal_own_foreign[1]
+
+    @property
+    def goal_factor(self):
+        if self.goal_own == 0 and self.goal_foreign ==0:
+            return -1000
+        return self.goal_own - self.goal_foreign
 
     @classmethod
     def players_have_team(cls, player_obj_lst):

@@ -167,6 +167,25 @@ class TeamListRealtime(ListView):
             ]
 
         @property
+        def goal_own_foreign(self):
+            own, foreign = self.own_team.goal_own_foreign
+            own += self.own_goals
+            foreign += self.enemy_goals
+            return own, foreign
+
+        @property
+        def goal_own(self):
+            return self.goal_own_foreign[0]
+
+        @property
+        def goal_foreign(self):
+            return self.goal_own_foreign[1]
+
+        @property
+        def goal_factor(self):
+            return self.goal_own - self.goal_foreign
+
+        @property
         def strength(self):
             tmp = []
             for player in self.own_team.players.all():
