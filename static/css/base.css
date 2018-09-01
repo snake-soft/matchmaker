@@ -8,6 +8,8 @@ body{
 	font-size:1em;
 	background: #a8c296; /* Old browsers */
 	overflow-y: scroll;
+  margin: 0px;
+  padding: 0px;
 }
 * {
 	box-sizing: border-box;
@@ -21,13 +23,10 @@ body, a, a:visited, a:hover{
 a{
 	text-decoration: underline dotted;
 }
-
-
-body {
-  margin: 0px;
-  padding: 0px;
+#main-nav{
+	-webkit-box-shadow: 0 0 3px 3px #858585;
+	box-shadow: 0 0 3px 3px #858585;
 }
-
 ul, .win ul, .draw ul, .lost ul{
 	list-style-type: none;
 	padding-left: 0;
@@ -41,6 +40,8 @@ ul, .win ul, .draw ul, .lost ul{
 	padding: 10px;
 	border: 1px solid grey;
 	margin-bottom: 10px;
+	-webkit-box-shadow: 0 0 3px 3px #858585;
+	box-shadow: 0 0 3px 3px #858585;
 }
 nav form{
 	background-color: white;

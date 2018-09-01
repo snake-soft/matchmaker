@@ -250,8 +250,8 @@ class TeamCreate(CreateView):
     form_class = TeamCreateForm
 
     def get_initial(self):
-        self.success_url = reverse('team-list')
-        # self.success_url = self.request.path
+        self.success_url = self.request.GET['next']\
+            if 'next' in self.request.GET else reverse('team-list')
         initial = super(CreateView, self).get_initial()
         initial = initial.copy()
 
@@ -261,4 +261,5 @@ class TeamCreate(CreateView):
         return initial
 
     def post(self, request):
+        import pdb; pdb.set_trace()  # <---------
         return super().post(request)

@@ -30,9 +30,6 @@ function loadMatchRealtime() {
 			$("#match-realtime").html(data);
 		});
 	}
-	else{
-		$("#match-realtime").empty();
-	}
 };
 
 function loadDataTables(){
