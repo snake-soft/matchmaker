@@ -3,14 +3,31 @@
 	{% endblock %}
 {% block var_link %}{% endblock %}
 
+
+{% block head %}
+<script>
+function loadDataTables(){
+    var t = $('#match-overview').DataTable( {
+    	"columnDefs": [ {
+    		"searchable": false,
+    		"orderable": true,
+    		"targets": 0
+    	} ],
+    	"order": [[ 0, 'asc' ]]
+    } );
+}
+</script>
+{% endblock %}
+
+
 {% block content %}
 {% load humanize %}
 <h1>Match overview</h1>
 <div class="table-responsive">
-<table id="player-overview" class="table table-striped table-bordered table-hover" >
+<table id="match-overview" class="table table-striped table-bordered table-hover" >
 	<thead>
 		<tr>
-			<th>#</th>
+			<th>ID</th>
 			<th>Time</th>
 			<th>First team</th>
 			<th>Second team</th>
@@ -20,15 +37,15 @@
 	</thead>
 {% for match in object_list %}
     <tr>
-    	<th></th>
-    	<td title="{{match.date_time|naturaltime}}"><a href="/match/{{match.pk}}">{{ match.date_time }}</a></td>
+    	<th><a href="/match/{{match.pk}}">{{match.pk}}</a></th>
+    	<td data-order="{{match.pk}}" title="{{match.date_time|naturaltime}}">{{ match.date_time }}</td>
     	<td title="{{match.firstteam.verbose_name}}"><a href="/team/{{match.firstteam.pk}}/">{{match.firstteam.name}}</a></td>
     	<td title="{{match.secondteam.verbose_name}}"><a href="/team/{{match.secondteam.pk}}/">{{ match.secondteam.name }}</a></td>
-    	<td><a href="/match/{{match.pk}}">{{ match.firstteam_goals}}:{{ match.secondteam_goals}}</a></td>
-    	<td><a href="/match/{{match.pk}}">{{ match.goal_difference}}</a></td>
+    	<td data-order="{{ match.goal_difference}}">{{ match.firstteam_goals}}:{{ match.secondteam_goals}}</td>
+    	<td>{{ match.goal_difference}}</td>
 {% empty %}
     <li>No player yet.</li>
 {% endfor %}
 </table>
 </div>
-{% endblock %} 
+{% endblock %}

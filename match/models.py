@@ -43,9 +43,12 @@ class Match(models.Model):
     @property
     def rematches(self):
         ret = []
-        ret += self.__class__.objects.filter(firstteam=self.firstteam).filter(secondteam=self.secondteam)
-        ret += self.__class__.objects.filter(firstteam=self.secondteam).filter(secondteam=self.firstteam)
-        return [x for x in sorted(ret, key=lambda x: x.pk) if x.pk is not self.pk]
+        ret += self.__class__.objects.filter(
+            firstteam=self.firstteam).filter(secondteam=self.secondteam)
+        ret += self.__class__.objects.filter(
+            firstteam=self.secondteam).filter(secondteam=self.firstteam)
+        return [x for x in sorted(ret, key=lambda x: x.pk)
+                if x.pk is not self.pk]
 
     def new_result(self):
         for x in self.firstteam.players.all():

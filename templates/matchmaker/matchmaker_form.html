@@ -4,6 +4,7 @@ Matchmaker
 {% endblock %}
 {% block var_link %}{% endblock %}
 
+
 {% block head %}
 <style>
 #id_count li{
@@ -22,7 +23,7 @@ function loadDataTables(){
     		"orderable": true,
     		"targets": 0
     	} ],
-    	"order": [[ 1, 'asc' ]]
+    	"order": [[ 6, 'asc' ]]
     } );
 }
 
@@ -38,6 +39,7 @@ function decrement(element){
 </script>
 {% endblock %} 
 
+
 {% block content %}
 {% load join_by_attr %}
 <div id="matchmaker" class="container">
@@ -52,41 +54,61 @@ function decrement(element){
 {% if constellations %}
 <div id="matchmaker-result" class="table-responsive">
 <table id="matchmaker-result-table" class="table table-striped table-bordered table-hover">
-	<thead>
-		<tr>
-			<th colspan=3>First team</th>
-			<th colspan=3>Second team</th>
-			<th colspan=2></th>
-		</tr>
-		<tr>
-			<th>{{ constellations.0.team1.players|length }} player{{ constellations.0.team1.players|pluralize:"s" }}</th>
-			<th>Teamname</th>
-			<th>Rating</th>
+<thead>
+	<tr>
+		<th colspan=3>First team</th>
+		<th colspan=3>Second team</th>
+		<th colspan=2></th>
+	</tr>
+	<tr>
+		<th>{{ constellations.0.team1.players|length }} player{{ constellations.0.team1.players|pluralize:"s" }}</th>
+		<th>Teamname</th>
+		<th>Rating</th>
 
-			<th>{{ constellations.0.team2.players|length }} player{{ constellations.0.team2.players|pluralize:"s" }}</th>
-			<th>Team</th>
-			<th>Rating</th>
+		<th>{{ constellations.0.team2.players|length }} player{{ constellations.0.team2.players|pluralize:"s" }}</th>
+		<th>Team</th>
+		<th>Rating</th>
 
-			<th>Difference</th>
-			<th>Play this match</th>
-		</tr>
-	</thead>
+		<th>Difference</th>
+		<th>Play this match</th>
+	</tr>
+</thead>
 
 {% for constellation in constellations %}
-    <tr>
-		<td>{{ constellation.team1.players|join_by_attr:"nick" }}</td>
-		<td>{% if constellation.team1.team.name %}<a href='/team/{{ constellation.team1.team.id }}/'>{{ constellation.team1.team.name }}</a>{% else %}<a href='/new/team/?players={{constellation.team1.player_ids|join:","}}&next={{request.path}}' type="button" class="btn btn-warning">create</a> {% endif %}</td>
-		<td>{{ constellation.team1.strength }}</td>
+<tr>
+<td>{{ constellation.team1.players|join_by_attr:"nick" }}</td>
+<td>
+	{% if constellation.team1.team.name != None %}
+		<a href='/team/{{ constellation.team1.team.id }}/'>
+	{{ constellation.team1.team.name }}</a>
+	{% else %}
+		<a href='/new/team/?players={{constellation.team1.player_ids|join:","}}&next={{request.path}}' type="button" class="btn btn-warning">create</a>
+	{% endif %}
+</td>
+<td>{{ constellation.team1.strength }}</td>
 
-		<td>{{ constellation.team2.players|join_by_attr:"nick" }}</td>
-		<td>{% if constellation.team2.team.name %}<a href='/team/{{ constellation.team2.team.id }}/'>{{ constellation.team2.team.name }}</a>{% else %}<a href='/new/team/?players={{constellation.team2.player_ids|join:","}}&next={{request.path}}' type="button" class="btn btn-warning">create</a> {% endif %}</td>
-		<td>{{ constellation.team2.strength }}</td>
+<td>{{ constellation.team2.players|join_by_attr:"nick" }}</td>
+<td>
+	{% if constellation.team2.team.name != None %}
+		<a href='/team/{{ constellation.team2.team.id }}/'>
+	{{ constellation.team2.team.name }}</a>{% else %}
+		<a href='/new/team/?players={{constellation.team2.player_ids|join:","}}&next={{request.path}}' type="button" class="btn btn-warning">create</a>
+	{% endif %}
+</td>
+<td>{{ constellation.team2.strength }}</td>
 
-		<td>{{ constellation.difference }}</td>
-		<td>{% if constellation.team1.team.name and constellation.team2.team.name %}<a href='/new/match/?firstteam={{constellation.team1.team.id}}&secondteam={{constellation.team2.team.id}}' type="button" class="btn btn-success">Start</a>{% endif %}</td>
-    </tr>
+<td>{{ constellation.difference }}</td>
+<td>
+	{% if constellation.team1.team.name != None and constellation.team2.team.name != None %}
+		<a href='/new/match/?firstteam={{constellation.team1.team.id}}&secondteam={{constellation.team2.team.id}}' type="button" class="btn btn-success">Start</a>
+	{% endif %}
+</td>
+</tr>
+
 {% empty %}
+
     <li>No constellations .</li>
+
 {% endfor %}
 
 </table>

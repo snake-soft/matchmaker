@@ -1,21 +1,41 @@
 {% extends 'base.html' %}
 	{% block title %}
 		Player overview
-		{% if room.id_%}
-			 {{room.name}}
-		{%endif%}
 	{% endblock %}
 {% block var_link %}{% endblock %}
 
-{% block content %}
-{% load join_by_attr %}
-<h1>{{object.nick}} Detail</h1>
 
+{% block head %}
+<script>
+function loadDataTables(){
+    var t = $('#player-detail').DataTable( {
+    	"ordering": false,
+    	"searching": false,
+    	"columnDefs": [ {
+    		"searchable": false,
+    		"orderable": false,
+    		"targets": 0
+    	} ],
+    	"order": [[ 1, 'asc' ]]
+    } );
+    t.on( 'order.dt search.dt', function () {
+    	t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+    		cell.innerHTML = i+1;
+    	} );
+    } ).draw();
+}
+</script>
+{% endblock %}
+
+
+{% block content %}
+{% load join_by_attr dict_get attrib_get signed %}
+<h1>Details Team {{object.name}}</h1>
+<div class="table-responsive">
 <table id="player-detail" class="table table-striped table-bordered table-hover" >
 	<thead>
 		<tr>
 			<th>ID</th>
-			<th>Team Name</th>
 			<th>Members</th>
 			<th>Score</th>
 			<th>Strength</th>
@@ -28,8 +48,11 @@
 	</thead>
     <tr>
     	<th>{{ object.pk }}</th>
-    	<td>{{ object.name }}</td>
-    	<td>{{ object.players.all|join_by_attr:"nick" }}</td>
+    	<!-- <td>{{ object.players.all|join_by_attr:"nick" }}</td> -->
+		<td><ul class="ul-disabled">{% for player in object.players.all %}<li><a href="/player/{{player.pk}}/">{{player.nick}}
+				({{player.rating_as_int}}{% if player.pk in player_realtime.keys %}{{ player_realtime|dict_get:player.pk|attrib_get:'elo_diff'|signed}}={{ player_realtime|dict_get:player.pk|attrib_get:'elo_as_int'}}{% endif%})</a></li>
+	   	    {% endfor %}</ul>
+    	</td>
     	<td>{{ object.team_score }}</td>
     	<td>{{ object.team_rating_as_int}}</td>
     	<td class="win"><a href="#">{{ object.get_win_draw_lose.0 | length }}</a>
@@ -54,7 +77,7 @@
     		{% endfor %}
     		</ul>
     		</td>
-    	<td class="lost"><a href="#">{{ object.get_win_draw_lose.2 | length }}</a>
+    	<td class="lose"><a href="#">{{ object.get_win_draw_lose.2 | length }}</a>
     		<ul>
     		{% for match in object.get_win_draw_lose.2 %}
     			<li>
@@ -66,7 +89,7 @@
     		</ul>
     		</td>
 
-    	<td class="close_lose"><a href="#">{{ object.close_win_lose.0 | length }}</a>
+    	<td class="win"><a href="#">{{ object.close_win_lose.0 | length }}</a>
     		<ul>
     		{% for match in object.close_win_lose.0 %}
     			<li>
@@ -77,7 +100,7 @@
     		{% endfor %}
     		</ul>
     		</td>
-    	<td class="close_lose"><a href="#">{{ object.close_win_lose.1 | length }}</a>
+    	<td class="lose"><a href="#">{{ object.close_win_lose.1 | length }}</a>
     		<ul>
     		{% for match in object.close_win_lose.1 %}
     			<li>
@@ -89,5 +112,5 @@
     		</ul>
     		</td>
 </table>
-
-{% endblock %} 
+</div>
+{% endblock %}

@@ -34,12 +34,12 @@ function loadDataTables(){
 {% for team in object_list %}
     <tr>
     	<th></th>
-    	<td>{{ team.name }}</td>
-			<td>{% for player in team.players.all %}{{player.nick}}
-					({{player.rating_as_int}}{% if player.pk in player_realtime.keys %}{{ player_realtime|dict_get:player.pk|attrib_get:'elo_diff'|signed}}={{ player_realtime|dict_get:player.pk|attrib_get:'elo_as_int'}}{% endif%}),
-	    	    {% endfor %}
-	    	</td>
-    	
+    	<td><a href="/team/{{team.pk}}/">{{ team.name }}</a></td>
+		<td>{% for player in team.players.all %}<a href="/player/{{player.pk}}/">{{player.nick}}
+				({{player.rating_as_int}}{% if player.pk in player_realtime.keys %}{{ player_realtime|dict_get:player.pk|attrib_get:'elo_diff'|signed}}={{ player_realtime|dict_get:player.pk|attrib_get:'elo_as_int'}}{% endif%})</a>,
+    	    {% endfor %}
+    	</td>
+
     	<!-- team_score -->
     	{% if team.id in team_realtime.keys %}
 			<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'team_score'}}">{{ team.team_score }}

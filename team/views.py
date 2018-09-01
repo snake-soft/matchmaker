@@ -218,7 +218,7 @@ class TeamListRealtime(ListView):
 
         @property
         def strength_diff(self):
-            return int(self.strength - self.own_team.team_rating)
+            return self.strength - int(self.own_team.team_rating + 0.5)
 
     class PlayerRealtimeValues:
         def __init__(self, player, enemy_team, goal_diff):
@@ -238,7 +238,7 @@ class TeamListRealtime(ListView):
 
         @property
         def elo_diff(self):
-            return int((self.elo - self.player.rating))
+            return self.elo_as_int - int(self.player.rating + 0.5)
 
 
 class TeamDetails(DetailView):
@@ -261,5 +261,4 @@ class TeamCreate(CreateView):
         return initial
 
     def post(self, request):
-        import pdb; pdb.set_trace()  # <---------
         return super().post(request)

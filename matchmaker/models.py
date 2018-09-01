@@ -55,6 +55,7 @@ class ConstellationTeam:
     def __init__(self, players):
         self.players = players
         self.team = Team.players_have_team(self.players)
+        print(self.team)
 
     @property
     def player_ids(self):
