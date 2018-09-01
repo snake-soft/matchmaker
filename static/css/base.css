@@ -48,6 +48,10 @@ nav form > *{
 	margin: 0 5px;
 }
 
+#id_nick, #id_teamname{
+	width: 100%;
+}
+
 @media (min-width: 858px) {
     html {
         font-size: 1em;
