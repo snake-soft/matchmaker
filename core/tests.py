@@ -3,7 +3,12 @@ from django.test import TestCase
 from datetime import date
 from django.test.client import Client
 
-from . import context_processor
+from . import context_processor, apps
+
+
+class AppsTestCase(TestCase):
+    def test_apps(self):
+        self.assertEqual(type(apps.AppConfig), type)
 
 
 class ContextProcessorTestCase(TestCase):

@@ -3,6 +3,12 @@ from datetime import date
 
 from .models import Team
 from player.models import Player
+from . import apps
+
+
+class AppsTestCase(TestCase):
+    def test_apps(self):
+        self.assertEqual(type(apps.AppConfig), type)
 
 
 class TeamTestCase(TestCase):
@@ -33,4 +39,3 @@ class TeamTestCase(TestCase):
         if type(self.devils.team_score) is not int:
             raise ValueError(self)
 
-        

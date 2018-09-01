@@ -1,9 +1,36 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.shortcuts import reverse
 from django.core.exceptions import ValidationError
 
 from .models import Match
+from . import apps
 from team.models import Team
 from player.models import Player
+
+
+class MatchViewsTestCase(TestCase):
+    client = Client()
+
+    def setUp(self):
+        TestCase.setUp(self)
+
+    def test_match_list(self):
+        response = self.client.get(reverse('match-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'match/match_list.html')
+        post_data = {'from': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
+        response = self.client.post(reverse('set-date'), post_data)
+        response = self.client.get(reverse('match-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'match/match_list.html')
+
+
+class DateSetViewTestCase(TestCase):
+
+    def test_post(self):
+        post_data = {'from': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
+        response = self.client.post(reverse('set-date'), post_data)
+        self.assertRedirects(response, post_data['next'], 302)
 
 
 class MatchModelsTestCase(TestCase):
@@ -54,3 +81,9 @@ class MatchModelsTestCase(TestCase):
 
     def test_str(self):
         self.assertEquals(type(str(Match.objects.all()[0])), str)
+
+
+class AppsTestCase(TestCase):
+
+    def test_apps(self):
+        self.assertEqual(type(apps.AppConfig), type)

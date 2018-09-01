@@ -8,10 +8,17 @@ class MatchList(ListView):
     model = Match
 
     def get_queryset(self):
-        frm = self.request.session['from']
-        to = datetime.strptime(self.request.session['to'], '%Y-%m-%d').date()
-        to += timedelta(days=1)
-        to = to.strftime('%Y-%m-%d')
+        if 'from' in self.request.session:
+            frm = self.request.session['from']
+        else:
+            frm = '2000-01-01'
+
+        if 'to' in self.request.session:
+            to = datetime.strptime(self.request.session['to'], '%Y-%m-%d').date()
+            to += timedelta(days=1)
+            to = to.strftime('%Y-%m-%d')
+        else:
+            to = '3000-01-01'
         return Match.objects.filter(date_time__range=[frm, to])
 
 

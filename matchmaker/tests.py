@@ -1,3 +1,8 @@
 from django.test import TestCase
 
-# Create your tests here.
+from . import apps
+
+
+class AppsTestCase(TestCase):
+    def test_apps(self):
+        self.assertEqual(type(apps.AppConfig), type)
