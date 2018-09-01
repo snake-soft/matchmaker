@@ -63,7 +63,7 @@ class Match(models.Model):
                 self.secondteam
                 )
 
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.firstteam.id is self.secondteam.id:
             raise ValidationError(
                 "%s can't play against itself" % (
@@ -73,7 +73,7 @@ class Match(models.Model):
                 )
         else:
             self.new_result()
-            super().save()
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return str("ID%s: %s vs. %s (%s:%s)" % (

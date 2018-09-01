@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'team',
     'match',
     'matchmaker',
-    'ladder'
 ]
 
 MIDDLEWARE = [

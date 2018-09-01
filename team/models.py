@@ -26,9 +26,12 @@ class Team(models.Model):
         cls.frm = frm
         cls.to = to
 
-    @property
-    def is_single_player(self):
-        return True if len(self.players) is 1 else False
+    #===========================================================================
+    # @property
+    # def is_single_player(self):
+    #     print("used")
+    #     return True if len(self.players) is 1 else False
+    #===========================================================================
 
     @property
     def name(self):

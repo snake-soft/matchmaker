@@ -40,14 +40,15 @@ class Player(models.Model):
             lose += team_results[2]
         return win, draw, lose
 
-    def save(self):
-        if not self.pk:
+    def save(self, *args, **kwargs):
+        new = False if self.pk else True
+        if new:
             if len(__class__.objects.filter(nick__iexact=self.nick)):
                 raise ValueError("Player %s exists already." % (self.nick))
             if len(Team.objects.filter(teamname__iexact=self.nick)):
                 raise ValueError("Team %s exists already." % (self.nick))
-        super().save()
-        if not self.pk:
+        super().save(*args, **kwargs)
+        if new:
             team = Team.objects.create(teamname=self.nick)
             team.players.add(self)
 
