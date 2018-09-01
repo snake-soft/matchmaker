@@ -35,6 +35,7 @@ urlpatterns = [
     #new/player
 
     path('team/', TeamList.as_view(), name="team-list"),
+    path('ladder/', TeamList.as_view(), name="team-list"),
     path('team/<pk>/', TeamDetails.as_view(), name="team-details"),
     path('new/team/', TeamCreate.as_view(), name="team-new"),
     path('realtime/team/', TeamListRealtime.as_view(), name="team-realtime"),

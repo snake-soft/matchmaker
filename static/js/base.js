@@ -12,6 +12,13 @@ $.ajaxSetup({
 	}
 });
 
+function loadLadderRealtime(){
+	$.get("/realtime/team/",{
+	}).done(function(data) {
+		$("#match-realtime").html(data);
+	});
+};
+
 function loadMatchRealtime() {
 	if ($('#id_firstteam').val() && $('#id_secondteam').val() && $('#id_firstteam').val() != $('#id_secondteam').val()){
 		$.get("/realtime/team/",{

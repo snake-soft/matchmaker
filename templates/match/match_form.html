@@ -7,22 +7,32 @@
 <style>
 #match-form td{
 border: 0;
-padding:0;
 }
 #match-form, #match-form input, #match-form select{
 	text-align: center;
 }
-#id_firstteam, #id_secondteam{
+#id_firstteam, #id_secondteam, #id_firstteam_goals, #id_secondteam_goals, .plus, .minus{
 	height: 50px;
+}
+#firstteam-controls *{
+	float: left;
+}
+#secondteam-controls *{
+	float: right;
+}
+
+#id_firstteam, #id_secondteam{
 	width: 100%;
 }
 #id_firstteam_goals, #id_secondteam_goals{
-	height: 50px;
-	width: 33%;
+	width: 29%;
+	min-width:50px;
 }
-.plus, .minus{
-	width:33%;
-	height:50px;
+.plus{
+	width: 50%;
+}
+.minus{
+	width: 20%;
 }
 .middle{
 	line-height: 3em;
@@ -34,21 +44,29 @@ padding:0;
 {% block content %}
 {% load humanize %}
 <form method="post">{% csrf_token %}
-	<table id="match-form" class="table table-bordered table-hover">
-    	<tr>
-			<td>{{ form.firstteam }}</td>
-			<td class="middle">vs.</td>
-			<td>{{ form.secondteam }}</td>
-    	</tr>
-    	<tr><td colspan=3 style="height: 10px"></td></tr>
-    	<tr>
-			<td><input class="plus" type="button" value="+" onclick="increment($('#id_firstteam_goals'))" />{{ form.firstteam_goals }}<input class="plus" type="button" value="-" onclick="decrement($('#id_firstteam_goals'))" /></td>
-			<td class="middle">:</td>
-			<td><input class="plus" type="button" value="+" onclick="increment($('#id_secondteam_goals'))" />{{ form.secondteam_goals }}<input class="plus" type="button" value="-" onclick="decrement($('#id_secondteam_goals'))" /></td>
-    	</tr>
-    	
-    </table>
-    <input type="submit" value="Save !!!" />
+<table id="match-form" class="table table-bordered table-hover">
+   	<tr>
+		<td>{{ form.firstteam }}</td>
+		<td class="middle">vs.</td>
+		<td>{{ form.secondteam }}</td>
+   	</tr>
+   	<tr><td colspan=3 style="height: 10px"></td></tr>
+   	<tr>
+		<td id="firstteam-controls">
+			<input class="plus btn btn-success" type="button" value="+" onclick="increment($('#id_firstteam_goals'))" />
+			{{ form.firstteam_goals }}
+			<input class="minus btn btn-danger" type="button" value="-" onclick="decrement($('#id_firstteam_goals'))" />
+		</td>
+		<td class="middle">:</td>
+		<td id="secondteam-controls">
+			<input class="plus btn btn-success" type="button" value="+" onclick="increment($('#id_secondteam_goals'))" />
+			{{ form.secondteam_goals }}
+			<input class="minus btn btn-danger" type="button" value="-" onclick="decrement($('#id_secondteam_goals'))" />
+		</td>
+   	</tr>
+   	
+</table>
+<input class="btn btn-primary btn-lg btn-block" type="submit" value="Save !!!" />
 </form>
 <div class="container-fluid">
 	<div id="match-realtime" class="row" style="margin-top:40px"></div>

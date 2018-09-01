@@ -4,6 +4,18 @@ Matchmaker
 {% endblock %}
 {% block var_link %}{% endblock %}
 
+{% block head %}
+<style>
+#id_count li{
+	float:left;
+	margin-right: 10px;
+}
+#id_count label{
+	margin: 0;
+}
+</style>
+{% endblock %} 
+
 {% block content %}
 {% load join_by_attr %}
 <div id="matchmaker">
@@ -11,7 +23,7 @@ Matchmaker
 		<table class="table table-striped table-bordered table-hover">
 		    {{ matchmaker_form.as_table }}
 		</table>
-	    <input type="submit" value="Calculate Teams" />
+	    <input class="btn btn-primary btn-lg btn-block" type="submit" value="Calculate Teams" />
 	</form>
 </div>
 

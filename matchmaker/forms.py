@@ -18,10 +18,20 @@ class MatchmakerForm(forms.Form):
         self.fields['players'] = forms.MultipleChoiceField(
             choices=choices, widget=forms.CheckboxSelectMultiple, initial=initial
             )
-
         initial = int(request.session['last_count']) \
             if 'last_count' in request.session else 2
-        self.fields['count'] = forms.IntegerField(min_value=2, initial=initial)
+        self.fields['count'] = forms.ChoiceField(
+            label="Constellation",
+            choices=[
+                [2, '1 vs 1'],
+                [3, '2 vs 1'],
+                [4, '2 vs 2'],
+                [5, '3 vs 2'],
+                [6, '3 vs 3'],
+                ],
+            widget=forms.RadioSelect(attrs={}),
+            initial=initial,
+            )
 
     def clean(self):
         data = self.cleaned_data

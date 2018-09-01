@@ -1,5 +1,5 @@
 from django.views.generic import ListView, DetailView, CreateView
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .models import Match
 
@@ -9,14 +9,9 @@ class MatchList(ListView):
 
     def get_queryset(self):
         frm = self.request.session['from']
-        to = self.request.session['to']
-        #=======================================================================
-        # to = datetime.strptime(self.request.session['to'], '%Y-%m-%d').date()
-        # try:
-        #     to = to.replace(day=to.day+1).strftime('%Y-%m-%d')
-        # except ValueError:
-        #     to = to.replace(day=to.month+1).strftime('%Y-%m-%d')
-        #=======================================================================
+        to = datetime.strptime(self.request.session['to'], '%Y-%m-%d').date()
+        to += timedelta(days=1)
+        to = to.strftime('%Y-%m-%d')
         return Match.objects.filter(date_time__range=[frm, to])
 
 

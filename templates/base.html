@@ -4,6 +4,7 @@
 <head>
 	<title>{% block title %}{% endblock %}</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
 	<script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
 	<script src="{% static "js/popper.min.js" %}"></script>
@@ -26,13 +27,21 @@
 </head>
 <body>
 <nav style="margin-bottom: 20px;" class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="/matchmaker/">Matchmaker</a>
-  <a class="navbar-brand" href="/new/match/">Match</a>
+  <a class="btn btn-outline-success navbar-brand" href="/matchmaker/">Matchmaker</a>
+  <a class="btn btn-outline-success navbar-brand" href="/new/match/">Match</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
+
+      <li class="nav-item">
+        <a class="nav-link" href="/ladder/">Ladder</a>
+      </li>
+
+      <li class="nav-item <!--active-->">
+        <a class="nav-link" href="/match/">Matches<span class="sr-only">(current)</span></a>
+      </li>
 
 	<li class="nav-item dropdown">
 	        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -42,19 +51,8 @@
 	          <a class="dropdown-item" href="/new/team/">Team</a>
 	          <a class="dropdown-item" href="/new/player/">Player</a>
       </li>
-
-      <li class="nav-item <!--active-->">
-        <a class="nav-link" href="/match/">Match<span class="sr-only">(current)</span></a>
-      </li>
-     
-      <li class="nav-item">
-        <a class="nav-link" href="/team/">Team</a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link" href="/player/">Player</a>
-      </li>
     </ul>
+
 
     <form class="form-inline my-2 my-lg-0" method="post" action="/set/date/">{% csrf_token %}
       <label for="id_from">From:{{time_range_form.from}}</label>
@@ -67,7 +65,7 @@
 
 	<div class="container">
 		<div class="row">
-		 <div class="col-12 col-md-12">
+		 <div class="col-sm">
 	            {% block content %}
 			    {% endblock %}
 		    </div>

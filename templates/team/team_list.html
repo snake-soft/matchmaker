@@ -1,41 +1,21 @@
 {% extends 'base.html' %}
 	{% block title %}
 		Player overview
-		{% if room.id_%}
-			 {{room.name}}
-		{%endif%}
 	{% endblock %}
 {% block var_link %}{% endblock %}
 
+{% block head %}
+<script>
+$(document).ready(function() {
+	loadLadderRealtime()
+} );
+</script>
+{% endblock %} 
+
+
 {% block content %}
 {% load join_by_attr %}
-<h1>Teams overview</h1>
-<!-- https://www.w3schools.com/howto/howto_js_sort_table.asp -->
-<div class="table-responsive">
-<table id="player-overview" class="table table-striped table-bordered table-hover" >
-	<thead>
-		<tr>
-			<th>#</th>
-			<th>Team Name</th>
-			<th>Members</th>
-			<th>Score</th>
-			<th>Strength</th>
-			<th>Win:Draw:Lose</th>
-			<th>Close Win:Lose</th>
-		</tr>
-	</thead>
-{% for team in object_list %}
-    <tr>
-    	<th></th>
-    	<td><a href="/team/{{team.pk}}">{{ team.name }}</a></td>
-    	<td>{{ team.players.all|join_by_attr:"nick" }}</td>
-    	<td>{{ team.team_score }}</td>
-    	<td>{{ team.team_rating_as_int}}</td>
-    	<td>{{ team.get_win_draw_lose.0 | length }}:{{ team.get_win_draw_lose.1 | length }}:{{ team.get_win_draw_lose.2 | length }}</td>
-    	<td>{{ team.close_win_lose.0 | length }}:{{ team.close_win_lose.1 | length }}</td>
-{% empty %}
-    <li>No player yet.</li>
-{% endfor %}
-</table>
+<div class="container-fluid">
+	<div id="match-realtime" class="row" style="margin-top:40px"></div>
 </div>
 {% endblock %} 
