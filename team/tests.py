@@ -63,13 +63,11 @@ class TeamTestCase(TestCase):
     def test_set_from_to(self):
         frm = self.devils.frm
         to = self.devils.to
-        self.devils.set_from_to(date(2018,1,1), date(2018,12,31))
-        if frm is self.devils.frm or to is self.devils.to:
-            raise ValueError("Time not setted correctly")
+        self.devils.set_from_to(date(2018, 1, 1), date(2018, 12, 31))
+        self.assertFalse(frm is self.devils.frm or to is self.devils.to)
 
     def test_team_score(self):
-        if type(self.devils.team_score) is not int:
-            raise ValueError(self)
+        self.assertEqual(type(self.devils.team_score), int)
 
     def test_team_rating(self):
         self.assertEqual(type(self.dimension.team_rating), float)
@@ -104,4 +102,3 @@ class TeamTestCase(TestCase):
         self.assertEqual(type(self.dimension.goal_foreign), int)
         self.assertEqual(type(self.dimension.goal_factor), int)
         self.assertEqual(type(self.empty_team.goal_factor), int)
-        
