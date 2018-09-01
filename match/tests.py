@@ -12,7 +12,26 @@ class MatchViewsTestCase(TestCase):
     client = Client()
 
     def setUp(self):
-        TestCase.setUp(self)
+        self.frank = Player.objects.create(nick="Frank")
+        self.alex = Player.objects.create(nick="Alexandra")
+        self.sebi = Player.objects.create(nick="Sebastiano")
+        self.uenal = Player.objects.create(nick="Ünal")
+
+        self.devils = Team.objects.create(teamname="Devils")
+        self.devils.players.add(self.frank)
+        self.devils.players.add(self.sebi)
+
+        self.dimension = Team.objects.create(teamname="Dimension")
+        self.dimension.players.add(self.frank)
+        self.dimension.players.add(self.alex)
+
+        self.nameless_team = Team.objects.create()
+        self.nameless_team.players.add(self.frank)
+        self.nameless_team.players.add(self.alex)
+
+        self.empty_team = Team.objects.create(teamname="Empty")
+
+        self.single_team = Team.objects.get(teamname="Frank")
 
     def test_match_list(self):
         response = self.client.get(reverse('match-list'))
@@ -23,6 +42,40 @@ class MatchViewsTestCase(TestCase):
         response = self.client.get(reverse('match-list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'match/match_list.html')
+
+    def test_match_create(self):
+        post_data = {
+            'firstteam': '1',
+            'secondteam': '2',
+            'firstteam_goals': '10',
+            'secondteam_goals': '5',
+            }
+        response = self.client.post(reverse('match-new'), post_data)
+
+        post_data = {
+            'firstteam': '1',
+            'secondteam': '2',
+            'firstteam_goals': '5',
+            'secondteam_goals': '10',
+            }
+        response = self.client.post(reverse('match-new'), post_data)
+
+        post_data = {
+            'firstteam': '1',
+            'secondteam': '2',
+            'firstteam_goals': '5',
+            'secondteam_goals': '5',
+            }
+        response = self.client.post(reverse('match-new'), post_data)
+
+        get_data = {
+            'firstteam': '1',
+            'secondteam': '2',
+            'firstteam_goals': '10',
+            'secondteam_goals': '5',
+            }
+        response = self.client.get(reverse('match-new'), get_data)
+        self.assertTemplateUsed(response, 'match/match_form.html')
 
 
 class DateSetViewTestCase(TestCase):

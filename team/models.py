@@ -26,13 +26,6 @@ class Team(models.Model):
         cls.frm = frm
         cls.to = to
 
-    #===========================================================================
-    # @property
-    # def is_single_player(self):
-    #     print("used")
-    #     return True if len(self.players) is 1 else False
-    #===========================================================================
-
     @property
     def name(self):
         return self.get_team_name_or_members()
@@ -196,7 +189,7 @@ class Team(models.Model):
             if sorted(player_obj_lst, key=id)\
                     == sorted(team.players.all(), key=id):
                 return team
-        return None
+        # return None  # no more possible
 
     def save(self, *args, **kwargs):
         super().save()

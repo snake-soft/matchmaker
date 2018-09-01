@@ -38,11 +38,6 @@ class Constellation:
         self.team2 = ConstellationTeam(players_t2)
 
     @property
-    def player_count(self):  # unused
-        """ 0->Teams are equal; <0: Team2 is bigger; >0-> Team1 is bigger """
-        return len(self.team1.players) - len(self.team2.players)
-
-    @property
     def difference(self):
         # could be better, recognizing unequal team sizes
         t1_strength = self.team1.strength
@@ -55,7 +50,6 @@ class ConstellationTeam:
     def __init__(self, players):
         self.players = players
         self.team = Team.players_have_team(self.players)
-        print(self.team)
 
     @property
     def player_ids(self):

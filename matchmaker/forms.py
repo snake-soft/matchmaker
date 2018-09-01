@@ -33,10 +33,12 @@ class MatchmakerForm(forms.Form):
             initial=initial,
             )
 
-    def clean(self):
-        data = self.cleaned_data
-        if "players" not in data or len(data["players"]) <= 1:
-            self._errors["players"] = ["At least 2 Players are needed"]
-        elif len(data["players"]) < data["count"]:
-            self._errors["players"] = ["Check Count"]
-        return self.cleaned_data
+    #===========================================================================
+    # def clean(self):
+    #     data = self.cleaned_data
+    #     if "players" not in data or len(data["players"]) <= 1:
+    #         self._errors["players"] = ["At least 2 Players are needed"]
+    #     elif len(data["players"]) < data["count"]:
+    #         self._errors["players"] = ["Check Count"]
+    #     return self.cleaned_data
+    #===========================================================================
