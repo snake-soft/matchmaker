@@ -36,6 +36,20 @@ ul, .win ul, .draw ul, .lost ul{
 .draw *{color: #575757;}
 .lose *{color: red;}
 
+.table-responsive, #content form{
+	background-color: white;
+	padding: 10px;
+	border: 1px solid grey;
+	margin-bottom: 10px;
+}
+nav form{
+	background-color: white;
+	padding: 5px;
+	border: 1px solid grey;
+}
+nav form > *{
+	margin: 0 5px;
+}
 
 @media (min-width: 858px) {
     html {

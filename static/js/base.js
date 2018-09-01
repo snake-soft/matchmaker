@@ -36,20 +36,6 @@ function loadMatchRealtime() {
 };
 
 function loadDataTables(){
-
-    var t = $('#teams-realtime').DataTable( {
-    	"searching": false,
-    	"columnDefs": [ {
-    		"targets": 0
-    	} ],
-    	"order": [[ 3, 'desc' ]]
-    } );
-    t.on( 'order.dt search.dt', function () {
-    	t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-    		cell.innerHTML = i+1;
-    	} );
-    } ).draw();
-
     var t = $('#player-overview').DataTable( {
     	"columnDefs": [ {
     		"searchable": false,
