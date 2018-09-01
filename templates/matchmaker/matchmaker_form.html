@@ -23,7 +23,7 @@ function loadDataTables(){
     		"orderable": true,
     		"targets": 0
     	} ],
-    	"order": [[ 6, 'asc' ]]
+    	"order": [[ 2, 'asc' ]]
     } );
 }
 
@@ -59,18 +59,9 @@ function decrement(element){
 <table id="matchmaker-result-table" class="table table-striped table-bordered table-hover">
 <thead>
 	<tr>
-		<th colspan=3>First team</th>
-		<th colspan=3>Second team</th>
-		<th colspan=2></th>
-	</tr>
-	<tr>
-		<th>{{ constellations.0.team1.players|length }} player{{ constellations.0.team1.players|pluralize:"s" }}</th>
-		<th>Teamname</th>
-		<th>Rating</th>
+		<th>Team 1 ({{ constellations.0.team1.players|length }}p.)</th>
 
-		<th>{{ constellations.0.team2.players|length }} player{{ constellations.0.team2.players|pluralize:"s" }}</th>
-		<th>Team</th>
-		<th>Rating</th>
+		<th>Team 2 ({{ constellations.0.team2.players|length }}p.)</th>
 
 		<th>Difference</th>
 		<th>Play this match</th>
@@ -79,31 +70,50 @@ function decrement(element){
 
 {% for constellation in constellations %}
 <tr>
-<td>{{ constellation.team1.players|join_by_attr:"nick" }}</td>
-<td>
+<td><strong>
 	{% if constellation.team1.team.name != None %}
 		<a href='/team/{{ constellation.team1.team.id }}/'>
-	{{ constellation.team1.team.name }}</a>
+	{{ constellation.team1.team.name }}
 	{% else %}
-		<a href='/new/team/?players={{constellation.team1.player_ids|join:","}}&next={{request.path}}' type="button" class="btn btn-warning">create</a>
+		<a href='/new/team/?players={{constellation.team1.player_ids|join:","}}&next={{request.path}}' type="button" class="btn btn-warning">Create Team
+	{% endif %}
+	({{ constellation.team1.strength }})</a></strong>
+
+	{% if constellation.team1.players|length > 1  %}
+	<ul>
+	{% for player in constellation.team1.players %}
+		<li><a href="/player/{{player.pk}}/">{{player.nick}} ({{player.rating_as_int}})</a></li>
+	{% endfor %}
+	</ul>
 	{% endif %}
 </td>
-<td>{{ constellation.team1.strength }}</td>
 
-<td>{{ constellation.team2.players|join_by_attr:"nick" }}</td>
-<td>
+<td><strong>
 	{% if constellation.team2.team.name != None %}
-		<a href='/team/{{ constellation.team2.team.id }}/'>
-	{{ constellation.team2.team.name }}</a>{% else %}
-		<a href='/new/team/?players={{constellation.team2.player_ids|join:","}}&next={{request.path}}' type="button" class="btn btn-warning">create</a>
+		<a href='/team/{{ constellation.team1.team.id }}/'>
+	{{ constellation.team2.team.name }}
+	{% else %}
+		<a href='/new/team/?players={{constellation.team1.player_ids|join:","}}&next={{request.path}}' type="button" class="btn btn-warning">Create Team
+	{% endif %}
+	({{ constellation.team2.strength }})</a></strong>
+
+	{% if constellation.team2.players|length > 1  %}
+	<ul>
+	{% for player in constellation.team2.players %}
+		<li><a href="/player/{{player.pk}}/">{{player.nick}} ({{player.rating_as_int}})</a></li>
+	{% endfor %}
+	</ul>
 	{% endif %}
 </td>
-<td>{{ constellation.team2.strength }}</td>
 
-<td>{{ constellation.difference }}</td>
+<td><strong>{{ constellation.difference }}</strong></td>
 <td>
 	{% if constellation.team1.team.name != None and constellation.team2.team.name != None %}
 		<a href='/new/match/?firstteam={{constellation.team1.team.id}}&secondteam={{constellation.team2.team.id}}' type="button" class="btn btn-success">Start</a>
+	{% else %}
+		<div class="alert alert-info" role="alert">
+			Create Teams first
+		</div></button>
 	{% endif %}
 </td>
 </tr>
