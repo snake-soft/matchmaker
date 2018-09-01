@@ -47,6 +47,9 @@ loadLadderRealtime();
 {% load humanize %}
 <div class="container">
 <form method="post">{% csrf_token %}
+	<div class="alert alert-success" role="alert">
+		Don't forget to save when the game is finished.
+	</div>
 <table id="match-form" class="table table-bordered table-hover">
    	<tr>
 		<td>{{ form.firstteam }}</td>
@@ -69,7 +72,7 @@ loadLadderRealtime();
    	</tr>
    	
 </table>
-<input class="btn btn-primary btn-lg btn-block" type="submit" value="Game finished" />
+<input class="btn btn-primary btn-lg btn-block" type="submit" value="Game finished (save)" />
 </form>
 </div>
 <div class="container-fluid">

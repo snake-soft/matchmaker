@@ -6,10 +6,13 @@
 {% load humanize %}
 <div class="container">
 	<form method="post">{% csrf_token %}
+   		<div class="alert alert-success" role="alert">
+			A single-player Team with the same Name will be created.
+		</div>
 		<table class="table table-striped table-bordered table-hover">
 	    	{{ form.as_table }}
 	    </table>
-	    <input type="submit" value="Save" />
+	    <input class="btn btn-primary btn-lg btn-block" type="submit" value="Save" />
 	</form>
 </div>
 {% endblock %} 
