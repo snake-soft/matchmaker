@@ -1,4 +1,5 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.shortcuts import reverse
 from datetime import date
 
 from .models import Team
@@ -7,12 +8,51 @@ from match.models import Match
 from . import apps
 
 
-class AppsTestCase(TestCase):
-    def test_apps(self):
-        self.assertEqual(type(apps.AppConfig), type)
+class TeamViewsTestCase(TestCase):
+    client = Client()
+
+    def setUp(self):
+        self.frank = Player.objects.create(nick="Frank")
+        self.alex = Player.objects.create(nick="Alexandra")
+
+    def test_list_realtime(self):
+        post_data = {'from': '2018-01-01', 'to': '2020-01-31', 'next': '/'}
+        response = self.client.post(reverse('set-date'), post_data)
+        self.assertRedirects(response, post_data['next'], 302)
+
+        get_data = {
+            'firstteam': 1,
+            'secondteam': 2,
+            'firstteam_goals': 1,
+            'secondteam_goals': 2,
+            }
+        response = self.client.get(reverse('team-realtime'), get_data)
+        self.assertTemplateUsed(response, 'team/team_list_realtime.html')
+
+        get_data = {
+            'firstteam': 1,
+            'secondteam': 2,
+            'firstteam_goals': 2,
+            'secondteam_goals': 2,
+            }
+        response = self.client.get(reverse('team-realtime'), get_data)
+        self.assertTemplateUsed(response, 'team/team_list_realtime.html')
+
+    def test_team_create(self):
+        post_data = {'from': '2018-01-01', 'to': '2020-01-31', 'next': '/'}
+        response = self.client.post(reverse('set-date'), post_data)
+        self.assertRedirects(response, post_data['next'], 302)
+
+        post_data = {'teamname': 'CreatedTeam', 'players': ['1', '2']}
+        response = self.client.post(reverse('team-new'), post_data)
+        self.assertEqual(response.status_code, 302)
+
+        get_data = {'teamname': 'CreatedTeam', 'players': ['1', '2']}
+        response = self.client.get(reverse('team-new'), get_data)
+        self.assertEqual(response.status_code, 200)
 
 
-class TeamTestCase(TestCase):
+class TeamModelsTestCase(TestCase):
     def setUp(self):
         self.frank = Player.objects.create(nick="Frank")
         self.alex = Player.objects.create(nick="Alexandra")
@@ -102,3 +142,8 @@ class TeamTestCase(TestCase):
         self.assertEqual(type(self.dimension.goal_foreign), int)
         self.assertEqual(type(self.dimension.goal_factor), int)
         self.assertEqual(type(self.empty_team.goal_factor), int)
+
+
+class AppsTestCase(TestCase):
+    def test_apps(self):
+        self.assertEqual(type(apps.AppConfig), type)

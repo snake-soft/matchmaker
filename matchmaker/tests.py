@@ -64,8 +64,6 @@ class MatchmakerViewTestCase(TestCase):
         response = self.client.post(reverse('matchmaker'), post_data)
 
 
-
-
 class AppsTestCase(TestCase):
     def test_apps(self):
         self.assertEqual(type(apps.AppConfig), type)
