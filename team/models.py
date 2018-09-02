@@ -27,6 +27,16 @@ class Team(models.Model):
         cls.to = to
 
     @property
+    def is_player_team(self):
+        if len(self.players.all()) is 1:
+            if self.players.all()[0].nick is self.teamname:
+                return True
+            else:
+                return False  # self.players.all()[0].nick
+        else:
+            return False
+
+    @property
     def name(self):
         return self.get_team_name_or_members()
 
@@ -186,13 +196,14 @@ class Team(models.Model):
     @classmethod
     def players_have_team(cls, player_obj_lst):
         for team in cls.objects.all():
-            if sorted(player_obj_lst, key=id)\
-                    == sorted(team.players.all(), key=id):
+            if sorted(player_obj_lst, key=lambda x: x.pk) \
+             == sorted(team.players.all(), key=lambda x: x.pk):
                 return team
         # return None  # no more possible
 
     def save(self, *args, **kwargs):
         super().save()
+        self.refresh_from_db()
         # Problem: Cannot access unsaved m2m need modelform
         # =====================================================================
         # if __class__.players_have_team(self.players):

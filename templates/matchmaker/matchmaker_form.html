@@ -63,7 +63,7 @@ function decrement(element){
 
 		<th>Team 2 ({{ constellations.0.team2.players|length }}p.)</th>
 
-		<th>Difference</th>
+		<th>Dif.</th>
 		<th>Play this match</th>
 	</tr>
 </thead>
@@ -97,7 +97,7 @@ function decrement(element){
 	{% endif %}
 	({{ constellation.team2.strength }})</a></strong>
 
-	{% if constellation.team2.players|length > 1  %}
+	{% if constellation.team2.is_player_team == True %}
 	<ul>
 	{% for player in constellation.team2.players %}
 		<li><a href="/player/{{player.pk}}/">{{player.nick}} ({{player.rating_as_int}})</a></li>
