@@ -75,6 +75,14 @@ class TeamModelsTestCase(TestCase):
 
         self.single_team = Team.objects.get(teamname="Frank")
 
+        self.single_name = Team.objects.create(teamname="SingleName")
+        self.single_name.players.add(self.frank)
+
+        #=======================================================================
+        # with self.assertRaises(ValueError):
+        #     self.single_name = Team.objects.create(teamname="SingleName")
+        #=======================================================================
+
         Match.objects.create(
             firstteam=self.devils,
             secondteam=self.dimension,
@@ -142,6 +150,11 @@ class TeamModelsTestCase(TestCase):
         self.assertEqual(type(self.dimension.goal_foreign), int)
         self.assertEqual(type(self.dimension.goal_factor), int)
         self.assertEqual(type(self.empty_team.goal_factor), int)
+
+    def test_is_player_team(self):
+        self.assertEqual(type(self.single_name.is_player_team), str)
+        self.assertEqual(self.dimension.is_player_team, False)
+        self.assertEqual(self.single_team.is_player_team, True)
 
 
 class AppsTestCase(TestCase):

@@ -40,6 +40,14 @@ class Player(models.Model):
             lose += team_results[2]
         return win, draw, lose
 
+    def get_close_win_lose(self):
+        win, lose = [], []
+        for team in self.teams():
+            team_results = team.close_win_lose
+            win += team_results[0]
+            lose += team_results[1]
+        return win, lose
+
     def save(self, *args, **kwargs):
         new = False if self.pk else True
         if new:

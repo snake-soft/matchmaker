@@ -70,7 +70,7 @@ function decrement(element){
 
 {% for constellation in constellations %}
 <tr>
-<td><strong>
+<td data-order="{{ team.team_rating_as_int }}"><strong>
 	{% if constellation.team1.team.name != None %}
 		<a href='/team/{{ constellation.team1.team.id }}/'>
 	{{ constellation.team1.team.name }}
@@ -88,7 +88,7 @@ function decrement(element){
 	{% endif %}
 </td>
 
-<td><strong>
+<td data-order="{{ team.team_rating_as_int }}"><strong>
 	{% if constellation.team2.team.name %}
 		<a href='/team/{{ constellation.team1.team.id }}/'>
 	{{ constellation.team2.team.name }}

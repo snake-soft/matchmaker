@@ -8,7 +8,7 @@ function loadDataTables(){
     		"searchable": false,
     		"targets": 0
     	} ],
-    	"order": [[ 3, 'desc' ]]
+    	"order": [[ 2, 'desc' ]]
     } );
     t.on( 'order.dt search.dt', function () {
     	t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
@@ -22,26 +22,37 @@ function loadDataTables(){
 	<thead>
 		<tr>
 			<th>#</th>
-			<th>Team Name</th>
-			<th>Members</th>
+			<th>Team</th>
 			<th>Score</th>
-			<th>Strength</th>
-			<th>Win:Draw:Lose</th>
-			<th>Close Win:Lose</th>
-			<th>Goals Own:Foreign</th>
+			<th>Win<wbr>:Draw<wbr>:Lose</th>
+			<th>Close Win<wbr>:Lose</th>
+			<th>Goals</th>
 		</tr>
 	</thead>
 {% for team in object_list %}
-    <tr>
-    	<th></th>
-    	<td><a href="/team/{{team.pk}}/">{{ team.name }}</a></td>
-		<td>{% for player in team.players.all %}<a href="/player/{{player.pk}}/">{{player.nick}}
-				({{player.rating_as_int}}{% if player.pk in player_realtime.keys %}{{ player_realtime|dict_get:player.pk|attrib_get:'elo_diff'|signed}}={{ player_realtime|dict_get:player.pk|attrib_get:'elo_as_int'}}{% endif%})</a>,
-    	    {% endfor %}
-    	</td>
+	<tr>
+		<th></th>
+		<td data-order="{{ team.team_rating_as_int }}">
+			<strong>
+			{% if team.name %}
+				<a href='/team/{{ team.id }}/'>
+			{{ team.name }}
+			{% else %}
+				<a href='/new/team/?players={{constellation.team1.player_ids|join:","}}&next={{request.path}}' type="button" class="btn btn-warning">Create Team
+			{% endif %}
+			({{ team.team_rating_as_int }}{% if team.id in team_realtime.keys %}<i>{{ team_realtime|dict_get:team.id|attrib_get:'strength_diff'|signed}}={{ team_realtime|dict_get:team.id|attrib_get:'strength'}}</i>{% endif%})</a></strong>
+		
+			{% if not team.is_player_team or not team.name %}
+			<ul>
+			{% for player in team.players.all %}
+				<li><a href="/player/{{player.pk}}/">{{player.nick}} ({{player.rating_as_int}}{% if player.pk in player_realtime.keys %}<i>{{ player_realtime|dict_get:player.pk|attrib_get:'elo_diff'|signed}}={{ player_realtime|dict_get:player.pk|attrib_get:'elo_as_int'}}</i>{% endif%})</a></li>
+			{% endfor %}
+			</ul>
+			{% endif %}
+		</td>
 
-    	<!-- team_score -->
-    	{% if team.id in team_realtime.keys %}
+		<!-- team_score -->
+		{% if team.id in team_realtime.keys %}
 			<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'team_score'}}">{{ team.team_score }}
 				<br />{{ team_realtime|dict_get:team.id|attrib_get:'team_score_diff'|signed}}
 				<br />={{ team_realtime|dict_get:team.id|attrib_get:'team_score'}}
@@ -50,14 +61,6 @@ function loadDataTables(){
 			<td data-order="{{ team.team_score }}">{{ team.team_score }}</td>
 		{% endif%}
 
-		<!-- strength -->
-		<td data-order="{% if team.id in team_realtime.keys %}{{ team_realtime|dict_get:team.id|attrib_get:'strength'}}{% else %}{{ team.team_rating_as_int }}{% endif%}">{{ team.team_rating_as_int}}
-			{% if team.id in team_realtime.keys %}
-				<br />{{ team_realtime|dict_get:team.id|attrib_get:'strength_diff'|signed}}
-				<br />={{ team_realtime|dict_get:team.id|attrib_get:'strength'}}
-			{% endif%}
-		</td>
-		
 		<!-- Team Win Draw Lose -->
 		{% if team.id in team_realtime.keys %}
 			<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'team_wdl_factor'}}">{{ team.team_win | length }}:{{ team.team_draw | length }}:{{ team.team_lose | length }}
@@ -75,7 +78,7 @@ function loadDataTables(){
 				<br />={{ team_realtime|dict_get:team.id|attrib_get:'close_win' | length }}:{{ team_realtime|dict_get:team.id|attrib_get:'close_lose' | length }}
 			</td>
 		{% else %}
-			<td>{{ team.close_win | length }}:{{ team.close_lose | length }}</td>
+			<td data-order="{{ team.close_wl_factor }}">{{ team.close_win | length }}:{{ team.close_lose | length }}</td>
 		{% endif%}
 		
 		<!-- Goals Own Foreign -->

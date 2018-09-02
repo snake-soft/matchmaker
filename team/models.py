@@ -30,7 +30,7 @@ class Team(models.Model):
     @property
     def is_player_team(self):
         if len(self.players.all()) is 1:
-            if self.players.all()[0].nick is self.teamname:
+            if self.players.all()[0].nick == self.teamname:
                 return True
             else:
                 return self.players.all()[0].nick

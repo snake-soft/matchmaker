@@ -22,6 +22,7 @@ body{
 }
 ul{
 	padding-left:15px;
+	margin-bottom:0;
 }
 .ul-disabled, #id_count, #id_players{
 	list-style-type: none;
