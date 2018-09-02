@@ -2,7 +2,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse
 
 from .models import Team
-from player.models import Elo
+from player.models import Player, Elo
 from .forms import TeamCreateForm
 
 
@@ -261,4 +261,8 @@ class TeamCreate(CreateView):
         return initial
 
     def post(self, request):
-        return super().post(request)
+        existing_team = self.model.players_have_team([Player.objects.get(pk=int(x)) for x in request.POST.getlist('players')])
+        if existing_team:
+            raise ValueError("Team already esists with name %s" % (existing_team))
+        else:
+            return super().post(request)

@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
 from django.db.models import Sum
+from django.db.models.signals import m2m_changed
 
 from match.models import Match
 
@@ -32,13 +33,14 @@ class Team(models.Model):
             if self.players.all()[0].nick is self.teamname:
                 return True
             else:
-                return False  # self.players.all()[0].nick
+                return self.players.all()[0].nick
         else:
             return False
 
     @property
     def name(self):
-        return self.get_team_name_or_members()
+        name = self.get_team_name_or_members()
+        return name if name else False
 
     @property
     def team_score(self):
@@ -202,8 +204,7 @@ class Team(models.Model):
         # return None  # no more possible
 
     def save(self, *args, **kwargs):
-        super().save()
-        self.refresh_from_db()
+        super().save(*args, **kwargs)
         # Problem: Cannot access unsaved m2m need modelform
         # =====================================================================
         # if __class__.players_have_team(self.players):

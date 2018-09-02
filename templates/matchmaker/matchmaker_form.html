@@ -79,7 +79,7 @@ function decrement(element){
 	{% endif %}
 	({{ constellation.team1.strength }})</a></strong>
 
-	{% if constellation.team1.players|length > 1  %}
+	{% if not constellation.team1.team.is_player_team or not constellation.team1.team.name %}
 	<ul>
 	{% for player in constellation.team1.players %}
 		<li><a href="/player/{{player.pk}}/">{{player.nick}} ({{player.rating_as_int}})</a></li>
@@ -89,7 +89,7 @@ function decrement(element){
 </td>
 
 <td><strong>
-	{% if constellation.team2.team.name != None %}
+	{% if constellation.team2.team.name %}
 		<a href='/team/{{ constellation.team1.team.id }}/'>
 	{{ constellation.team2.team.name }}
 	{% else %}
@@ -97,7 +97,7 @@ function decrement(element){
 	{% endif %}
 	({{ constellation.team2.strength }})</a></strong>
 
-	{% if constellation.team2.is_player_team == True %}
+	{% if not constellation.team2.team.is_player_team or not constellation.team2.team.name %}
 	<ul>
 	{% for player in constellation.team2.players %}
 		<li><a href="/player/{{player.pk}}/">{{player.nick}} ({{player.rating_as_int}})</a></li>
