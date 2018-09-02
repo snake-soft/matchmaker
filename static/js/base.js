@@ -33,12 +33,14 @@ function loadMatchRealtime() {
 };
 
 function increment(element){
-	$(element).get(0).value++; loadMatchRealtime();
+	$(element).get(0).value++;
+	loadMatchRealtime();
 }
 
 function decrement(element){
 	if ($(element).val() > 0){
-		$(element).get(0).value--; loadMatchRealtime();
+		$(element).get(0).value--;
+		loadMatchRealtime();
 	}
 }
 
