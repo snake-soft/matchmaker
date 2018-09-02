@@ -38,8 +38,8 @@ function loadDataTables(){
     <tr>
     	<th><a href="/match/{{match.pk}}">{{match.pk}}</a></th>
     	<td data-order="{{match.pk}}" title="{{match.date_time|naturaltime}}">{{ match.date_time }}</td>
-    	<td title="{{match.firstteam.verbose_name}}"><a href="/team/{{match.firstteam.pk}}/">{{match.firstteam.name}}</a></td>
-    	<td title="{{match.secondteam.verbose_name}}"><a href="/team/{{match.secondteam.pk}}/">{{ match.secondteam.name }}</a></td>
+    	<td title="{{match.firstteam.verbose_name}}"><a href="/team/{{match.firstteam.pk}}/">{{match.firstteam}}</a></td>
+    	<td title="{{match.secondteam.verbose_name}}"><a href="/team/{{match.secondteam.pk}}/">{{ match.secondteam }}</a></td>
     	<td data-order="{{ match.goal_difference}}">{{ match.firstteam_goals}}:{{ match.secondteam_goals}}</td>
     	<td>{{ match.goal_difference}}</td>
 {% empty %}

@@ -12,11 +12,11 @@
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-hover" >
 		<tr>
-			<th>Teams</th>
+			<th>Teams:</th>
 	    	<td>
 		    	<ul>
 		    		{% for team in object.teams %}
-		    			<li><a href='/team/{{team.id}}/'>{{ team.name }} ({{team.team_rating_as_int}})</a></li>
+		    			<li><a href='/team/{{team.id}}/'>{{ team }}</a></li>
 		    		{%endfor%}
 		    	</ul>
 	    	</td>
@@ -28,7 +28,7 @@
 		    		{% for match in object.get_win_draw_lose.0 %}
 		    			<li>
 		    			<a href="/match/{{match.pk}}/">
-		    			#{{ match.pk }}: {{match.firstteam.name}} vs. {{match.secondteam.name}} ({{match.firstteam_goals}}:{{match.secondteam_goals}})
+		    			#{{ match.pk }}: {{match.firstteam.name}} <strong>vs.</strong> {{match.secondteam.name}} <strong>({{match.firstteam_goals}}:{{match.secondteam_goals}})</strong>
 		    			</a>
 		    			</li>
 		    		{% endfor %}
@@ -42,7 +42,7 @@
 		    		{% for match in object.get_win_draw_lose.1 %}
 		    			<li>
 		    			<a href="/match/{{match.pk}}/">
-		    			#{{ match.pk }}: {{match.firstteam.name}} vs. {{match.secondteam.name}} ({{match.firstteam_goals}}:{{match.secondteam_goals}})
+		    			#{{ match.pk }}: {{match.firstteam.name}} <strong>vs.</strong> {{match.secondteam.name}} <strong>({{match.firstteam_goals}}:{{match.secondteam_goals}})</strong>
 		    			</a>
 		    			</li>
 		    		{% endfor %}
@@ -56,7 +56,7 @@
 		    		{% for match in object.get_win_draw_lose.2 %}
 		    			<li>
 		    			<a href="/match/{{match.pk}}/">
-		    			#{{ match.pk }}: {{match.firstteam.name}} vs. {{match.secondteam.name}} ({{match.firstteam_goals}}:{{match.secondteam_goals}})
+		    			#{{ match.pk }}: {{match.firstteam.name}} <strong>vs.</strong> {{match.secondteam.name}} <strong>({{match.firstteam_goals}}:{{match.secondteam_goals}})</strong>
 		    			</a>
 		    			</li>
 		    		{% endfor %}
@@ -72,7 +72,7 @@
 		    		{% for match in object.get_close_win_lose.0 %}
 		    			<li>
 		    			<a href="/match/{{match.pk}}/">
-		    			#{{ match.pk }}: {{match.firstteam.name}} vs. {{match.secondteam.name}} ({{match.firstteam_goals}}:{{match.secondteam_goals}})
+		    			#{{ match.pk }}: {{match.firstteam.name}} <strong>vs.</strong> {{match.secondteam.name}} <strong>({{match.firstteam_goals}}:{{match.secondteam_goals}})</strong>
 		    			</a>
 		    			</li>
 		    		{% endfor %}
@@ -86,7 +86,7 @@
 		    		{% for match in object.get_close_win_lose.1 %}
 		    			<li>
 		    			<a href="/match/{{match.pk}}/">
-		    			#{{ match.pk }}: {{match.firstteam.name}} vs. {{match.secondteam.name}} ({{match.firstteam_goals}}:{{match.secondteam_goals}})
+		    			#{{ match.pk }}: {{match.firstteam.name}} <strong>vs.</strong> {{match.secondteam.name}} <strong>({{match.firstteam_goals}}:{{match.secondteam_goals}})</strong>
 		    			</a>
 		    			</li>
 		    		{% endfor %}

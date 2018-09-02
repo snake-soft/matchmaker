@@ -29,17 +29,12 @@ class Team(models.Model):
 
     @property
     def is_player_team(self):
-        if len(self.players.all()) is 1:
-            if self.players.all()[0].nick == self.teamname:
-                return True
-            else:
-                return self.players.all()[0].nick
-        else:
-            return False
+        return len(self.players.all()) is 1
 
     @property
     def name(self):
-        name = self.get_team_name_or_members()
+        #name = self.get_team_name_or_members()
+        name = self.teamname
         return name if name else False
 
     @property
@@ -71,10 +66,25 @@ class Team(models.Model):
         return int(self.team_rating + 0.5)
 
     def get_team_name_or_members(self):
-        if self.teamname:
+        if self.is_player_team:
             return self.teamname
         else:
-            return '<%s>' % (', '.join([x.nick for x in self.players.all()]))
+            return '%s <%s>' % (
+                self.teamname,
+                ', '.join([x.nick for x in self.players.all()])
+                )
+        
+        #=======================================================================
+        # if self.teamname:
+        #     if len(self.players.all()) > 1 or :
+        #         return '%s <%s>' % (
+        #             self.teamname,
+        #             ', '.join([x.nick for x in self.players.all()])
+        #             )
+        #     return self.teamname
+        # else:
+        #     return '<%s>' % (', '.join([x.nick for x in self.players.all()]))
+        #=======================================================================
 
     def get_win_draw_lose(self):
         win, draw, lose = [], [], []
@@ -213,4 +223,4 @@ class Team(models.Model):
         # =====================================================================
 
     def __str__(self):
-        return self.get_team_name_or_members()
+        return '%s (%s)' % (self.get_team_name_or_members(), self.team_rating_as_int)

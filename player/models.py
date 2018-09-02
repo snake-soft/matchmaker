@@ -61,7 +61,7 @@ class Player(models.Model):
             team.players.add(self)
 
     def __str__(self):
-        return str("%s (Player Rating: %s)" % (
+        return str("%s (%s)" % (
             self.nick,
             self.player_rating(as_int=True)
             ))
