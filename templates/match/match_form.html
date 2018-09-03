@@ -51,7 +51,11 @@ $(document).ready(function() {
 		var x = $('#id_firstteam').find(":selected").val()
 		$('#id_firstteam').val($('#id_secondteam').find(":selected").val());
 		$('#id_secondteam').val(x);
-		loadLadderRealtime();
+
+		x = $('#id_firstteam_goals').val()
+		$('#id_firstteam_goals').val($('#id_secondteam_goals').val());
+		$('#id_secondteam_goals').val(x);
+		loadMatchRealtime();
 	});
 });
 
