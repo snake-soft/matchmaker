@@ -25,7 +25,7 @@ class Player(models.Model):
     def new_result(self, goal_diff, enemy):
         elo = Elo(self.rating)
         self.rating = elo.new_result(enemy.team_rating, goal_diff)
-        self.save(self.owner)
+        self.save()
 
     @property
     def rating_as_int(self):
@@ -56,17 +56,6 @@ class Player(models.Model):
 
     def save(self, *args, **kwargs):
         new = False if self.pk else True
-        if new:
-            if len(__class__.objects.filter(
-                nick__iexact=self.nick,
-                owner=self.owner
-                    )):
-                raise ValueError("Player %s exists already." % (self.nick))
-            if len(Team.objects.filter(
-                teamname__iexact=self.nick,
-                owner=self.owner
-                    )):
-                raise ValueError("Team %s exists already." % (self.nick))
         super().save(*args, **kwargs)
         if new:
             team = Team.objects.create(

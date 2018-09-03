@@ -11,6 +11,7 @@ class MatchmakerView(LoginRequiredMixin, View):
 
     def get(self, request):
         self.context = {}
+        form = MatchmakerForm(request)
         if 'players' and 'count' in request.GET:
             request.session['last_players'] = request.GET.getlist('players')
             request.session['last_count'] = request.GET.get('count')
@@ -20,8 +21,10 @@ class MatchmakerView(LoginRequiredMixin, View):
                 players, int(request.GET.get('count'))
                 ).get_constellations()
             x = self.context['constellations']
-
-        self.context["matchmaker_form"] = MatchmakerForm(request)
+            if len(request.GET.getlist('players')) < int(request.GET.get(
+                                                                    'count')):
+                form.errors['error'] = 'Choose more players !'
+        self.context["matchmaker_form"] = form
         return render(
             request,
             template_name="matchmaker/matchmaker_form.html",

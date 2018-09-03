@@ -49,7 +49,7 @@ nav form > *{
 	margin: 0 5px;
 }
 
-#id_nick, #id_teamname{
+#id_nick, #id_teamname, #id_username, #id_password, #id_password1, #id_password2{
 	width: 100%;
 }
 

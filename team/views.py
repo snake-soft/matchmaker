@@ -274,15 +274,25 @@ class TeamCreate(LoginRequiredMixin, CreateView):
                 int(x) for x in self.request.GET['players'].split(',')]
         return initial
 
-    def post(self, request):
+    def form_valid(self, form, *args, **kwargs):
+        teamname = form.cleaned_data['teamname']
+        owner = self.request.user
+        form.instance.owner = owner
         existing_team = self.model.players_have_team(
-            [Player.objects.get(pk=int(x))  # , owner=request.user)
-             for x in request.POST.getlist('players')]
+            [Player.objects.get(pk=int(x), owner=owner)
+             for x in self.request.POST.getlist('players')]
             )
-        import pdb; pdb.set_trace()  # <---------
+        teamname_exists = Team.objects.filter(
+            teamname__iexact=teamname,
+            owner=owner
+            )
         if existing_team:
-            raise ValueError(
-                "Team already esists with name %s" % (existing_team)
-                )
+            form.errors['error'] = \
+                str(existing_team) + ' constellation already exists'
+            return super().form_invalid(form, *args, **kwargs)
+        elif teamname_exists:
+            form.errors['error'] = \
+                str(teamname_exists[0]) + ' team already exists'
+            return super().form_invalid(form, *args, **kwargs)
         else:
-            return super().post(request)
+            return super().form_valid(form, *args, **kwargs)

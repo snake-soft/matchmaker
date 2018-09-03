@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from datetime import datetime, timedelta
 
 from .models import Match
-from player.models import Player
+from .forms import MatchCreateForm
 
 
 class MatchList(LoginRequiredMixin, ListView):
@@ -16,7 +16,8 @@ class MatchList(LoginRequiredMixin, ListView):
             frm = '2000-01-01'
 
         if 'to' in self.request.session:
-            to = datetime.strptime(self.request.session['to'], '%Y-%m-%d').date()
+            to = datetime.strptime(
+                self.request.session['to'], '%Y-%m-%d').date()
             to += timedelta(days=1)
             to = to.strftime('%Y-%m-%d')
         else:
@@ -24,7 +25,7 @@ class MatchList(LoginRequiredMixin, ListView):
         return Match.objects.filter(
             date_time__range=[frm, to],
             owner=self.request.user
-            )
+        )
 
 
 class MatchDetails(LoginRequiredMixin, DetailView):
@@ -36,15 +37,12 @@ class MatchDetails(LoginRequiredMixin, DetailView):
 
 class MatchCreate(LoginRequiredMixin, CreateView):
     model = Match
-    fields = ['firstteam', 'secondteam', 'firstteam_goals', 'secondteam_goals']
+    form_class = MatchCreateForm
 
-    def get(self, *args, **kwargs):
-        response = super().get(*args, **kwargs)
-        response.context_data['form'].fields['firstteam'].queryset = \
-            Player.objects.filter(owner=self.request.user)
-        response.context_data['form'].fields['secondteam'].queryset = \
-            Player.objects.filter(owner=self.request.user)
-        return response
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['owner'] = self.request.user
+        return kwargs
 
     def get_initial(self):
         self.success_url = self.request.path
@@ -63,9 +61,21 @@ class MatchCreate(LoginRequiredMixin, CreateView):
             initial['secondteam'] = int(self.request.GET['secondteam'])
         return initial
 
-    def post(self, request):
-        request.session['last_firstteam'] = int(request.POST['firstteam'])
-        request.session['last_secondteam'] = int(request.POST['secondteam'])
-        response = super().post(request)
-        import pdb; pdb.set_trace()  # <---------
-        return response
+    def form_valid(self, form, *args, **kwargs):
+        owner = self.request.user
+        form.instance.owner = owner
+        if form.cleaned_data['firstteam_goals'] \
+                == 0 and form.cleaned_data['secondteam_goals'] == 0:
+            form.errors['error'] = 'Score cannot be 0:0'
+            return super().form_invalid(form, *args, **kwargs)
+
+        if form.cleaned_data['firstteam'] == form.cleaned_data['secondteam']:
+            form.errors['error'] = 'Choose different teams!'
+            return super().form_invalid(form, *args, **kwargs)
+
+        else:
+            self.request.session['last_firstteam'] = \
+                int(self.request.POST['firstteam'])
+            self.request.session['last_secondteam'] = \
+                int(self.request.POST['secondteam'])
+            return super().form_valid(form, *args, **kwargs)

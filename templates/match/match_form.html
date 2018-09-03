@@ -66,9 +66,15 @@ $(document).ready(function() {
 {% load humanize %}
 <div class="container">
 <form id="new-match-form" method="post">{% csrf_token %}
-	<div class="alert alert-success" role="alert">
+{% if form.errors %}
+  		<div class="alert alert-danger" role="alert">
+  			{{ form.errors.error }}
+	</div>
+{% else %}
+  		<div class="alert alert-success" role="alert">
 		Don't forget to save when the game is finished.
 	</div>
+{% endif %}
 <table id="match-form" class="table table-bordered table-hover">
    	<tr>
 		<td>{{ form.firstteam }}</td>

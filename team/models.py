@@ -206,12 +206,9 @@ class Team(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        # Problem: Cannot access unsaved m2m need modelform
-        # =====================================================================
-        # if __class__.players_have_team(self.players):
-        #     self.delete()
-        #     raise ValidationError("This team already exists")
-        # =====================================================================
 
     def __str__(self):
-        return '%s (%s)' % (self.get_team_name_or_members(), self.team_rating_as_int)
+        return '%s (%s)' % (
+            self.get_team_name_or_members(),
+            self.team_rating_as_int
+            )

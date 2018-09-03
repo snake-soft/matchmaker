@@ -18,7 +18,9 @@ class MatchmakerForm(forms.Form):
             if 'last_players' in request.session else ''
 
         self.fields['players'] = forms.MultipleChoiceField(
-            choices=choices, widget=forms.CheckboxSelectMultiple, initial=initial
+            choices=choices,
+            widget=forms.CheckboxSelectMultiple,
+            initial=initial,
             )
         initial = int(request.session['last_count']) \
             if 'last_count' in request.session else 2
@@ -34,13 +36,3 @@ class MatchmakerForm(forms.Form):
             widget=forms.RadioSelect(attrs={}),
             initial=initial,
             )
-
-    #===========================================================================
-    # def clean(self):
-    #     data = self.cleaned_data
-    #     if "players" not in data or len(data["players"]) <= 1:
-    #         self._errors["players"] = ["At least 2 Players are needed"]
-    #     elif len(data["players"]) < data["count"]:
-    #         self._errors["players"] = ["Check Count"]
-    #     return self.cleaned_data
-    #===========================================================================
