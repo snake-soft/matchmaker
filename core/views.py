@@ -1,14 +1,15 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, HttpResponseRedirect
 from django.views import View
 from datetime import datetime
 
 
-class StartView(View):
+class StartView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, template_name="start.html")
 
 
-class DateSetView(View):  # Form Validation MISSING!!!
+class DateSetView(LoginRequiredMixin, View):  # Form Validation MISSING!!!
     def post(self, request):
         frm = datetime.strptime(request.POST['from'], '%Y-%m-%d').date()
         request.session['from'] = frm.strftime('%Y-%m-%d')

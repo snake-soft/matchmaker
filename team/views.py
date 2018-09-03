@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse
 
@@ -6,11 +7,11 @@ from player.models import Player, Elo
 from .forms import TeamCreateForm
 
 
-class TeamList(ListView):
+class TeamList(LoginRequiredMixin, ListView):
     model = Team
 
 
-class TeamListRealtime(ListView):
+class TeamListRealtime(LoginRequiredMixin, ListView):
     model = Team
     template_name = 'team/team_list_realtime.html'
 
@@ -241,11 +242,11 @@ class TeamListRealtime(ListView):
             return self.elo_as_int - int(self.player.rating + 0.5)
 
 
-class TeamDetails(DetailView):
+class TeamDetails(LoginRequiredMixin, DetailView):
     model = Team
 
 
-class TeamCreate(CreateView):
+class TeamCreate(LoginRequiredMixin, CreateView):
     model = Team
     form_class = TeamCreateForm
 

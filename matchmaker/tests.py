@@ -62,6 +62,7 @@ class MatchmakerViewTestCase(TestCase):
     def test_post(self):
         post_data = {'last_players': [1, 2], 'count': 2}
         response = self.client.post(reverse('matchmaker'), post_data)
+        import pdb; pdb.set_trace()  # <---------import pdb; pdb.set_trace()  # <---------
 
 
 class AppsTestCase(TestCase):

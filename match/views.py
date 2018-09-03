@@ -1,10 +1,11 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView
 from datetime import datetime, timedelta
 
 from .models import Match
 
 
-class MatchList(ListView):
+class MatchList(LoginRequiredMixin, ListView):
     model = Match
 
     def get_queryset(self):
@@ -22,11 +23,11 @@ class MatchList(ListView):
         return Match.objects.filter(date_time__range=[frm, to])
 
 
-class MatchDetails(DetailView):
+class MatchDetails(LoginRequiredMixin, DetailView):
     model = Match
 
 
-class MatchCreate(CreateView):
+class MatchCreate(LoginRequiredMixin, CreateView):
     model = Match
     fields = ['firstteam', 'secondteam', 'firstteam_goals', 'secondteam_goals']
 
