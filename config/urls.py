@@ -21,18 +21,32 @@ from core.views import DateSetView
 from match.views import MatchList, MatchDetails, MatchCreate
 from matchmaker.views import MatchmakerView
 from core.views import StartView
+from account.views import SignUpView
+from django.contrib.auth.views import LoginView, LogoutView
+# from django.contrib.auth import urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('signup/', SignUpView.as_view(
+        template_name='account/signup.html',
+        ), name='signup'),
 
-    path('', StartView.as_view(), name="start"),
+    path('login/', LoginView.as_view(
+        template_name='account/login.html',
+         ), name='login'),
+
+    path('logout/', LogoutView.as_view(
+        template_name='account/logout.html',
+        ), name='logout'),
+
+
+    path('', StartView.as_view(), name="home"),
     path('set/date/', DateSetView.as_view(), name="set-date"),
     path('matchmaker/', MatchmakerView.as_view(), name="matchmaker"),
 
     path('player/', PlayerList.as_view(), name='player-list'),
     path('player/<pk>/', PlayerDetails.as_view(), name="player-details"),
     path('new/player/', PlayerCreate.as_view(), name="player-new"),
-    #new/player
 
     path('team/', TeamList.as_view(), name="team-list"),
     path('ladder/', TeamList.as_view(), name="ladder"),
@@ -43,5 +57,4 @@ urlpatterns = [
     path('match/', MatchList.as_view(), name="match-list"),
     path('match/<pk>/', MatchDetails.as_view(), name="match-details"),
     path('new/match/', MatchCreate.as_view(), name="match-new"),
-    #new/match
 ]

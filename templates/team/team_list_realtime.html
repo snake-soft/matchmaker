@@ -35,17 +35,17 @@ function loadDataTables(){
 		<td data-order="{{ team.team_rating_as_int }}">
 			<strong>
 			{% if team.name %}
-				<a href='/team/{{ team.id }}/'>
+				<a href="{% url 'team-details' team.pk %}">
 			{{ team.name }}
 			{% else %}
-				<a href='/new/team/?players={{constellation.team1.player_ids|join:","}}&next={{request.path}}' type="button" class="btn btn-warning">Create Team
+				<a href="{% url 'team-new' team.pk %}?players={{constellation.team1.player_ids|join:','}}&next={{request.path}}" type="button" class="btn btn-warning">Create Team
 			{% endif %}
 			({{ team.team_rating_as_int }}{% if team.id in team_realtime.keys %}<i>{{ team_realtime|dict_get:team.id|attrib_get:'strength_diff'|signed}}={{ team_realtime|dict_get:team.id|attrib_get:'strength'}}</i>{% endif%})</a></strong>
 		
 			{% if not team.is_player_team or not team.name %}
 			<ul>
 			{% for player in team.players.all %}
-				<li><a href="/player/{{player.pk}}/">{{player.nick}} ({{player.rating_as_int}}{% if player.pk in player_realtime.keys %}<i>{{ player_realtime|dict_get:player.pk|attrib_get:'elo_diff'|signed}}={{ player_realtime|dict_get:player.pk|attrib_get:'elo_as_int'}}</i>{% endif%})</a></li>
+				<li><a href="{% url 'player-details' player.pk %}">{{player.nick}} ({{player.rating_as_int}}{% if player.pk in player_realtime.keys %}<i>{{ player_realtime|dict_get:player.pk|attrib_get:'elo_diff'|signed}}={{ player_realtime|dict_get:player.pk|attrib_get:'elo_as_int'}}</i>{% endif%})</a></li>
 			{% endfor %}
 			</ul>
 			{% endif %}

@@ -16,7 +16,8 @@ __all__ = ['BASE_DIR', 'INSTALLED_APPS', 'MIDDLEWARE', 'ROOT_URLCONF',
            'TEMPLATES', 'WSGI_APPLICATION', 'DATABASES',
            'AUTH_PASSWORD_VALIDATORS', 'LANGUAGE_CODE', 'TIME_ZONE',
            'USE_I18N', 'USE_L10N', 'USE_TZ', 'STATIC_URL', 'STATIC_ROOT',
-           'STATICFILES_DIRS']
+           'STATICFILES_DIRS', 'LOGIN_URL', 'LOGIN_REDIRECT_URL',
+           'LOGOUT_REDIRECT_URL']
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'account',
     'core',
     'player',
     'team',
@@ -120,9 +122,12 @@ USE_L10N = True
 USE_TZ = False  # True
 
 
+LOGIN_URL='/login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = LOGIN_URL
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 

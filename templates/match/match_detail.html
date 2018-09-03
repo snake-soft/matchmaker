@@ -42,19 +42,19 @@ function loadDataTables(){
 		</tr>
 	</thead>
     <tr>
-    	<th><a href="/match/{{object.pk}}">{{ object.pk }}</a></th>
+    	<th><a href="{% url 'match-details' object.pk %}">{{ object.pk }}</a></th>
     	<td>{{ object.date_time|naturaltime }}</td>
     	<td>
-    		<a href="/team/{{object.firstteam.pk}}/">{{object.firstteam.name}} ({{object.firstteam.team_rating_as_int}})</a>
+    		<a href="{% url 'team-details' object.firstteam.pk %}">{{object.firstteam.name}} ({{object.firstteam.team_rating_as_int}})</a>
     		<br /><br />Players:
-    		<ul>{% for player in object.firstteam.players.all %}<li><a href="/player/{{player.pk}}/">{{player.nick}}
+    		<ul>{% for player in object.firstteam.players.all %}<li><a href="{% url 'player-details' player.pk %}">{{player.nick}}
 				({{player.rating_as_int}}{% if player.pk in player_realtime.keys %}{{ player_realtime|dict_get:player.pk|attrib_get:'elo_diff'|signed}}={{ player_realtime|dict_get:player.pk|attrib_get:'elo_as_int'}}{% endif%})</a></li>
 	   	    {% endfor %}</ul>
     	</td>
     	<td>
-    		<a href="/team/{{object.secondteam.pk}}/">{{object.secondteam.name}} ({{object.secondteam.team_rating_as_int}})</a>
+    		<a href="{% url 'team-details' object.secondteam.pk %}">{{object.secondteam.name}} ({{object.secondteam.team_rating_as_int}})</a>
     		<br /><br />Players:
-    		<ul>{% for player in object.secondteam.players.all %}<li><a href="/player/{{player.pk}}/">{{player.nick}}
+    		<ul>{% for player in object.secondteam.players.all %}<li><a href="{% url 'player-details' player.pk %}">{{player.nick}}
 				({{player.rating_as_int}}{% if player.pk in player_realtime.keys %}{{ player_realtime|dict_get:player.pk|attrib_get:'elo_diff'|signed}}={{ player_realtime|dict_get:player.pk|attrib_get:'elo_as_int'}}{% endif%})</a></li>
 	   	    {% endfor %}</ul>
     	</td>
@@ -78,10 +78,10 @@ function loadDataTables(){
 	</thead>
 	{% for match in object.rematches %}
     <tr>
-    	<th><a href="/match/{{match.pk}}">{{ match.pk }}</a></th>
+    	<th><a href="{% url 'match-details' match.pk %}">{{ match.pk }}</a></th>
     	<td title="{{match.date_time}}">{{ match.date_time|naturaltime }}</td>
-    	<td title="{{match.firstteam}}"><a href="/team/{{match.firstteam.pk}}/">{{match.firstteam.name}}</a></td>
-    	<td title="{{match.secondteam}}"><a href="/team/{{match.secondteam.pk}}/">{{ match.secondteam.name }}</a></td>
+    	<td title="{{match.firstteam}}"><a href="{% url 'team-details' match.firstteam.pk %}">{{match.firstteam.name}}</a></td>
+    	<td title="{{match.secondteam}}"><a href="{% url 'team-details' match.firstteam.pk %}">{{ match.secondteam.name }}</a></td>
     	<td>{{ match.firstteam_goals}}:{{ match.secondteam_goals}}</td>
     	<td>{{ match.goal_difference}}</td>
 	</tr>

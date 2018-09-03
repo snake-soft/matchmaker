@@ -27,8 +27,8 @@
 </head>
 <body>
 <nav id="main-nav" style="margin-bottom: 20px;" class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="btn btn-outline-success navbar-brand" href="/matchmaker/">Matchmaker</a>
-  <a class="btn btn-outline-success navbar-brand" href="/new/match/">Match</a>
+  <a class="btn btn-outline-success navbar-brand" href="{% url 'matchmaker' %}">Matchmaker</a>
+  <a class="btn btn-outline-success navbar-brand" href="{% url 'match-new' %}">Match</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -36,11 +36,11 @@
     <ul class="navbar-nav mr-auto">
 
       <li class="nav-item">
-        <a class="nav-link" href="/ladder/">Ladder</a>
+        <a class="nav-link" href="{% url 'ladder' %}">Ladder</a>
       </li>
 
       <li class="nav-item <!--active-->">
-        <a class="nav-link" href="/match/">Matches<span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="{% url 'match-list' %}">Matches<span class="sr-only">(current)</span></a>
       </li>
 
 	<li class="nav-item dropdown">
@@ -48,16 +48,20 @@
 	          Create New
 	        </a>
 	        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-	          <a class="dropdown-item" href="/new/team/">Team</a>
-	          <a class="dropdown-item" href="/new/player/">Player</a>
+	          <a class="dropdown-item" href="{% url 'team-new' %}">Team</a>
+	          <a class="dropdown-item" href="{% url 'player-new' %}">Player</a>
      </li>
       <li class="nav-item <!--active-->">
-        <a class="nav-link" href="/">Manual</a>
+        <a class="nav-link" href="{% url 'home' %}">Manual</a>
+      </li>
+
+      <li class="nav-item <!--active-->">
+        <a class="nav-link" href="{% url 'logout' %}">Log out</a>
       </li>
     </ul>
 
 
-    <form class="form-inline my-2 my-lg-0" method="post" action="/set/date/">{% csrf_token %}
+    <form class="form-inline my-2 my-lg-0" method="post" action="{% url 'set-date' %}">{% csrf_token %}
       <label for="id_from">From:{{time_range_form.from}}</label>
       <label for="id_to">To:{{time_range_form.to}}</label>
       <input type="hidden" name="next" value="{{ request.path }}">
