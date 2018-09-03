@@ -1,8 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
 class Match(models.Model):
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        default=User.objects.all()[0].pk,
+        )
     firstteam = models.ForeignKey(
         'team.Team',
         related_name='Team1',

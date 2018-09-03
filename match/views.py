@@ -3,6 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from datetime import datetime, timedelta
 
 from .models import Match
+from player.models import Player
 
 
 class MatchList(LoginRequiredMixin, ListView):
@@ -20,16 +21,30 @@ class MatchList(LoginRequiredMixin, ListView):
             to = to.strftime('%Y-%m-%d')
         else:
             to = '3000-01-01'
-        return Match.objects.filter(date_time__range=[frm, to])
+        return Match.objects.filter(
+            date_time__range=[frm, to],
+            owner=self.request.user
+            )
 
 
 class MatchDetails(LoginRequiredMixin, DetailView):
     model = Match
 
+    def get_queryset(self):
+        return Match.objects.filter(owner=self.request.user)
+
 
 class MatchCreate(LoginRequiredMixin, CreateView):
     model = Match
     fields = ['firstteam', 'secondteam', 'firstteam_goals', 'secondteam_goals']
+
+    def get(self, *args, **kwargs):
+        response = super().get(*args, **kwargs)
+        response.context_data['form'].fields['firstteam'].queryset = \
+            Player.objects.filter(owner=self.request.user)
+        response.context_data['form'].fields['secondteam'].queryset = \
+            Player.objects.filter(owner=self.request.user)
+        return response
 
     def get_initial(self):
         self.success_url = self.request.path
@@ -51,4 +66,6 @@ class MatchCreate(LoginRequiredMixin, CreateView):
     def post(self, request):
         request.session['last_firstteam'] = int(request.POST['firstteam'])
         request.session['last_secondteam'] = int(request.POST['secondteam'])
-        return super().post(request)
+        response = super().post(request)
+        import pdb; pdb.set_trace()  # <---------
+        return response

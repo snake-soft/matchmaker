@@ -7,7 +7,9 @@ class MatchmakerForm(forms.Form):
     def __init__(self, request, *args, **kwargs):
         super(__class__, self).__init__(*args, **kwargs)
         choices = sorted(
-            Player.objects.all(), key=lambda x: x.rating, reverse=True
+            Player.objects.filter(owner=request.user),
+            key=lambda x: x.rating,
+            reverse=True
             )
         choices = tuple((x.pk, "%s (%s)" % (x.nick, x.rating_as_int))
                         for x in (choices))

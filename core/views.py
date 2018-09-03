@@ -6,7 +6,7 @@ from datetime import datetime
 
 class StartView(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, template_name="start.html")
+        return render(request, template_name="home.html")
 
 
 class DateSetView(LoginRequiredMixin, View):  # Form Validation MISSING!!!

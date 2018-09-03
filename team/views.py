@@ -10,10 +10,16 @@ from .forms import TeamCreateForm
 class TeamList(LoginRequiredMixin, ListView):
     model = Team
 
+    def get_queryset(self):
+        return Team.objects.filter(owner=self.request.user)
+
 
 class TeamListRealtime(LoginRequiredMixin, ListView):
     model = Team
     template_name = 'team/team_list_realtime.html'
+
+    def get_queryset(self):
+        return Team.objects.filter(owner=self.request.user)
 
     def get_context_data(self, *args, **kwargs):
         context = super(__class__, self).get_context_data(*args, **kwargs)
@@ -245,17 +251,24 @@ class TeamListRealtime(LoginRequiredMixin, ListView):
 class TeamDetails(LoginRequiredMixin, DetailView):
     model = Team
 
+    def get_queryset(self):
+        return Team.objects.filter(owner=self.request.user)
+
 
 class TeamCreate(LoginRequiredMixin, CreateView):
     model = Team
     form_class = TeamCreateForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['owner'] = self.request.user
+        return kwargs
 
     def get_initial(self):
         self.success_url = self.request.GET['next']\
             if 'next' in self.request.GET else reverse('team-list')
         initial = super(CreateView, self).get_initial()
         initial = initial.copy()
-
         if 'players' in self.request.GET:
             initial['players'] = [
                 int(x) for x in self.request.GET['players'].split(',')]
@@ -263,9 +276,10 @@ class TeamCreate(LoginRequiredMixin, CreateView):
 
     def post(self, request):
         existing_team = self.model.players_have_team(
-            [Player.objects.get(pk=int(x))
+            [Player.objects.get(pk=int(x))  # , owner=request.user)
              for x in request.POST.getlist('players')]
             )
+        import pdb; pdb.set_trace()  # <---------
         if existing_team:
             raise ValueError(
                 "Team already esists with name %s" % (existing_team)

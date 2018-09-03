@@ -1,26 +1,30 @@
 from django.db import models
+from django.contrib.auth.models import User
 from datetime import date
 from django.db.models import Sum
-from django.db.models.signals import m2m_changed
 
 from match.models import Match
 
 
-# CHECK IF AN IDENTICAL TEAM EXISTS
 class Team(models.Model):
     """ Teams are Season-based
     -> every season there are new values
     -> values are calculated from the matches
     """
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        default=User.objects.all()[0].pk,
+        )
     teamname = models.CharField(
         max_length=50, verbose_name="Teamname",
         blank=True,
-        unique=True,
     )
     players = models.ManyToManyField('player.Player')
 
     frm = date(2000, 1, 1)
     to = date(3000, 1, 1)
+    logged_in_user = None
 
     @classmethod
     def set_from_to(cls, frm, to):
@@ -33,7 +37,6 @@ class Team(models.Model):
 
     @property
     def name(self):
-        #name = self.get_team_name_or_members()
         name = self.teamname
         return name if name else False
 
@@ -73,18 +76,6 @@ class Team(models.Model):
                 self.teamname,
                 ', '.join([x.nick for x in self.players.all()])
                 )
-        
-        #=======================================================================
-        # if self.teamname:
-        #     if len(self.players.all()) > 1 or :
-        #         return '%s <%s>' % (
-        #             self.teamname,
-        #             ', '.join([x.nick for x in self.players.all()])
-        #             )
-        #     return self.teamname
-        # else:
-        #     return '<%s>' % (', '.join([x.nick for x in self.players.all()]))
-        #=======================================================================
 
     def get_win_draw_lose(self):
         win, draw, lose = [], [], []

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 
 from team.models import Team
@@ -6,8 +7,13 @@ from team.models import Team
 
 class Player(models.Model):
     """ Player stats are long-term statistics that are not deleted """
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        default=User.objects.all()[0].pk,
+        )
     nick = models.CharField(
-        max_length=50, verbose_name="Nickname", unique=True
+        max_length=50, verbose_name="Nickname"
         )
 
     rating = models.FloatField(
@@ -19,7 +25,7 @@ class Player(models.Model):
     def new_result(self, goal_diff, enemy):
         elo = Elo(self.rating)
         self.rating = elo.new_result(enemy.team_rating, goal_diff)
-        self.save()
+        self.save(self.owner)
 
     @property
     def rating_as_int(self):
@@ -51,13 +57,22 @@ class Player(models.Model):
     def save(self, *args, **kwargs):
         new = False if self.pk else True
         if new:
-            if len(__class__.objects.filter(nick__iexact=self.nick)):
+            if len(__class__.objects.filter(
+                nick__iexact=self.nick,
+                owner=self.owner
+                    )):
                 raise ValueError("Player %s exists already." % (self.nick))
-            if len(Team.objects.filter(teamname__iexact=self.nick)):
+            if len(Team.objects.filter(
+                teamname__iexact=self.nick,
+                owner=self.owner
+                    )):
                 raise ValueError("Team %s exists already." % (self.nick))
         super().save(*args, **kwargs)
         if new:
-            team = Team.objects.create(teamname=self.nick)
+            team = Team.objects.create(
+                teamname=self.nick,
+                owner=self.owner,
+                )
             team.players.add(self)
 
     def __str__(self):
