@@ -15,6 +15,15 @@ class MatchViewsTestCase(TestCase):
         self.client = tb.client
         self.db = tb.db
 
+    def test_match_details(self):
+        response = self.client.get(
+            reverse('match-details', args=[Match.objects.all()[0].pk])
+        )
+        self.assertIs(response.status_code, 200)
+        self.assertTemplateUsed(response, 'match/match_detail.html')
+        self.assertIn(
+            str(Match.objects.all()[0].firstteam), response.rendered_content)
+
     def test_match_list(self):
         response = self.client.get(reverse('match-list'))
         self.assertEqual(response.status_code, 200)
@@ -26,30 +35,6 @@ class MatchViewsTestCase(TestCase):
         self.assertTemplateUsed(response, 'match/match_list.html')
 
     def test_match_create(self):
-        post_data = {
-            'firstteam': '1',
-            'secondteam': '2',
-            'firstteam_goals': '10',
-            'secondteam_goals': '5',
-        }
-        response = self.client.post(reverse('match-new'), post_data)
-
-        post_data = {
-            'firstteam': '1',
-            'secondteam': '2',
-            'firstteam_goals': '5',
-            'secondteam_goals': '10',
-        }
-        response = self.client.post(reverse('match-new'), post_data)
-
-        post_data = {
-            'firstteam': '1',
-            'secondteam': '2',
-            'firstteam_goals': '5',
-            'secondteam_goals': '5',
-        }
-        response = self.client.post(reverse('match-new'), post_data)
-
         get_data = {
             'firstteam': '1',
             'secondteam': '2',
@@ -58,6 +43,62 @@ class MatchViewsTestCase(TestCase):
         }
         response = self.client.get(reverse('match-new'), get_data)
         self.assertTemplateUsed(response, 'match/match_form.html')
+
+        post_data = {
+            'firstteam': '1',
+            'secondteam': '2',
+            'firstteam_goals': '10',
+            'secondteam_goals': '5',
+        }
+        response = self.client.post(reverse('match-new'), post_data)
+        self.assertRedirects(response, reverse('match-new'), 302)
+
+        post_data = {
+            'firstteam': '1',
+            'secondteam': '2',
+            'firstteam_goals': '5',
+            'secondteam_goals': '10',
+        }
+        response = self.client.post(reverse('match-new'), post_data)
+        self.assertRedirects(response, reverse('match-new'), 302)
+
+        post_data = {
+            'firstteam': '1',
+            'secondteam': '2',
+            'firstteam_goals': '5',
+            'secondteam_goals': '5',
+        }
+        response = self.client.post(reverse('match-new'), post_data)
+        self.assertRedirects(response, reverse('match-new'), 302)
+
+        post_data = {
+            'firstteam': '1',
+            'secondteam': '2',
+            'firstteam_goals': '0',
+            'secondteam_goals': '0',
+        }
+        response = self.client.post(reverse('match-new'), post_data)
+        self.assertTemplateUsed(response, 'match/match_form.html')
+        self.assertIn('error', response.context['form'].errors)
+
+        post_data = {
+            'firstteam': '1',
+            'secondteam': '1',
+            'firstteam_goals': '10',
+            'secondteam_goals': '5',
+        }
+        response = self.client.post(reverse('match-new'), post_data)
+        self.assertTemplateUsed(response, 'match/match_form.html')
+        self.assertIn('error', response.context['form'].errors)
+
+        post_data = {
+            'secondteam': '1',
+            'firstteam_goals': '10',
+            'secondteam_goals': '5',
+        }
+        response = self.client.post(reverse('match-new'), post_data)
+        self.assertTemplateUsed(response, 'match/match_form.html')
+        self.assertIn('firstteam', response.context['form'].errors)
 
 
 class DateSetViewTestCase(TestCase):

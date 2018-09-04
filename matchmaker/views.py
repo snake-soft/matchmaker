@@ -8,7 +8,6 @@ from player.models import Player
 
 
 class MatchmakerView(LoginRequiredMixin, View):
-
     def get(self, request):
         self.context = {}
         form = MatchmakerForm(request)
@@ -19,14 +18,14 @@ class MatchmakerView(LoginRequiredMixin, View):
                        for x in request.GET.getlist('players')]
             self.context['constellations'] = ConstellationFactory(
                 players, int(request.GET.get('count'))
-                ).get_constellations()
+            ).get_constellations()
             x = self.context['constellations']
-            if len(request.GET.getlist('players')) < int(request.GET.get(
-                                                                    'count')):
+            if len(request.GET.getlist('players')) \
+                    < int(request.GET.get('count')):
                 form.errors['error'] = 'Choose more players !'
         self.context["matchmaker_form"] = form
         return render(
             request,
             template_name="matchmaker/matchmaker_form.html",
             context=self.context,
-            )
+        )

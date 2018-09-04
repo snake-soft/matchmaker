@@ -1,10 +1,12 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.shortcuts import reverse
 from datetime import date
 
 from config.tests import TestBase
 from match.models import Match
 from . import apps
+from .views import TeamDetails, TeamCreate
+from .models import Team
 
 
 class TeamViewsTestCase(TestCase):
@@ -12,6 +14,25 @@ class TeamViewsTestCase(TestCase):
         tb = TestBase()
         self.client = tb.client
         self.db = tb.db
+
+    def test_team_details(self):
+        response = self.client.get(
+            reverse('team-details', args=[Team.objects.all()[0].pk])
+        )
+        self.assertIs(response.status_code, 200)
+        self.assertTemplateUsed(response, 'team/team_detail.html')
+        self.assertIn(
+            str(Team.objects.all()[0].teamname), response.rendered_content)
+
+    def test_team_list(self):
+        response = self.client.get(reverse('team-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'team/team_list.html')
+        post_data = {'from': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
+        response = self.client.post(reverse('set-date'), post_data)
+        response = self.client.get(reverse('team-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'team/team_list.html')
 
     def test_list_realtime(self):
         post_data = {'from': '2018-01-01', 'to': '2020-01-31', 'next': '/'}
@@ -39,14 +60,32 @@ class TeamViewsTestCase(TestCase):
     def test_team_create(self):
         post_data = {'from': '2018-01-01', 'to': '2020-01-31', 'next': '/'}
         response = self.client.post(reverse('set-date'), post_data)
+        self.assertIs(response.context, None)
         self.assertRedirects(response, post_data['next'], 302)
 
         post_data = {'teamname': 'CreatedTeam', 'players': ['1', '2']}
         response = self.client.post(reverse('team-new'), post_data)
+        self.assertIn('error', response.context['form'].errors)
         self.assertEqual(response.status_code, 200)
+
+        post_data = {'teamname': 'CreatedTeam', 'players': ['3', '2']}
+        response = self.client.post(reverse('team-new'), post_data)
+        self.assertIs(response.context, None)
+        self.assertEqual(response.status_code, 302)
 
         get_data = {'teamname': 'CreatedTeam', 'players': ['1', '2']}
         response = self.client.get(reverse('team-new'), get_data)
+        self.assertNotIn('error', response.context['form'].errors)
+        self.assertEqual(response.status_code, 200)
+
+        post_data = {'teamname': 'CreatedTeam', 'players': ['1', '2']}
+        response = self.client.post(reverse('team-new'), post_data)
+        self.assertIn('error', response.context['form'].errors)
+        self.assertEqual(response.status_code, 200)
+
+        post_data = {'teamname': 'CreatedTeam', 'players': ['3', '4']}
+        response = self.client.post(reverse('team-new'), post_data)
+        self.assertIn('error', response.context['form'].errors)
         self.assertEqual(response.status_code, 200)
 
 

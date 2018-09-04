@@ -26,12 +26,14 @@ class MatchmakerViewTestCase(TestCase):
         self.db = tb.db
 
     def test_get(self):
-        get_data = {
-            'players': [1, 2],
-            'count': 2,
-        }
+        get_data = {'players': [1, 2], 'count': 2, }
         response = self.client.get(reverse('matchmaker'), get_data)
         self.assertTemplateUsed(response, 'matchmaker/matchmaker_form.html')
+
+        get_data = {'players': [1, 2], 'count': 3, }
+        response = self.client.get(reverse('matchmaker'), get_data)
+        self.assertTemplateUsed(response, 'matchmaker/matchmaker_form.html')
+        self.assertIn('error', response.context['matchmaker_form'].errors)
 
     def test_post(self):
         post_data = {'last_players': [1, 2], 'count': 2}

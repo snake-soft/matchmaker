@@ -1,4 +1,4 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.shortcuts import reverse
 
 from config.tests import TestBase
@@ -14,12 +14,38 @@ class PlayerViewsTestCase(TestCase):
         self.client = tb.client
         self.db = tb.db
 
+    def test_player_details(self):
+        response = self.client.get(
+            reverse('player-details', args=[Player.objects.all()[0].pk])
+        )
+        self.assertIs(response.status_code, 200)
+        self.assertTemplateUsed(response, 'player/player_detail.html')
+        self.assertIn(
+            str(Player.objects.all()[0].nick), response.rendered_content)
+
+    def test_match_list(self):
+        response = self.client.get(reverse('player-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'player/player_list.html')
+        post_data = {'from': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
+        response = self.client.post(reverse('set-date'), post_data)
+        response = self.client.get(reverse('player-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'player/player_list.html')
+
     def test_player_create(self):
         post_data = {
             'nick': 'Hanswurst',
         }
         response = self.client.post(reverse('player-new'), post_data)
         self.assertRedirects(response, reverse('ladder'), 302)
+
+        post_data = {
+            'nick': 'Hanswurst',
+        }
+        response = self.client.post(reverse('player-new'), post_data)
+        self.assertIs(response.status_code, 200)
+        self.assertIn('error', response.context['form'].errors)
 
         response = self.client.get(reverse('player-new'))
         self.assertTemplateUsed(response, 'player/player_form.html')
