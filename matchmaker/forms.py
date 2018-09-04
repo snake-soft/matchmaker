@@ -13,10 +13,8 @@ class MatchmakerForm(forms.Form):
             )
         choices = tuple((x.pk, "%s (%s)" % (x.nick, x.rating_as_int))
                         for x in (choices))
-
         initial = request.session['last_players'] \
             if 'last_players' in request.session else ''
-
         self.fields['players'] = forms.MultipleChoiceField(
             choices=choices,
             widget=forms.CheckboxSelectMultiple,

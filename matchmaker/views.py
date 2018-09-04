@@ -10,10 +10,10 @@ from player.models import Player
 class MatchmakerView(LoginRequiredMixin, View):
     def get(self, request):
         self.context = {}
+        request.session['last_players'] = request.GET.getlist('players')
+        request.session['last_count'] = request.GET.get('count')
         form = MatchmakerForm(request)
         if 'players' and 'count' in request.GET:
-            request.session['last_players'] = request.GET.getlist('players')
-            request.session['last_count'] = request.GET.get('count')
             players = [Player.objects.get(pk=x, owner=request.user)
                        for x in request.GET.getlist('players')]
             self.context['constellations'] = ConstellationFactory(
