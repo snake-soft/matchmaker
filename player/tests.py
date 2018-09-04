@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.shortcuts import reverse
 
+from config.tests import TestBase
 from team.models import Team
 from match.models import Match
 from . import apps
@@ -8,14 +9,17 @@ from .models import Player, Elo
 
 
 class PlayerViewsTestCase(TestCase):
-    client = Client()
+    def setUp(self):
+        tb = TestBase()
+        self.client = tb.client
+        self.db = tb.db
 
     def test_player_create(self):
         post_data = {
             'nick': 'Hanswurst',
-            }
+        }
         response = self.client.post(reverse('player-new'), post_data)
-        self.assertRedirects(response, reverse('player-list'), 302)
+        self.assertRedirects(response, reverse('ladder'), 302)
 
         response = self.client.get(reverse('player-new'))
         self.assertTemplateUsed(response, 'player/player_form.html')
@@ -23,39 +27,15 @@ class PlayerViewsTestCase(TestCase):
 
 class PlayerModelTestCase(TestCase):
     def setUp(self):
-        self.frank = Player.objects.create(nick="Frank")
-        self.alex = Player.objects.create(nick="Alexandra")
-        self.sebi = Player.objects.create(nick="Sebastiano")
-        self.uenal = Player.objects.create(nick="Ünal")
-
-        self.devils = Team.objects.create(teamname="Devils")
-        self.devils.players.add(self.frank)
-        self.devils.players.add(self.sebi)
-
-        self.dimension = Team.objects.create(teamname="Dimension")
-        self.dimension.players.add(self.frank)
-        self.dimension.players.add(self.alex)
-
-        self.single_team = Team.objects.get(teamname="Frank")
-
-        self.match1 = Match.objects.create(
-            firstteam=Team.objects.get(teamname="Frank"),
-            secondteam=Team.objects.get(teamname="Alexandra"),
-            firstteam_goals=10,
-            secondteam_goals=5,
-            )
-        self.match2 = Match.objects.create(
-            firstteam=Team.objects.get(teamname="Frank"),
-            secondteam=Team.objects.get(teamname="Alexandra"),
-            firstteam_goals=5,
-            secondteam_goals=10,
-            )
+        tb = TestBase()
+        self.client = tb.client
+        self.db = tb.db
 
     def test_get_teams(self):
-        self.assertEqual(type(self.frank.teams()[0]), Team)
+        self.assertEqual(type(self.db.frank.teams()[0]), Team)
 
     def test_get_win_draw_lose(self):
-        wdl = self.frank.get_win_draw_lose()
+        wdl = self.db.frank.get_win_draw_lose()
         self.assertEqual(type(wdl[0][0]), Match)
         self.assertEqual(type(wdl[2][0]), Match)
 
@@ -66,7 +46,7 @@ class PlayerModelTestCase(TestCase):
             Player.objects.create(nick="Devils")
 
     def test_str(self):
-        self.assertEqual(type(str(self.frank)), str)
+        self.assertEqual(type(str(self.db.frank)), str)
 
     def test_elo(self):
         elo = Elo(1000)

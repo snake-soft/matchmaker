@@ -3,6 +3,7 @@ from django.test import TestCase
 from datetime import date
 from django.test.client import Client
 
+from config.tests import TestBase
 from . import context_processor, apps
 
 
@@ -18,13 +19,13 @@ class ContextProcessorTestCase(TestCase):
         self.assertEqual(
             type(context_processor.date_to_str(date(2000, 1, 1))),
             str
-            )
+        )
 
     def test_str_to_date(self):
         self.assertEqual(
             type(context_processor.str_to_date("2000-01-01")),
             date
-            )
+        )
 
     def test_default(self):
         response = self.client.get("/")
@@ -33,20 +34,26 @@ class ContextProcessorTestCase(TestCase):
         self.assertTrue(
             all([x in default_context.keys()
                  for x in ['time_range_form', 'from', 'to']])
-            )
+        )
 
 
 class StartViewTestCase(TestCase):
-    client = Client()
+    def setUp(self):
+        tb = TestBase()
+        self.client = tb.client
+        self.db = tb.db
 
     def test_get(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'start.html')
+        self.assertTemplateUsed(response, 'home.html')
 
 
 class DateSetViewTestCase(TestCase):
-    client = Client()
+    def setUp(self):
+        tb = TestBase()
+        self.client = tb.client
+        self.db = tb.db
 
     def test_post(self):
         post_data = {'from': '2018-01-01', 'to': '2018-01-31', 'next': '/'}

@@ -38,7 +38,7 @@ function loadDataTables(){
 				<a href="{% url 'team-details' team.pk %}">
 			{{ team.name }}
 			{% else %}
-				<a href="{% url 'team-new' team.pk %}?players={{constellation.team1.player_ids|join:','}}&next={{request.path}}" type="button" class="btn btn-warning">Create Team
+				<a href="{% url 'team-new' %}?players={{constellation.team1.player_ids|join:','}}&next={{request.path}}" type="button" class="btn btn-warning">Create Team
 			{% endif %}
 			({{ team.team_rating_as_int }}{% if team.id in team_realtime.keys %}<i>{{ team_realtime|dict_get:team.id|attrib_get:'strength_diff'|signed}}={{ team_realtime|dict_get:team.id|attrib_get:'strength'}}</i>{% endif%})</a></strong>
 		

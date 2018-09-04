@@ -11,16 +11,16 @@ class Player(models.Model):
         User,
         on_delete=models.CASCADE,
         default=User.objects.all()[0].pk,
-        )
+    )
     nick = models.CharField(
         max_length=50, verbose_name="Nickname"
-        )
+    )
 
     rating = models.FloatField(
         verbose_name="Player Rating",
         default=1000,
         validators=[MinValueValidator(0.0)],
-        )
+    )
 
     def new_result(self, goal_diff, enemy):
         elo = Elo(self.rating)
@@ -56,19 +56,32 @@ class Player(models.Model):
 
     def save(self, *args, **kwargs):
         new = False if self.pk else True
+        if new:
+            if len(__class__.objects.filter(
+                nick__iexact=self.nick,
+                owner=self.owner)
+            ):
+                raise ValueError("Player %s exists already." % (self.nick))
+
+            if len(Team.objects.filter(
+                teamname__iexact=self.nick,
+                owner=self.owner)
+            ):
+                raise ValueError("Team %s exists already." % (self.nick))
+
         super().save(*args, **kwargs)
         if new:
             team = Team.objects.create(
                 teamname=self.nick,
                 owner=self.owner,
-                )
+            )
             team.players.add(self)
 
     def __str__(self):
         return str("%s (%s)" % (
             self.nick,
             self.player_rating(as_int=True)
-            ))
+        ))
 
 
 class Elo:
@@ -78,6 +91,7 @@ class Elo:
     - Goal difference is considered
     - K value calculation simplified
     """
+
     def __init__(self, current_elo=1000):
         self.elo = current_elo
 
@@ -109,12 +123,12 @@ class Elo:
         :param A: Elo rating for player A
         :param B: Elo rating for player B
         """
-        if B-A < -400:
+        if B - A < -400:
             dif = -400
-        if B-A > 400:
+        if B - A > 400:
             dif = 400
         else:
-            dif = B-A
+            dif = B - A
         return 1 / (1 + 10 ** ((dif) / 400))
 
     @staticmethod
