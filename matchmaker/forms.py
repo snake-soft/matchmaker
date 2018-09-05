@@ -13,15 +13,10 @@ class MatchmakerForm(forms.Form):
             )
         choices = tuple((x.pk, "%s (%s)" % (x.nick, x.rating_as_int))
                         for x in (choices))
-        initial = request.session['last_players'] \
-            if len(request.session['last_players']) is True else ''
         self.fields['players'] = forms.MultipleChoiceField(
             choices=choices,
             widget=forms.CheckboxSelectMultiple,
-            initial=initial,
             )
-        initial = int(request.session['last_count']) \
-            if request.session['last_count'] else 2
         self.fields['count'] = forms.ChoiceField(
             label="Constellation",
             choices=[
@@ -32,5 +27,4 @@ class MatchmakerForm(forms.Form):
                 [6, '3 vs 3'],
                 ],
             widget=forms.RadioSelect(attrs={}),
-            initial=initial,
             )
