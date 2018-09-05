@@ -6,6 +6,15 @@
 	<div class="container">
 		<h2>Sign up</h2>
 		<form method="post">
+			{% if form.errors %}
+			<div class="alert alert-danger" role="alert">
+				{{ form.errors }}
+				</div>
+			{% else %}
+				<div class="alert alert-warning" role="alert">
+					This is only your login name. Your player name may be another.
+				</div>
+			{% endif %}
 			{% csrf_token %}
 			<table class="table table-striped table-bordered table-hover">
 				{{ form.as_table }}
