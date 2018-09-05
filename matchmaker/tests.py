@@ -30,6 +30,10 @@ class MatchmakerViewTestCase(TestCase):
         response = self.client.get(reverse('matchmaker'), get_data)
         self.assertTemplateUsed(response, 'matchmaker/matchmaker_form.html')
 
+        get_data = {}
+        response = self.client.get(reverse('matchmaker'), get_data)
+        self.assertTemplateUsed(response, 'matchmaker/matchmaker_form.html')
+
         get_data = {'players': [1, 2], 'count': 3, }
         response = self.client.get(reverse('matchmaker'), get_data)
         self.assertTemplateUsed(response, 'matchmaker/matchmaker_form.html')
