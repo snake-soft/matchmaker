@@ -17,9 +17,13 @@ class MatchmakerView(LoginRequiredMixin, View):
             request.session['last_count'] = request.GET.get('count')
 
         initial_count = int(request.session['last_count']) \
-            if request.session['last_count'] else 2
+            if 'last_count' in request.session \
+            and request.session['last_count'] \
+            else 2
         initial_players = request.session['last_players'] \
-            if len(request.session['last_players']) else ''
+            if 'last_players' in request.session \
+            and len(request.session['last_players']) \
+            else ''
 
         form = MatchmakerForm(request, initial={
             'count': initial_count,
