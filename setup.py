@@ -18,5 +18,5 @@ if not path.isfile(secrets_file):
         f.write("ALLOWED_HOSTS = ['localhost', '%s']%s" %
                 (allowed_host, linesep))
 
-        f.write("SECRET_KEY = %s%s" %
+        f.write("SECRET_KEY = '%s'%s" %
                 (get_random_string(50, chars), linesep))
