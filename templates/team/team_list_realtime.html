@@ -1,6 +1,5 @@
 {% load join_by_attr signed dict_get attrib_get list_get%}
 
-{% if object_list %}
 <script>
 function loadDataTables(){
     var t = $('#teams-realtime').DataTable( {
@@ -89,9 +88,18 @@ function loadDataTables(){
 		{% else %}
 		<td data-order="{{team.goal_factor}}">{{ team.goal_own }}:{{ team.goal_foreign }}</td>
 		{% endif%}
-		
+{% empty %}
+<tr>
+	<th></th>
+	<td>
+		<a href="{% url 'player-new' %}" class="btn btn-warning">Create players first</a>
+	</td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
 {% endfor %}
 </table>
-</div>
 <script>loadDataTables()</script>
-{% endif %}
+</div>

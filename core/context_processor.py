@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from calendar import monthrange
 
 from .forms import TimeRangeForm
@@ -22,7 +22,18 @@ def default(request):
                 date.today().month)[1]
             ))
     return {
-        'time_range_form': TimeRangeForm(request),
+        'time_range_form': TimeRangeForm(
+            initial={
+                'frm': request.session["from"],
+                'to': request.session['to'],
+                }
+            ),
         'from': str_to_date(request.session['from']),
         'to': str_to_date(request.session['to']),
-        }
+    }
+
+            #===================================================================
+            # to = datetime.strptime(
+            #     self.request.session['to'], '%Y-%m-%d').date()
+            # to += timedelta(days=1)
+            #===================================================================

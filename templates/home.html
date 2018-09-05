@@ -1,9 +1,170 @@
 {% extends 'base.html' %}
-	{% block title %}
-Start
-	{% endblock %}
+	{% block title %}Home{% endblock %}
 {% block var_link %}{% endblock %}
 
-{% block content %}
+{% block head %}
+<style>
+#donation-form{
+	border: none!important;
+	-webkit-box-shadow: none!important;
+	box-shadow: none!important;
+}
+</style>
+{% endblock %}
 
+{% block content %}
+<div class="table-responsive">
+<div class="accordion" id="accordionExample">
+{% if not request.user.is_authenticated %}
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseAnon" aria-expanded="{% if request.user.is_authenticated %}true{% else %}false{% endif %}" aria-controls="collapseOne">
+          <h4>Sign up or log in<h4>
+        </button>
+      </h5>
+    </div>
+    <div id="collapseAnon" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div class="card-body">
+      		<div class="row">
+				  <div class="col-sm-7">
+				      <div class="card-body">
+				        <h5 class="card-title">Sign up for free</h5>
+				        <p class="card-text">If you love to play tablesoccer with more than two people you really need to have an account here.</p>
+				        <p class="card-text">It's free (and open source). You don't need to use your real names.</p>
+				        <p class="card-text">This site contains a quick overview of the functions that will improve your tablesoccer experience.</p>
+				        <a href="{% url 'signup' %}" class="btn btn-primary">Sign up for free</a>
+				      </div>
+				  </div>
+				  <div class="col-sm-5">
+				      <div class="card-body">
+				        <h5 class="card-title">Log in</h5>
+				        <p class="card-text">If you're already registered...</p>
+				        <a href="{% url 'login' %}" class="btn btn-primary">Log in</a>
+				      </div>
+				  </div>
+			</div>
+      </div>
+    </div>
+  </div>
+{% else %}
+{% endif %}
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link{% if not request.user.is_authenticated %} collapsed{% endif %}" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="{% if request.user.is_authenticated %}true{% else %}false{% endif %}" aria-controls="collapseOne">
+          <h4>Getting started<h4>
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse{% if request.user.is_authenticated %} show{% endif %}" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div class="card-body">
+      		<div class="row">
+				  <div class="col-sm-4">
+				      <div class="card-body">
+				        <h5 class="card-title">Players</h5>
+				        <p class="card-text">For playing tablesoccer you need players.</p>
+				        <p class="card-text">When you create them, there will be a Team created with the same name. This team contains only this one player.</p>
+				        <a href="{% url 'player-new' %}" class="btn btn-primary">Create new player</a>
+				      </div>
+				  </div>
+				  <div class="col-sm-4">
+				      <div class="card-body">
+				        <h5 class="card-title">Teams</h5>
+				        <p class="card-text">Every player automatically gets a own single-player team with his name. You can manually create new multiplayer teams.</p>
+				        <p class="card-text">You can also start the <a href="{% url 'matchmaker' %}">matchmaker</a> and generate the teams when you want to start playing in a new constellation.</p>
+				        <a href="{% url 'team-new' %}" class="btn btn-primary">Create new team</a>
+				      </div>
+				  </div>
+				  <div class="col-sm-4">
+				      <div class="card-body">
+				        <h5 class="card-title">Matches</h5>
+				        <p class="card-text">Let the <a href="{% url 'matchmaker' %}">matchmaker</a> help you, choosing the teams/players with the most equal strength.</p>
+				        <p class="card-text">If you want to choose the teams directly, you can generate the Match directly.</p>
+				        <a href="{% url 'team-new' %}" class="btn btn-primary">Create Match</a>
+				      </div>
+				  </div>
+			</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          <h4>Strength</h4>
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+      <div class="card-body">
+        <p class="card-text">The strength is calculated player-based.
+        	Team strength is calculated out of the mean value of the team-players.
+        	You can find the score inside the brackets after the team or player.</p>
+        <p class="card-text">The calculation formula is mostly the <a href="https://en.wikipedia.org/wiki/Elo_rating_system">Elo rating system</a> originated in chess.
+        	The only change is that the goal difference is counted 50% and the win/draw/lose is the other 50% (Elo counts only win draw lose).</p>
+        <p class="card-text alert alert-success">Every goal counts to the strength!!!</p>
+        <p class="card-text">Strength is a fixed value that is not influenced by filtering the time range.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingThree">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          <h4>Score</h4>
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+      <div class="card-body">
+        <p class="card-text">The score (team and player) is calculated from the games between a date range. You can change the range in the menu.</p>
+        <p class="card-text">This value is used for creating time based rankings like the weekly office season <strong>:-)</strong></p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingForu">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseThree">
+          <h4>Some facts</h4>
+        </button>
+      </h5>
+    </div>
+    <div id="collapseFour" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+      <div class="card-body">
+        <p class="card-text">The Datefilter is from inclusive to inclusive date.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingFive">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseThree">
+          <h4>Open source</h4>
+        </button>
+      </h5>
+    </div>
+    <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
+      <div class="card-body">
+        <p class="card-text">This Software is completely free and open source</p>
+        <p class="card-text">You can find the source <a href="https://github.com/snake-soft/ranker" target="_blank">code at Github</a></p>
+        <p class="card-text">If you have a mistake or an idea for improvement, please do not keep it to yourself and open a 
+        	<a href="https://github.com/snake-soft/ranker/issues/new" target="_blank">issue at github</a> or directly send a pull request.</p>
+        <p class="card-text">Each kind of feedback is welcome!</p>
+        	
+        	<form id="donation-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+				<input type="hidden" name="cmd" value="_s-xclick">
+				<input type="hidden" name="hosted_button_id" value="K5E7URQTT3RZN">
+				<input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="Send a donation with PayPal.">
+				<img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
+			</form>
+						
+        	
+      </div>
+    </div>
+  </div>
+</div>
+</div>
 {% endblock %} 

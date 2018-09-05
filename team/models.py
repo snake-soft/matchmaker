@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import date
+from datetime import date, datetime, timedelta
 from django.db.models import Sum
 
 from match.models import Match
@@ -15,21 +15,30 @@ class Team(models.Model):
         User,
         on_delete=models.CASCADE,
         default=User.objects.all()[0].pk,
-        )
+    )
     teamname = models.CharField(
         max_length=50, verbose_name="Teamname",
         blank=True,
     )
     players = models.ManyToManyField('player.Player')
 
-    frm = date(2000, 1, 1)
-    to = date(3000, 1, 1)
-    logged_in_user = None
+    frm = datetime(2000, 1, 1).date()
+    to = datetime(3000, 1, 1).date()
 
     @classmethod
     def set_from_to(cls, frm, to):
-        cls.frm = frm
-        cls.to = to
+        def to_date(date_x):
+            """ date_x may be date, datetime or string object 
+            returns date object
+            """
+            return {
+                datetime: lambda: date_x.date(),
+                date: lambda: date_x,
+                str: lambda: datetime.strptime(date_x, '%Y-%m-%d').date(),
+                }.get(type(date_x))()
+
+        cls.frm = to_date(frm)
+        cls.to = to_date(to) + timedelta(days=1)
 
     @property
     def is_player_team(self):
@@ -75,7 +84,7 @@ class Team(models.Model):
             return '%s <%s>' % (
                 self.teamname,
                 ', '.join([x.nick for x in self.players.all()])
-                )
+            )
 
     def get_win_draw_lose(self):
         win, draw, lose = [], [], []
@@ -124,7 +133,7 @@ class Team(models.Model):
         for match in Match.objects.filter(
             firstteam=self,
             date_time__range=(self.frm, self.to)
-             ):
+        ):
             if match.goal_difference is 1:
                 close_win.append(match)
             elif match.goal_difference is -1:
@@ -133,7 +142,7 @@ class Team(models.Model):
         for match in Match.objects.filter(
             secondteam=self,
             date_time__range=(self.frm, self.to)
-             ):
+        ):
             if match.goal_difference is 1:
                 close_lose.append(match)
             elif match.goal_difference is -1:
@@ -159,25 +168,25 @@ class Team(models.Model):
         sum_ = Match.objects.filter(
             firstteam_id=self.pk,
             date_time__range=(self.frm, self.to)
-            ).aggregate(Sum('firstteam_goals'))['firstteam_goals__sum']
+        ).aggregate(Sum('firstteam_goals'))['firstteam_goals__sum']
         own += sum_ if sum_ else 0
 
         sum_ = Match.objects.filter(
             secondteam_id=self.pk,
             date_time__range=(self.frm, self.to)
-            ).aggregate(Sum('secondteam_goals'))['secondteam_goals__sum']
+        ).aggregate(Sum('secondteam_goals'))['secondteam_goals__sum']
         own += sum_ if sum_ else 0
 
         sum_ = Match.objects.filter(
             firstteam_id=self.pk,
             date_time__range=(self.frm, self.to)
-            ).aggregate(Sum('secondteam_goals'))['secondteam_goals__sum']
+        ).aggregate(Sum('secondteam_goals'))['secondteam_goals__sum']
         foreign += sum_ if sum_ else 0
 
         sum_ = Match.objects.filter(
             secondteam_id=self.pk,
             date_time__range=(self.frm, self.to)
-            ).aggregate(Sum('firstteam_goals'))['firstteam_goals__sum']
+        ).aggregate(Sum('firstteam_goals'))['firstteam_goals__sum']
 
         foreign += sum_ if sum_ else 0
         return own, foreign
@@ -200,7 +209,7 @@ class Team(models.Model):
     def players_have_team(cls, player_obj_lst):
         for team in cls.objects.all():
             if sorted(player_obj_lst, key=lambda x: x.pk) \
-             == sorted(team.players.all(), key=lambda x: x.pk):
+                    == sorted(team.players.all(), key=lambda x: x.pk):
                 return team
         # return None  # no more possible
 
@@ -211,4 +220,4 @@ class Team(models.Model):
         return '%s (%s)' % (
             self.get_team_name_or_members(),
             self.team_rating_as_int
-            )
+        )

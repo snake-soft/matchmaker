@@ -4,6 +4,7 @@
 {% block content %}
 {% load humanize %}
 <div class="container">
+{% if form.players|length > 1 %}
 	<form method="post">{% csrf_token %}
 		{% if form.errors %}
 	   		<div class="alert alert-danger" role="alert">
@@ -19,5 +20,10 @@
 	    </table>
 	    <input class="btn btn-primary btn-block" type="submit" value="Save" />
 	</form>
+{% else %}
+<div class="alert alert-danger" role="alert">
+	A Team needs at least 2 players. <a href="{% url 'player-new' %}" class="btn btn-warning">Create them first</a>
+</div>
+{% endif %}
 </div>
 {% endblock %} 

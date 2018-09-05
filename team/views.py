@@ -19,6 +19,7 @@ class TeamListRealtime(LoginRequiredMixin, ListView):
     template_name = 'team/team_list_realtime.html'
 
     def get_queryset(self):
+        Team.set_from_to(self.request.session['from'], self.request.session['to'])
         return Team.objects.filter(owner=self.request.user)
 
     def get_context_data(self, *args, **kwargs):

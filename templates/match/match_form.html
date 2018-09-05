@@ -66,15 +66,21 @@ $(document).ready(function() {
 {% load humanize %}
 <div class="container">
 <form id="new-match-form" method="post">{% csrf_token %}
-{% if form.errors %}
-  		<div class="alert alert-danger" role="alert">
-  			{{ form.errors.error }}
-	</div>
-{% else %}
-  		<div class="alert alert-success" role="alert">
-		Don't forget to save when the game is finished.
-	</div>
-{% endif %}
+	{% if form.fields.firstteam.choices|length > 2 %}
+		{% if form.errors %}
+		  		<div class="alert alert-danger" role="alert">
+		  			{{ form.errors.error }}
+			</div>
+		{% else %}
+		  		<div class="alert alert-success" role="alert">
+				Don't forget to save when the game is finished.
+			</div>
+		{% endif %}
+	{% else %}
+		<div class="alert alert-danger" role="alert">
+			A Match needs at least 2 teams/player-teams. <a href="{% url 'player-new' %}" class="btn btn-warning">Create them first</a>
+		</div>
+	{% endif %}
 <table id="match-form" class="table table-bordered table-hover">
    	<tr>
 		<td>{{ form.firstteam }}</td>
