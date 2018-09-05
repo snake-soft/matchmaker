@@ -57,7 +57,7 @@ class Player(models.Model):
     def save(self, *args, **kwargs):
         new = False if self.pk else True
         if new:
-            if len(__class__.objects.filter(
+            if len(Player.objects.filter(
                 nick__iexact=self.nick,
                 owner=self.owner)
             ):
@@ -100,10 +100,10 @@ class Elo:
         return self.new_elo(exp, goal_diff)
 
     def expected(self, enemy_elo):
-        return __class__._expected(self.elo, enemy_elo)
+        return Elo._expected(self.elo, enemy_elo)
 
     def new_elo(self, exp, goal_diff):
-        self.elo = __class__._new_elo(self.elo, exp, goal_diff)
+        self.elo = Elo._new_elo(self.elo, exp, goal_diff)
         return self.elo
 
     @staticmethod
@@ -143,7 +143,7 @@ class Elo:
 
         # Original k: default->20, elo>2400->10, less30matches->40, <18yo->40
         # Here k is mapped to the range of possible k-values (40-10)
-        k = __class__.mapper(old, 0, 2400, 40, 10)
+        k = Elo.mapper(old, 0, 2400, 40, 10)
         new_elo = old + k * (score - exp)
         return new_elo if new_elo >= 0 else 0
 

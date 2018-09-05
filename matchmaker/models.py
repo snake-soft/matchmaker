@@ -23,7 +23,8 @@ class ConstellationFactory:
             for t1 in combi1:
                 if t1 not in used:
                     for t2 in combi2:
-                        if t2 not in used and not any([x for x in t2 if x in t1]):
+                        if t2 not in used \
+                                and not any([x for x in t2 if x in t1]):
                             ret.append(Constellation(t1, t2))
                             used.append(t1)
             return ret

@@ -5,7 +5,6 @@ from datetime import date
 from config.tests import TestBase
 from match.models import Match
 from . import apps
-from .views import TeamDetails, TeamCreate
 from .models import Team
 
 

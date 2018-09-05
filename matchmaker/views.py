@@ -19,7 +19,6 @@ class MatchmakerView(LoginRequiredMixin, View):
             self.context['constellations'] = ConstellationFactory(
                 players, int(request.GET.get('count'))
             ).get_constellations()
-            x = self.context['constellations']
             if len(request.GET.getlist('players')) \
                     < int(request.GET.get('count')):
                 form.errors['error'] = 'Choose more players !'

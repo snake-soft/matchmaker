@@ -88,4 +88,3 @@ class TestBase:
 class WsgiTestCase(TestCase):
     def test_wsgi(self):
         from .wsgi import application
-        _ = application

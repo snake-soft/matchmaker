@@ -22,7 +22,7 @@ class TeamListRealtime(LoginRequiredMixin, ListView):
         return Team.objects.filter(owner=self.request.user)
 
     def get_context_data(self, *args, **kwargs):
-        context = super(__class__, self).get_context_data(*args, **kwargs)
+        context = super().get_context_data(*args, **kwargs)
         if 'firstteam' in self.request.GET and self.request.GET['firstteam']:
             context = self.init_teams(context)
         return context
@@ -267,7 +267,7 @@ class TeamCreate(LoginRequiredMixin, CreateView):
     def get_initial(self):
         self.success_url = self.request.GET['next']\
             if 'next' in self.request.GET else reverse('team-list')
-        initial = super(CreateView, self).get_initial()
+        initial = super().get_initial()
         initial = initial.copy()
         if 'players' in self.request.GET:
             initial['players'] = [

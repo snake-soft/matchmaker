@@ -37,7 +37,7 @@ class MatchmakerViewTestCase(TestCase):
 
     def test_post(self):
         post_data = {'last_players': [1, 2], 'count': 2}
-        _ = self.client.post(reverse('matchmaker'), post_data)
+        self.client.post(reverse('matchmaker'), post_data)
 
 
 class AppsTestCase(TestCase):

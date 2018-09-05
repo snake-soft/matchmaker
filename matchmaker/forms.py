@@ -5,7 +5,7 @@ from player.models import Player
 
 class MatchmakerForm(forms.Form):
     def __init__(self, request, *args, **kwargs):
-        super(__class__, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         choices = sorted(
             Player.objects.filter(owner=request.user),
             key=lambda x: x.rating,
