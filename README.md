@@ -7,7 +7,7 @@ There are two kinds of countings:
 
 # Deploy for development-server (can be used in lan)
 ```
-git clone https://github.com/snake-soft/ranker.git
+git clone https://github.com/snake-soft/matchmaker.git
 
 virtualenv -p python3 venv
 source venv/bin/activate
