@@ -6,7 +6,7 @@ There are two kinds of countings:
 - Team-based --> Score (Win=2, draw=1, lose=0)
 
 # Deploy for development-server (can be used in lan)
-'''
+```
 git clone https://github.com/snake-soft/ranker.git
 
 virtualenv -p python3 venv
@@ -18,6 +18,6 @@ pip install -r requirements.txt
 python setup.py
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
-'''
+```
 
 https://matchmaker.hennige-it.de/
