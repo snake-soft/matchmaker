@@ -67,9 +67,9 @@ class PlayerModelTestCase(TestCase):
 
     def test_save(self):
         with self.assertRaises(ValueError):
-            Player.objects.create(nick="Frank")
+            Player.objects.create(nick="Frank", owner=self.db.me)
         with self.assertRaises(ValueError):
-            Player.objects.create(nick="Devils")
+            Player.objects.create(nick="Devils", owner=self.db.me)
 
     def test_str(self):
         self.assertEqual(type(str(self.db.frank)), str)

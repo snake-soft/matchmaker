@@ -10,7 +10,6 @@ class Player(models.Model):
     owner = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        default=User.objects.all()[0].pk,
     )
     nick = models.CharField(
         max_length=50, verbose_name="Nickname"

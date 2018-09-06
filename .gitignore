@@ -10,3 +10,4 @@ __ pycache __
 /config/db.sqlite3
 /test.py
 /static_root/
+/db.sqlite3

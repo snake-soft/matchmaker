@@ -14,7 +14,6 @@ class Team(models.Model):
     owner = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        default=User.objects.all()[0].pk,
     )
     teamname = models.CharField(
         max_length=50, verbose_name="Teamname",

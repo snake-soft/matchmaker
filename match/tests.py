@@ -28,7 +28,7 @@ class MatchViewsTestCase(TestCase):
         response = self.client.get(reverse('match-list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'match/match_list.html')
-        post_data = {'from': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
+        post_data = {'frm': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
         response = self.client.post(reverse('set-date'), post_data)
         response = self.client.get(reverse('match-list'))
         self.assertEqual(response.status_code, 200)
