@@ -1,4 +1,4 @@
-# ranker
+# matchmaker
 Table Soccer ranking web-application
 
 There are two kinds of countings:
