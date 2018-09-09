@@ -1,9 +1,12 @@
+""" team forms """
 from django import forms
-from .models import Team
+
 from player.models import Player
+from .models import Team
 
 
 class TeamCreateForm(forms.ModelForm):
+    """ Team creation form """
 
     def __init__(self, *args, **kwargs):
         owner = kwargs.pop('owner')

@@ -1,9 +1,11 @@
+""" Match model """
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
 class Match(models.Model):
+    """ Match model """
     owner = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -47,6 +49,7 @@ class Match(models.Model):
 
     @property
     def rematches(self):
+        """ returns list of matches with same teams """
         ret = []
         ret += self.__class__.objects.filter(
             firstteam=self.firstteam).filter(secondteam=self.secondteam)
@@ -56,25 +59,26 @@ class Match(models.Model):
                 if x.pk is not self.pk]
 
     def new_result(self):
-        for x in self.firstteam.players.all():
-            x.new_result(
+        """ sets new result to players """
+        for player in self.firstteam.players.all():
+            player.new_result(
                 self.firstteam_goals - self.secondteam_goals,
                 self.secondteam
                 )
 
-        for x in self.secondteam.players.all():
-            x.new_result(
+        for player in self.secondteam.players.all():
+            player.new_result(
                 self.secondteam_goals - self.firstteam_goals,
                 self.secondteam
                 )
 
-    def save(self, *args, **kwargs):
-        if self.firstteam.id is self.secondteam.id:
+    def save(self, *args, **kwargs):  # pylint: disable=W0221
+        if self.firstteam.pk is self.secondteam.pk:
             raise ValidationError(
                 "%s can't play against itself" % (
-                    str(self.firstteam.id) + "",
+                    str(self.firstteam.pk) + "",
                     ),
-                params={'value': self.firstteam.id},
+                params={'value': self.firstteam.pk},
                 )
         else:
             self.new_result()

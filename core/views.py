@@ -1,3 +1,4 @@
+""" core views """
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, HttpResponseRedirect
 from django.views import View
@@ -6,12 +7,16 @@ from .forms import TimeRangeForm
 
 
 class StartView(View):
+    """ start view (home) """
     def get(self, request):
+        """ get view """
         return render(request, template_name="home.html")
 
 
-class DateSetView(LoginRequiredMixin, View):  # Form Validation MISSING!!!
+class DateSetView(LoginRequiredMixin, View):
+    """ date setter """
     def post(self, request):
+        """ post view """
         form = TimeRangeForm(request.POST)
         if form.is_valid()\
                 and form.cleaned_data['frm'] <= form.cleaned_data['to']:

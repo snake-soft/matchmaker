@@ -1,40 +1,47 @@
+""" views of team module """
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse
 
-from .models import Team
 from player.models import Player, Elo
+from .models import Team
 from .forms import TeamCreateForm
 
 
-class TeamList(LoginRequiredMixin, ListView):
+class TeamList(LoginRequiredMixin, ListView):\
+        # pylint: disable=too-many-ancestors
+    """ view all teams as list """
     model = Team
 
     def get_queryset(self):
         return Team.objects.filter(owner=self.request.user)
 
 
-class TeamListRealtime(LoginRequiredMixin, ListView):
+class TeamListRealtime(LoginRequiredMixin, ListView):\
+        # pylint: disable=too-many-ancestors
+    """ realtime list of all teams """
     model = Team
     template_name = 'team/team_list_realtime.html'
 
     def get_queryset(self):
-        Team.set_from_to(self.request.session['from'], self.request.session['to'])
+        Team.set_from_to(
+            self.request.session['from'], self.request.session['to'])
         return Team.objects.filter(owner=self.request.user)
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+    def get_context_data(self, **kwargs):  # pylint: disable=W0221
+        context = super().get_context_data(**kwargs)
         if 'firstteam' in self.request.GET and self.request.GET['firstteam']:
             context = self.init_teams(context)
         return context
 
     def init_teams(self, context):
+        """ initialize realtime teams and add to context """
         self.request.session['last_firstteam'] = int(
             self.request.GET['firstteam']
-            )
+        )
         self.request.session['last_secondteam'] = int(
             self.request.GET['secondteam']
-            )
+        )
         firstteam = Team.objects.get(pk=int(self.request.GET['firstteam']))
         secondteam = Team.objects.get(pk=int(self.request.GET['secondteam']))
 
@@ -46,7 +53,7 @@ class TeamListRealtime(LoginRequiredMixin, ListView):
                 int(self.request.GET['firstteam_goals'])
                 - int(self.request.GET['secondteam_goals'])
             )
-            context['player_realtime'][obj.pk] = obj
+            context['player_realtime'][obj.pk_] = obj
         for player in secondteam.players.all():  # BEFORE TEAM REALTIME!
             obj = self.PlayerRealtimeValues(
                 player,
@@ -54,50 +61,46 @@ class TeamListRealtime(LoginRequiredMixin, ListView):
                 int(self.request.GET['secondteam_goals'])
                 - int(self.request.GET['firstteam_goals'])
             )
-            context['player_realtime'][obj.pk] = obj
+            context['player_realtime'][obj.pk_] = obj
 
         context['team_realtime'] = {}
         obj = self.TeamRealtimeValues(
             self.request,
-            firstteam,
-            secondteam,
-            int(self.request.GET['firstteam_goals']),
-            int(self.request.GET['secondteam_goals']),
+            (firstteam, secondteam),
+            (int(self.request.GET['firstteam_goals']),
+             int(self.request.GET['secondteam_goals'])),
             context['player_realtime'],
         )
-        context['team_realtime'][obj.pk] = obj
+        context['team_realtime'][obj.own_team.pk] = obj
         obj = self.TeamRealtimeValues(
             self.request,
-            secondteam,
-            firstteam,
-            int(self.request.GET['secondteam_goals']),
-            int(self.request.GET['firstteam_goals']),
+            (secondteam, firstteam),
+            (int(self.request.GET['secondteam_goals']),
+             int(self.request.GET['firstteam_goals'])),
             context['player_realtime'],
         )
-        context['team_realtime'][obj.pk] = obj
+        context['team_realtime'][obj.own_team.pk] = obj
         return context
 
     class TeamRealtimeValues:
-        def __init__(self, request, own_team, enemy, own_goals, enemy_goals,
-                     player_rt):
-            self.request = request
-            self.own_team = own_team
+        """ class for realtime calculated values of teams """
+
+        def __init__(self, request, teams, goals, player_rt):
+            self.own_team, enemy = teams
+            self.own_goals, self.enemy_goals = goals
             self.own_team.set_from_to(
-                self.request.session['from'],
-                self.request.session['to']
-                )
-            self.pk = own_team.pk
-            self.enemy = enemy
-            self.enemy.set_from_to(
-                self.request.session['from'],
-                self.request.session['to']
-                )
-            self.own_goals = own_goals
-            self.enemy_goals = enemy_goals
+                request.session['from'],
+                request.session['to']
+            )
+            enemy.set_from_to(
+                request.session['from'],
+                request.session['to']
+            )
             self.player_realtimes = player_rt
 
         @property
         def team_score(self):
+            """ returns realtime score of own_team """
             score = self.own_team.team_score
             if self.own_goals > self.enemy_goals:
                 score += 2
@@ -107,11 +110,13 @@ class TeamListRealtime(LoginRequiredMixin, ListView):
 
         @property
         def team_score_diff(self):
+            """ returns difference between old and realtime score """
             return self.team_score - self.own_team.team_score
 
         @property
         def team_wdl(self):
-            wdl = self.own_team.get_win_draw_lose()
+            """ returns realtime values of ([win], [draw], [lose]) """
+            wdl = self.own_team.get_win_draw_lose
             if self.own_goals > self.enemy_goals:
                 wdl[0].append("Realtime")
             elif self.own_goals == self.enemy_goals:
@@ -122,44 +127,23 @@ class TeamListRealtime(LoginRequiredMixin, ListView):
 
         @property
         def team_wdl_diff(self):
+            """ returns realtime difference of (win, draw, lose) old vs new """
             wdl = self.team_wdl
-            wdl_orig = self.own_team.get_win_draw_lose()
-            return [
+            wdl_orig = self.own_team.get_win_draw_lose
+            return (
                 len(wdl[0]) - len(wdl_orig[0]),
                 len(wdl[1]) - len(wdl_orig[1]),
                 len(wdl[2]) - len(wdl_orig[2])
-            ]
-
-        @property
-        def team_win(self):
-            return self.team_wdl[0]
-
-        @property
-        def team_draw(self):
-            return self.team_wdl[1]
-
-        @property
-        def team_lose(self):
-            return self.team_wdl[2]
+            )
 
         @property
         def team_wdl_factor(self):
-            return len(self.team_win) - len(self.team_lose)
-
-        @property
-        def team_win_diff(self):
-            return self.team_wdl_diff[0]
-
-        @property
-        def team_draw_diff(self):
-            return self.team_wdl_diff[1]
-
-        @property
-        def team_lose_diff(self):
-            return self.team_wdl_diff[2]
+            """ len win - len lose (for sorting w:d:l) """
+            return len(self.team_wdl[0]) - len(self.team_wdl[2])
 
         @property
         def close_wl(self):
+            """ returns realtime ([close_win], [close_lose]) """
             close_wl = self.own_team.close_win_lose
             if self.own_goals - self.enemy_goals == 1:
                 close_wl[0].append("Realtime")
@@ -168,27 +152,13 @@ class TeamListRealtime(LoginRequiredMixin, ListView):
             return close_wl
 
         @property
-        def close_win(self):
-            return self.close_wl[0]
-
-        @property
-        def close_lose(self):
-            return self.close_wl[1]
-
-        @property
-        def close_win_diff(self):
-            return self.close_wl_diff[0]
-
-        @property
-        def close_lose_diff(self):
-            return self.close_wl_diff[1]
-
-        @property
         def close_wl_factor(self):
-            return len(self.close_win) - len(self.close_lose)
+            """ len close_win - len close_lose (for sorting close_win:lose) """
+            return len(self.close_wl[0]) - len(self.close_wl[1])
 
         @property
         def close_wl_diff(self):
+            """ returns difference of clos_win : close_lose """
             close_wl = self.close_wl
             close_wl_orig = self.own_team.close_win_lose
             return [
@@ -197,26 +167,22 @@ class TeamListRealtime(LoginRequiredMixin, ListView):
             ]
 
         @property
-        def goal_own_foreign(self):
+        def realtime_goal_own_foreign(self):
+            """ returns (own_goals_count : foreign_goals_count) """
             own, foreign = self.own_team.goal_own_foreign
             own += self.own_goals
             foreign += self.enemy_goals
             return own, foreign
 
         @property
-        def goal_own(self):
-            return self.goal_own_foreign[0]
-
-        @property
-        def goal_foreign(self):
-            return self.goal_own_foreign[1]
-
-        @property
         def goal_factor(self):
-            return self.goal_own - self.goal_foreign
+            """ own_goals vs enemy_goals """
+            return self.realtime_goal_own_foreign[0] \
+                - self.realtime_goal_own_foreign[1]
 
         @property
         def strength(self):
+            """ new realtime strength of team """
             tmp = []
             for player in self.own_team.players.all():
                 for player_rt in self.player_realtimes.values():
@@ -226,16 +192,18 @@ class TeamListRealtime(LoginRequiredMixin, ListView):
 
         @property
         def strength_diff(self):
+            """ difference of old vs realtime strength """
             return self.strength - int(self.own_team.team_rating + 0.5)
 
     class PlayerRealtimeValues:
+        """ class for realtime calculated values of players """
+
         def __init__(self, player, enemy_team, goal_diff):
             self.player = player
-            self.pk = player.pk
+            self.pk_ = player.pk
             self.enemy_team = enemy_team
             self.goal_diff = goal_diff
             self.elo = self._new_elo()
-            self.elo_as_int = int(self.elo + 0.5)
 
         def _new_elo(self):
             elo = Elo(self.player.rating)
@@ -246,17 +214,27 @@ class TeamListRealtime(LoginRequiredMixin, ListView):
 
         @property
         def elo_diff(self):
+            """ new realtime elo """
             return self.elo_as_int - int(self.player.rating + 0.5)
 
+        @property
+        def elo_as_int(self):
+            """ new realtime elo as int """
+            return int(self.elo + 0.5)
 
-class TeamDetails(LoginRequiredMixin, DetailView):
+
+class TeamDetails(LoginRequiredMixin, DetailView):\
+        # pylint: disable=too-many-ancestors
+    """ View details of one team """
     model = Team
 
     def get_queryset(self):
         return Team.objects.filter(owner=self.request.user)
 
 
-class TeamCreate(LoginRequiredMixin, CreateView):
+class TeamCreate(LoginRequiredMixin, CreateView):\
+        # pylint: disable=too-many-ancestors
+    """ view for creating new team """
     model = Team
     form_class = TeamCreateForm
 
@@ -275,25 +253,27 @@ class TeamCreate(LoginRequiredMixin, CreateView):
                 int(x) for x in self.request.GET['players'].split(',')]
         return initial
 
-    def form_valid(self, form, *args, **kwargs):
+    def form_valid(self, form):
+        valid = False
         teamname = form.cleaned_data['teamname']
         owner = self.request.user
         form.instance.owner = owner
         existing_team = self.model.players_have_team(
             [Player.objects.get(pk=int(x), owner=owner)
              for x in self.request.POST.getlist('players')]
-            )
+        )
         teamname_exists = Team.objects.filter(
             teamname__iexact=teamname,
             owner=owner
-            )
+        )
         if existing_team:
             form.errors['error'] = \
                 str(existing_team) + ' constellation already exists'
-            return super().form_invalid(form, *args, **kwargs)
         elif teamname_exists:
             form.errors['error'] = \
                 str(teamname_exists[0]) + ' team already exists'
-            return super().form_invalid(form, *args, **kwargs)
         else:
-            return super().form_valid(form, *args, **kwargs)
+            valid = True
+
+        return super().form_valid(form) if valid \
+            else super().form_invalid(form)

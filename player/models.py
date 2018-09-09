@@ -1,3 +1,4 @@
+""" model for player objects """
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
@@ -22,30 +23,36 @@ class Player(models.Model):
     )
 
     def new_result(self, goal_diff, enemy):
+        """ calculate new elo """
         elo = Elo(self.rating)
         self.rating = elo.new_result(enemy.team_rating, goal_diff)
         self.save()
 
     @property
     def rating_as_int(self):
+        """ return rating as int """
         return self.player_rating(as_int=True)
 
     def player_rating(self, as_int=False):
+        """ return player rating """
         return int(self.rating + 0.5) if as_int else self.rating
 
     def teams(self):
+        """ return teams of this player """
         return Team.objects.filter(players=self.pk)
 
     def get_win_draw_lose(self):
+        """ returns tuple of three lists ([win], [draw], [lose]) """
         win, draw, lose = [], [], []
         for team in self.teams():
-            team_results = team.get_win_draw_lose()
+            team_results = team.get_win_draw_lose
             win += team_results[0]
             draw += team_results[1]
             lose += team_results[2]
         return win, draw, lose
 
     def get_close_win_lose(self):
+        """ returns tuple of two lists ([close win], [close lose]) """
         win, lose = [], []
         for team in self.teams():
             team_results = team.close_win_lose
@@ -53,19 +60,14 @@ class Player(models.Model):
             lose += team_results[1]
         return win, lose
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # pylint: disable=W0221
         new = False if self.pk else True
         if new:
-            if len(Player.objects.filter(
-                nick__iexact=self.nick,
-                owner=self.owner)
-            ):
+            if Player.objects.filter(nick__iexact=self.nick, owner=self.owner):
                 raise ValueError("Player %s exists already." % (self.nick))
 
-            if len(Team.objects.filter(
-                teamname__iexact=self.nick,
-                owner=self.owner)
-            ):
+            if Team.objects.filter(
+                    teamname__iexact=self.nick, owner=self.owner):
                 raise ValueError("Team %s exists already." % (self.nick))
 
         super().save(*args, **kwargs)
@@ -95,39 +97,49 @@ class Elo:
         self.elo = current_elo
 
     def new_result(self, enemy_elo, goal_diff):
+        """ returns new result from existing elo and goal difference """
         exp = self.expected(enemy_elo)
         return self.new_elo(exp, goal_diff)
 
     def expected(self, enemy_elo):
+        """ returns the excepted match result """
         return Elo._expected(self.elo, enemy_elo)
 
     def new_elo(self, exp, goal_diff):
-        self.elo = Elo._new_elo(self.elo, exp, goal_diff)
-        return self.elo
+        """ returns new elo from expected and goal difference """
+        return Elo._new_elo(self.elo, exp, goal_diff)
 
     @staticmethod
-    def mapper(value, minFrom, maxFrom, minTo, maxTo, limitTo=True):
-        ret = minTo + (maxTo - minTo) * ((value - minFrom) /
-                                         (maxFrom - minFrom))
-        if limitTo:
-            if ret < min(minTo, maxTo):
-                ret = min(minTo, maxTo)
-            elif ret > max(maxTo, minTo):
-                ret = max(maxTo, minTo)
+    def mapper(value, range_from, range_to, limit_to=True):
+        """ maps value from range(min_from-max_from) to (min_to-max_to)
+        :param value: value to map
+        :param range_from: (min_from, max_from)
+        :param range_to: (min_to, max_to)
+        :param limit_to: False if value can be out of range
+        """
+        min_from, max_from = range_from
+        min_to, max_to = range_to
+        ret = min_to + (max_to - min_to) * ((value - min_from) /
+                                            (max_from - min_from))
+        if limit_to:
+            if ret < min(min_to, max_to):
+                ret = min(min_to, max_to)
+            elif ret > max(max_to, min_to):
+                ret = max(max_to, min_to)
         return ret
 
     @staticmethod
-    def _expected(A, B):
+    def _expected(player_a, player_b):
         """ Calculate expected score of A in a match against B
-        :param A: Elo rating for player A
-        :param B: Elo rating for player B
+        :param player_a: Elo rating for player A
+        :param player_b: Elo rating for player B
         """
-        if B - A < -400:
+        if player_b - player_a < -400:
             dif = -400
-        if B - A > 400:
+        if player_b - player_a > 400:
             dif = 400
         else:
-            dif = B - A
+            dif = player_b - player_a
         return 1 / (1 + 10 ** ((dif) / 400))
 
     @staticmethod
@@ -142,7 +154,7 @@ class Elo:
 
         # Original k: default->20, elo>2400->10, less30matches->40, <18yo->40
         # Here k is mapped to the range of possible k-values (40-10)
-        k = Elo.mapper(old, 0, 2400, 40, 10)
+        k = Elo.mapper(old, (0, 2400), (40, 10))
         new_elo = old + k * (score - exp)
         return new_elo if new_elo >= 0 else 0
 

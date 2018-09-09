@@ -1,3 +1,4 @@
+""" views of account """
 from django.shortcuts import redirect
 from django.views.generic import FormView
 from django.contrib.auth.forms import UserCreationForm
@@ -5,6 +6,7 @@ from django.contrib.auth import login, authenticate
 
 
 class SignUpView(FormView):
+    """ Signup new users """
     form_class = UserCreationForm
     template_name = 'account/signup.html'
 

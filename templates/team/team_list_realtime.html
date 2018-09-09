@@ -52,41 +52,49 @@ function loadDataTables(){
 
 		<!-- team_score -->
 		{% if team.id in team_realtime.keys %}
-			<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'team_score'}}">{{ team.team_score }}
-				<br />{{ team_realtime|dict_get:team.id|attrib_get:'team_score_diff'|signed}}
-				<br />={{ team_realtime|dict_get:team.id|attrib_get:'team_score'}}
-			</td>
+			{% with rt_team=team_realtime|dict_get:team.id %}
+				<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'team_score'}}">{{ team.team_score }}
+					<br />{{ rt_team.team_score_diff|signed }}
+					<br />={{ rt_team.team_score }}
+				</td>
+			{% endwith %}
 		{% else %}
 			<td data-order="{{ team.team_score }}">{{ team.team_score }}</td>
 		{% endif%}
 
 		<!-- Team Win Draw Lose -->
 		{% if team.id in team_realtime.keys %}
-			<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'team_wdl_factor'}}">{{ team.team_win | length }}:{{ team.team_draw | length }}:{{ team.team_lose | length }}
-				<br />{{ team_realtime|dict_get:team.id|attrib_get:'team_win_diff' | signed }}:{{ team_realtime|dict_get:team.id|attrib_get:'team_draw_diff' | signed }}:{{ team_realtime|dict_get:team.id|attrib_get:'team_lose_diff' | signed }}
-				<br />={{ team_realtime|dict_get:team.id|attrib_get:'team_win' | length }}:{{ team_realtime|dict_get:team.id|attrib_get:'team_draw' | length }}:{{ team_realtime|dict_get:team.id|attrib_get:'team_lose' | length }}
-			</td>
+			{% with rt_team=team_realtime|dict_get:team.id %}
+				<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'team_wdl_factor'}}">{{ team.get_win_draw_lose.0 | length }}:{{ team.get_win_draw_lose.1 | length }}:{{ team.get_win_draw_lose.2 | length }}
+					<br />{{ rt_team.team_wdl_diff.0 | signed }}:{{ rt_team.team_wdl_diff.1 | signed }}:{{ rt_team.team_wdl_diff.2 | signed }}
+					<br />={{ rt_team.team_wdl.0 | length }}:{{ rt_team.team_wdl.1 | length }}:{{ rt_team.team_wdl.2 | length }}
+				</td>
+			{% endwith %}
 		{% else %}
-			<td>{{ team.team_win | length }}:{{ team.team_draw | length }}:{{ team.team_lose | length }}</td>
+			<td>{{ team.get_win_draw_lose.0 | length }}:{{ team.get_win_draw_lose.1 | length }}:{{ team.get_win_draw_lose.2 | length }}</td>
 		{% endif%}
 
 		<!-- Team Close Win Lose -->
 		{% if team.id in team_realtime.keys %}
-			<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'close_wl_factor'}}">{{ team.close_win | length }}:{{ team.close_lose | length }}
-				<br />{{ team_realtime|dict_get:team.id|attrib_get:'close_win_diff' | signed }}:{{ team_realtime|dict_get:team.id|attrib_get:'close_lose_diff' | signed}}
-				<br />={{ team_realtime|dict_get:team.id|attrib_get:'close_win' | length }}:{{ team_realtime|dict_get:team.id|attrib_get:'close_lose' | length }}
-			</td>
+			{% with rt_team=team_realtime|dict_get:team.id %}
+				<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'close_wl_factor'}}">{{ team.close_win_lose.0 | length }}:{{ team.close_win_lose.1 | length }}
+					<br />{{ rt_team.close_wl_diff.0 | signed }}:{{ rt_team.close_wl_diff.1 | signed}}
+					<br />={{ rt_team.close_wl.0 | length }}:{{ rt_team.close_wl.1 | length }}
+				</td>
+			{% endwith %}
 		{% else %}
-			<td data-order="{{ team.close_wl_factor }}">{{ team.close_win | length }}:{{ team.close_lose | length }}</td>
+			<td data-order="{{ team.close_wl_factor }}">{{ team.close_win_lose.0 | length }}:{{ team.close_win_lose.1 | length }}</td>
 		{% endif%}
-		
+
 		<!-- Goals Own Foreign -->
 		{% if team.id in team_realtime.keys %}
-			<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'goal_factor'}}">{{ team.goal_own }}:{{ team.goal_foreign }}
-				<br />={{ team_realtime|dict_get:team.id|attrib_get:'goal_own' }}:{{ team_realtime|dict_get:team.id|attrib_get:'goal_foreign' }} ({{ team_realtime|dict_get:team.id|attrib_get:'goal_factor'}})
-			</td>
+			{% with rt_team=team_realtime|dict_get:team.id %}
+				<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'goal_factor'}}">{{ team.goal_own_foreign.0 }}:{{ team.goal_own_foreign.1 }}
+					<br />={{ rt_team.realtime_goal_own_foreign.0 }}:{{ rt_team.realtime_goal_own_foreign.1 }} ({{ rt_team.goal_factor }})
+				</td>
+			{% endwith %}
 		{% else %}
-		<td data-order="{{team.goal_factor}}">{{ team.goal_own }}:{{ team.goal_foreign }}</td>
+			<td data-order="{{team.goal_factor}}">{{ team.goal_own_foreign.0 }}:{{ team.goal_own_foreign.1 }}</td>
 		{% endif%}
 {% empty %}
 <tr>

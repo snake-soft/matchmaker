@@ -1,9 +1,12 @@
-from team.models import Team
-from math import ceil
+""" matchmaker model (no database) """
 from itertools import combinations as comb
+from math import ceil
+from team.models import Team
 
 
 class ConstellationFactory:
+    """ Factory that calculates constellations from players and count """
+
     def __init__(self, players, count):
         self.players = players
         self.count = count
@@ -15,18 +18,21 @@ class ConstellationFactory:
         return ceil(self.count / 2), self.count - ceil(self.count / 2)
 
     def get_constellations(self):
+        """ returns list of possible constellations
+        sorted by strength difference
+        """
         def team_calculator(players, t1_size, t2_size):
             combi1 = tuple(comb(players, t1_size))
             combi2 = tuple(comb(players, t2_size))
             used, ret = [], []
 
-            for t1 in combi1:
-                if t1 not in used:
-                    for t2 in combi2:
-                        if t2 not in used \
-                                and not any([x for x in t2 if x in t1]):
-                            ret.append(Constellation(t1, t2))
-                            used.append(t1)
+            for team1 in combi1:
+                if team1 not in used:
+                    for team2 in combi2:
+                        if team2 not in used \
+                                and not any([x for x in team2 if x in team1]):
+                            ret.append(Constellation(team1, team2))
+                            used.append(team1)
             return ret
 
         ret = team_calculator(self.players, self.teamsize[0], self.teamsize[1])
@@ -34,26 +40,34 @@ class ConstellationFactory:
 
 
 class Constellation:
+    """ team1 vs team2 -> constellation """
+
     def __init__(self, players_t1, players_t2):
-        self.team1 = ConstellationTeam(players_t1)
-        self.team2 = ConstellationTeam(players_t2)
+        self.team1 = self.get_constellation_team(players_t1)
+        self.team2 = self.get_constellation_team(players_t2)
 
     @property
     def difference(self):
-        # could be better, recognizing unequal team sizes
-        t1_strength = self.team1.strength
-        t2_strength = self.team2.strength
-        ret = t1_strength - t2_strength
+        """ difference of the team strength """
+        ret = self.team1.strength - self.team2.strength
         return ret if ret >= 0 else ret * -1
+
+    @staticmethod
+    def get_constellation_team(players):
+        """ returns single constellation """
+        return ConstellationTeam(players)
 
 
 class ConstellationTeam:
+    """ single team """
+
     def __init__(self, players):
         self.players = players
         self.team = Team.players_have_team(self.players)
 
     @property
     def player_ids(self):
+        """ returns list of player ids """
         return [x.id for x in self.players]
 
     @property

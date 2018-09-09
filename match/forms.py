@@ -1,10 +1,12 @@
+""" match forms """
 from django import forms
 
-from .models import Match
 from team.models import Team
+from .models import Match
 
 
 class MatchCreateForm(forms.ModelForm):
+    """ match creation form """
 
     def __init__(self, *args, **kwargs):
         owner = kwargs.pop('owner')
@@ -19,4 +21,4 @@ class MatchCreateForm(forms.ModelForm):
             'secondteam',
             'firstteam_goals',
             'secondteam_goals',
-            ]
+        ]

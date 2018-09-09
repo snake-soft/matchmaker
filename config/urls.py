@@ -15,29 +15,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.contrib.auth.views import LoginView, LogoutView
+
+from core.views import StartView
+from core.views import DateSetView
 from player.views import PlayerList, PlayerDetails, PlayerCreate
 from team.views import TeamList, TeamDetails, TeamCreate, TeamListRealtime
-from core.views import DateSetView
 from match.views import MatchList, MatchDetails, MatchCreate
 from matchmaker.views import MatchmakerView
-from core.views import StartView
 from account.views import SignUpView
-from django.contrib.auth.views import LoginView, LogoutView
-# from django.contrib.auth import urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('signup/', SignUpView.as_view(
-        template_name='account/signup.html',
-        ), name='signup'),
+        template_name='account/signup.html',), name='signup'),
 
     path('login/', LoginView.as_view(
-        template_name='account/login.html',
-         ), name='login'),
+        template_name='account/login.html',), name='login'),
 
     path('logout/', LogoutView.as_view(
-        template_name='account/logout.html',
-        ), name='logout'),
+        template_name='account/logout.html',), name='logout'),
 
 
     path('', StartView.as_view(), name="home"),

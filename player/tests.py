@@ -1,3 +1,4 @@
+""" tests for player module """
 from django.test import TestCase
 from django.shortcuts import reverse
 
@@ -9,12 +10,16 @@ from .models import Player, Elo
 
 
 class PlayerViewsTestCase(TestCase):
+    """ player views tests """
+
     def setUp(self):
-        tb = TestBase()
-        self.client = tb.client
-        self.db = tb.db
+        """ setup """
+        testbase = TestBase()
+        self.client = testbase.client
+        self.db_ = testbase.db_
 
     def test_player_details(self):
+        """ test player details view """
         response = self.client.get(
             reverse('player-details', args=[Player.objects.all()[0].pk])
         )
@@ -24,25 +29,23 @@ class PlayerViewsTestCase(TestCase):
             str(Player.objects.all()[0].nick), response.rendered_content)
 
     def test_match_list(self):
+        """ test match list view """
         response = self.client.get(reverse('player-list'))
-        self.assertEqual(response.status_code, 200)
+        self.assertIs(response.status_code, 200)
         self.assertTemplateUsed(response, 'player/player_list.html')
         post_data = {'from': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
         response = self.client.post(reverse('set-date'), post_data)
         response = self.client.get(reverse('player-list'))
-        self.assertEqual(response.status_code, 200)
+        self.assertIs(response.status_code, 200)
         self.assertTemplateUsed(response, 'player/player_list.html')
 
     def test_player_create(self):
-        post_data = {
-            'nick': 'Hanswurst',
-        }
+        """ test player creation """
+        post_data = {'nick': 'Hanswurst', }
         response = self.client.post(reverse('player-new'), post_data)
         self.assertRedirects(response, reverse('ladder'), 302)
 
-        post_data = {
-            'nick': 'Hanswurst',
-        }
+        post_data = {'nick': 'Hanswurst', }
         response = self.client.post(reverse('player-new'), post_data)
         self.assertIs(response.status_code, 200)
         self.assertIn('error', response.context['form'].errors)
@@ -52,37 +55,48 @@ class PlayerViewsTestCase(TestCase):
 
 
 class PlayerModelTestCase(TestCase):
+    """ player model tests """
+
     def setUp(self):
-        tb = TestBase()
-        self.client = tb.client
-        self.db = tb.db
+        """ setup """
+        testbase = TestBase()
+        self.client = testbase.client
+        self.db_ = testbase.db_
 
     def test_get_teams(self):
-        self.assertEqual(type(self.db.frank.teams()[0]), Team)
+        """ test teams get method """
+        self.assertIs(type(self.db_.frank.teams()[0]), Team)
 
     def test_get_win_draw_lose(self):
-        wdl = self.db.frank.get_win_draw_lose()
-        self.assertEqual(type(wdl[0][0]), Match)
-        self.assertEqual(type(wdl[2][0]), Match)
+        """ test get win draw lose """
+        wdl = self.db_.frank.get_win_draw_lose()
+        self.assertIs(type(wdl[0][0]), Match)
+        self.assertIs(type(wdl[2][0]), Match)
 
     def test_save(self):
+        """ test save method """
         with self.assertRaises(ValueError):
-            Player.objects.create(nick="Frank", owner=self.db.me)
+            Player.objects.create(nick="Frank", owner=self.db_.me_)
         with self.assertRaises(ValueError):
-            Player.objects.create(nick="Devils", owner=self.db.me)
+            Player.objects.create(nick="Devils", owner=self.db_.me_)
 
     def test_str(self):
-        self.assertEqual(type(str(self.db.frank)), str)
+        """ test str method """
+        self.assertIs(type(str(self.db_.frank)), str)
 
     def test_elo(self):
+        """ test elo handling """
         elo = Elo(1000)
-        elo.mapper(-10, 0, 100, 0, 1000, True)
-        elo.mapper(1000, 0, 100, 0, 1000, True)
+        elo.mapper(-10, (0, 100), (0, 1000), True)
+        elo.mapper(1000, (0, 100), (0, 1000), True)
         elo.expected(100)
         elo.expected(10000)
-        self.assertEqual(type(str(elo)), str)
+        self.assertIs(type(str(elo)), str)
 
 
 class AppsTestCase(TestCase):
+    """ test core apps config """
+
     def test_apps(self):
-        self.assertEqual(type(apps.AppConfig), type)
+        """ checkt type """
+        self.assertIs(type(apps.AppConfig), type)
