@@ -9,14 +9,14 @@ class Match(models.Model):
     owner = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        )
+    )
     firstteam = models.ForeignKey(
         'team.Team',
         related_name='Team1',
         on_delete=models.CASCADE,
         default=None,
         verbose_name="Team 1",
-        )
+    )
 
     secondteam = models.ForeignKey(
         'team.Team',
@@ -24,23 +24,23 @@ class Match(models.Model):
         on_delete=models.CASCADE,
         default=None,
         verbose_name="Team 2",
-        )
+    )
 
     firstteam_goals = models.PositiveSmallIntegerField(
         verbose_name="T1 goals",
         default=0
-        )
+    )
 
     secondteam_goals = models.PositiveSmallIntegerField(
         verbose_name="T2 goals",
         default=0
-        )
+    )
 
     date_time = models.DateTimeField(
         auto_now_add=True,
         blank=True,
         verbose_name="Finish-Date",
-        )
+    )
 
     @property
     def goal_difference(self):
@@ -50,13 +50,18 @@ class Match(models.Model):
     @property
     def rematches(self):
         """ returns list of matches with same teams """
-        ret = []
-        ret += self.__class__.objects.filter(
-            firstteam=self.firstteam).filter(secondteam=self.secondteam)
-        ret += self.__class__.objects.filter(
-            firstteam=self.secondteam).filter(secondteam=self.firstteam)
+        ret = self.previous_matches(self.firstteam, self.secondteam)
         return [x for x in sorted(ret, key=lambda x: x.pk)
                 if x.pk is not self.pk]
+
+    @classmethod
+    def previous_matches(cls, firstteam, secondteam):
+        ret = []
+        ret += cls.objects.filter(
+            firstteam=firstteam).filter(secondteam=secondteam)
+        ret += cls.objects.filter(
+            firstteam=secondteam).filter(secondteam=firstteam)
+        return ret
 
     def new_result(self):
         """ sets new result to players """
@@ -64,22 +69,22 @@ class Match(models.Model):
             player.new_result(
                 self.firstteam_goals - self.secondteam_goals,
                 self.secondteam
-                )
+            )
 
         for player in self.secondteam.players.all():
             player.new_result(
                 self.secondteam_goals - self.firstteam_goals,
                 self.secondteam
-                )
+            )
 
     def save(self, *args, **kwargs):  # pylint: disable=W0221
         if self.firstteam.pk is self.secondteam.pk:
             raise ValidationError(
                 "%s can't play against itself" % (
                     str(self.firstteam.pk) + "",
-                    ),
+                ),
                 params={'value': self.firstteam.pk},
-                )
+            )
         else:
             self.new_result()
             super().save(*args, **kwargs)
@@ -91,7 +96,7 @@ class Match(models.Model):
             self.secondteam.get_team_name_or_members(),
             self.firstteam_goals,
             self.secondteam_goals,
-            ))
+        ))
 
     class Meta:
         verbose_name_plural = "Matches"

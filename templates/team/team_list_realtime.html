@@ -33,9 +33,8 @@ function loadDataTables(){
 		<th></th>
 		<td data-order="{{ team.team_rating_as_int }}">
 			<strong>
-			{% if team.name %}
-				<a href="{% url 'team-details' team.pk %}">
-			{{ team.name }}
+			{% if team.name != None %}
+				<a href="{% url 'team-details' team.pk %}">{{ team.get_team_name_or_members }}
 			{% else %}
 				<a href="{% url 'team-new' %}?players={{constellation.team1.player_ids|join:','}}&next={{request.path}}" type="button" class="btn btn-warning">Create Team
 			{% endif %}

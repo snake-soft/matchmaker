@@ -23,7 +23,7 @@ function loadDataTables(){
     		"orderable": true,
     		"targets": 0
     	} ],
-    	"order": [[ 2, 'asc' ]]
+    	"order": [[ 1, 'asc' ]]
     } );
 }
 
@@ -71,54 +71,84 @@ function decrement(element){
 <table id="matchmaker-result-table" class="table table-striped table-bordered table-hover">
 <thead>
 	<tr>
-		<th>Team 1 ({{ constellations.0.team1.players|length }}p.)</th>
-
-		<th>Team 2 ({{ constellations.0.team2.players|length }}p.)</th>
-
-		<th>Dif.</th>
-		<th>Play this match</th>
+		<th scope="col">Team 1 ({{ constellations.0.team1.players|length }}p.)</th>
+		<th scope="col">Balance</th>
+		<th scope="col">Team 2 ({{ constellations.0.team2.players|length }}p.)</th>
+		<th scope="col">Play this match</th>
 	</tr>
 </thead>
 
 {% for constellation in constellations %}
 <tr>
+<!-- Team 1 -->
 <td data-order="{{ team.team_rating_as_int }}"><strong>
 	{% if constellation.team1.team.name != None %}
-		<a href="{% url 'team-details' constellation.team1.team.id %}">
-	{{ constellation.team1.team.name }}
+		<a href="{% url 'team-details' constellation.team1.team.id %}" class="text-primary">{{ constellation.team1.team }}</a>
 	{% else %}
-		<a href="{% url 'team-new' %}?players={{constellation.team1.player_ids|join:','}}&next={{request.path}}" type="button" class="btn btn-warning">Create Team
+		<a href="{% url 'team-new' %}?players={{constellation.team1.player_ids|join:','}}&next={{request.path}}" type="button" class="btn btn-warning">Create Team ({{ constellation.team1.strength }})</a>
 	{% endif %}
-	({{ constellation.team1.strength }})</a></strong>
+	</strong>
 
 	{% if not constellation.team1.team.is_player_team or not constellation.team1.team.name %}
 	<ul>
 	{% for player in constellation.team1.players %}
-		<li><a href="{% url 'player-details' player.pk %}">{{player.nick}} ({{player.rating_as_int}})</a></li>
+		<li><a href="{% url 'player-details' player.pk %}" class="text-primary">{{player.nick}} ({{player.rating_as_int}})</a></li>
 	{% endfor %}
 	</ul>
 	{% endif %}
 </td>
+<!-- /Team 1 -->
 
-<td data-order="{{ team.team_rating_as_int }}"><strong>
-	{% if constellation.team2.team.name %}
-		<a href="{% url 'team-details' constellation.team2.team.id %}">
-	{{ constellation.team2.team.name }}
-	{% else %}
-		<a href="{% url 'team-new' %}?players={{constellation.team2.player_ids|join:','}}&next={{request.path}}" type="button" class="btn btn-warning">Create Team
+<!-- Balance -->
+<td data-order="{{ constellation.difference }}">
+	<div class="progress" style="height: 30px;">
+		<div class="progress-bar bg-primary" role="progressbar" style="width: {{ constellation.chance.0 }}%" aria-valuenow="{{ constellation.chance.0 }}" aria-valuemin="0" aria-valuemax="100">
+			<strong>{{ constellation.chance.0 }}%</strong>
+		</div>
+		<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ constellation.chance.1 }}%" aria-valuenow="{{ constellation.chance.1 }}" aria-valuemin="0" aria-valuemax="100">
+			<strong>{{ constellation.chance.1 }}%</strong>
+		</div>
+	</div>
+	{% if constellation.previous_matches %}
+	<div class="container-fluid" >
+		<div class="row">
+			<ul style="padding-left: 0;list-style-type: none;">
+			{% for match in constellation.previous_matches %}
+				<li style="float:left;margin-right: 1px;">
+				{% if match.firstteam.pk is constellation.team1.team.pk %}
+					<a href="{% url 'match-details' match.pk %}" class="badge badge-{% if match.goal_difference > 0 %}primary{% elif match.goal_difference < 0 %}secondary{% else %}light{% endif %}">{{ match.firstteam_goals }}:{{ match.secondteam_goals }}</a>
+				{% else %}
+					<a href="{% url 'match-details' match.pk %}" class="badge badge-{% if match.goal_difference < 0 %}primary{% elif match.goal_difference > 0 %}secondary{% else %}light{% endif %}">{{ match.secondteam_goals }}:{{ match.firstteam_goals }}</a>
+				{% endif %}
+				</li>
+			{% endfor %}
+			</ul>
+		</div>
+	</div>
 	{% endif %}
-	({{ constellation.team2.strength }})</a></strong>
+</td>
+<!-- /Balance -->
+
+<!-- Team 2 -->
+<td data-order="{{ team.team_rating_as_int }}"><strong>
+	{% if constellation.team2.team.name != None %}
+		<a href="{% url 'team-details' constellation.team2.team.id %}" class="text-secondary">{{ constellation.team2.team }}
+	{% else %}
+		<a href="{% url 'team-new' %}?players={{constellation.team2.player_ids|join:','}}&next={{request.path}}" type="button" class="btn btn-warning">Create Team ({{ constellation.team2.strength }})
+	{% endif %}
+	</a></strong>
 
 	{% if not constellation.team2.team.is_player_team or not constellation.team2.team.name %}
 	<ul>
 	{% for player in constellation.team2.players %}
-		<li><a href="{% url 'player-details' player.pk %}">{{player.nick}} ({{player.rating_as_int}})</a></li>
+		<li><a href="{% url 'player-details' player.pk %}" class="text-secondary">{{player.nick}} ({{player.rating_as_int}})</a></li>
 	{% endfor %}
 	</ul>
 	{% endif %}
 </td>
+<!-- /Team 2 -->
 
-<td><strong>{{ constellation.difference }}</strong></td>
+<!-- Play -->
 <td>
 	{% if constellation.team1.team.name != None and constellation.team2.team.name != None %}
 		<a href="{% url 'match-new' %}?firstteam={{constellation.team1.team.id}}&secondteam={{constellation.team2.team.id}}" type="button" class="btn btn-success">Start</a>
@@ -128,12 +158,11 @@ function decrement(element){
 		</div></button>
 	{% endif %}
 </td>
+<!-- /Play -->
 </tr>
 
 {% empty %}
-
-    <li>No constellations .</li>
-
+    <li>No constellations.</li>
 {% endfor %}
 
 </table>

@@ -2,6 +2,8 @@
 from itertools import combinations as comb
 from math import ceil
 from team.models import Team
+from player.models import Elo
+from match.models import Match
 
 
 class ConstellationFactory:
@@ -52,10 +54,21 @@ class Constellation:
         ret = self.team1.strength - self.team2.strength
         return ret if ret >= 0 else ret * -1
 
+    @property
+    def chance(self):
+        """ returns t1chance, t2chance """
+        elo_t1 = Elo(self.team1.strength)
+        expected = elo_t1.expected(self.team2.strength)
+        return int(expected * 100 + 0.5), int((1 - expected) * 100 + 0.5)
+
     @staticmethod
     def get_constellation_team(players):
         """ returns single constellation """
         return ConstellationTeam(players)
+
+    @property
+    def previous_matches(self):
+        return Match.previous_matches(self.team1.team, self.team2.team)
 
 
 class ConstellationTeam:

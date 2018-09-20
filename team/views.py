@@ -269,7 +269,7 @@ class TeamCreate(LoginRequiredMixin, CreateView):\
         if existing_team:
             form.errors['error'] = \
                 str(existing_team) + ' constellation already exists'
-        elif teamname_exists:
+        elif teamname_exists and teamname:
             form.errors['error'] = \
                 str(teamname_exists[0]) + ' team already exists'
         else:
