@@ -20,6 +20,8 @@ class MatchViewsTestCase(TestCase):
 
     def test_match_details(self):
         """ tests match detail view """
+        post_data = {'frm': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
+        self.client.post(reverse('set-date'), post_data)
         response = self.client.get(
             reverse('match-details', args=[Match.objects.all()[0].pk])
         )

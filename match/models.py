@@ -1,11 +1,16 @@
 """ Match model """
+from datetime import date, datetime, timedelta
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
 class Match(models.Model):
-    """ Match model """
+    """ Match model
+    workaround: frm and to_ are the last setted datefilters
+    I dont want to have requests inside the model
+    """
     owner = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -42,6 +47,25 @@ class Match(models.Model):
         verbose_name="Finish-Date",
     )
 
+    frm = datetime(2000, 1, 1).date()
+    to_ = datetime(3000, 1, 1).date()
+
+    @classmethod
+    def set_from_to(cls, frm, to_):
+        """ sets new date filter """
+        def to_date(date_x):
+            """ date_x may be date, datetime or string object
+            returns date object
+            """
+            return {
+                datetime: lambda: date_x.date,
+                date: lambda: date_x,
+                str: lambda: datetime.strptime(date_x, '%Y-%m-%d').date(),
+            }.get(type(date_x))()
+
+        cls.frm = to_date(frm)
+        cls.to_ = to_date(to_) + timedelta(days=1)
+
     @property
     def goal_difference(self):
         """ positiv=win_firstteam, negativ=win_secondteam """
@@ -56,12 +80,13 @@ class Match(models.Model):
 
     @classmethod
     def previous_matches(cls, firstteam, secondteam):
+        """ calculates previous matches by firstteam, secondteam """
         ret = []
-        ret += cls.objects.filter(
-            firstteam=firstteam).filter(secondteam=secondteam)
-        ret += cls.objects.filter(
-            firstteam=secondteam).filter(secondteam=firstteam)
-        return ret
+        ret += cls.objects.filter(firstteam=firstteam, secondteam=secondteam,
+                                  date_time__range=(cls.frm, cls.to_))
+        ret += cls.objects.filter(firstteam=secondteam, secondteam=firstteam,
+                                  date_time__range=(cls.frm, cls.to_))
+        return sorted(ret, key=lambda x: x.pk)
 
     def new_result(self):
         """ sets new result to players """

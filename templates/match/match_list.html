@@ -31,17 +31,35 @@ function loadDataTables(){
 			<th>First team</th>
 			<th>Second team</th>
 			<th>Result</th>
-			<th>Difference</th>
+			<th>Rematches</th>
 		</tr>
 	</thead>
 {% for match in object_list %}
     <tr>
     	<th><a href="{% url 'match-details' match.pk %}">{{match.pk}}</a></th>
     	<td data-order="{{match.pk}}" title="{{match.date_time|naturaltime}}">{{ match.date_time }}</td>
-    	<td title="{{match.firstteam.verbose_name}}"><a href="{% url 'team-details' match.firstteam.pk %}">{{match.firstteam}}</a></td>
-    	<td title="{{match.secondteam.verbose_name}}"><a href="{% url 'team-details' match.secondteam.pk %}">{{ match.secondteam }}</a></td>
-    	<td data-order="{{ match.goal_difference}}">{{ match.firstteam_goals}}:{{ match.secondteam_goals}}</td>
-    	<td>{{ match.goal_difference}}</td>
+    	<td title="{{match.firstteam.verbose_name}}"><a href="{% url 'team-details' match.firstteam.pk %}" class="text-primary">{{match.firstteam}}</a></td>
+    	<td title="{{match.secondteam.verbose_name}}"><a href="{% url 'team-details' match.secondteam.pk %}" class="text-secondary">{{ match.secondteam }}</a></td>
+    	<td data-order="{{ match.goal_difference}}">{{ match.firstteam_goals}}:{{ match.secondteam_goals}} ({{ match.goal_difference}})</td>
+    	<td data-order="{{match.rematches | length}}">
+		{% if match.rematches %}
+			<div class="container-fluid" >
+				<div class="row">
+					<ul style="padding-left: 0;list-style-type: none;">
+					{% for rematch in match.rematches %}
+						<li style="float:left;margin-right: 1px;">
+						{% if match.firstteam is rematch.firstteam %}
+							<a href="{% url 'match-details' rematch.pk %}" class="badge badge-{% if rematch.goal_difference > 0 %}primary{% elif rematch.goal_difference < 0 %}secondary{% else %}light{% endif %}">{{ rematch.firstteam_goals }}:{{ rematch.secondteam_goals }}</a>
+						{% else %}
+							<a href="{% url 'match-details' rematch.pk %}" class="badge badge-{% if rematch.goal_difference < 0 %}primary{% elif rematch.goal_difference > 0 %}secondary{% else %}light{% endif %}">{{ rematch.secondteam_goals }}:{{ rematch.firstteam_goals }}</a>
+						{% endif %}
+						</li>
+					{% endfor %}
+					</ul>
+				</div>
+			</div>
+		{% endif %}
+	</td>
 {% empty %}
     <li>No player yet.</li>
 {% endfor %}

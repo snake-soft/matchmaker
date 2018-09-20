@@ -68,6 +68,7 @@ class Constellation:
 
     @property
     def previous_matches(self):
+        """ previous matches of this constellation """
         return Match.previous_matches(self.team1.team, self.team2.team)
 
 

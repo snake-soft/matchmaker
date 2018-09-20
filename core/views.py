@@ -4,6 +4,10 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.views import View
 
 from .forms import TimeRangeForm
+# ==============================================================================
+# from match.models import Match
+# from team.models import Team
+# ==============================================================================
 
 
 class StartView(View):
@@ -24,5 +28,11 @@ class DateSetView(LoginRequiredMixin, View):
                 '%Y-%m-%d')
             request.session['to'] = form.cleaned_data['to'].strftime(
                 '%Y-%m-%d')
+            # ==================================================================
+            # Match.set_from_to(
+            #     self.request.session['from'], self.request.session['to'])
+            # Team.set_from_to(
+            #     self.request.session['from'], self.request.session['to'])
+            # ==================================================================
         nxt = request.POST.get('next', '/')
         return HttpResponseRedirect(nxt)

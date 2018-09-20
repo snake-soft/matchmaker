@@ -12,6 +12,8 @@ class Team(models.Model):
     """ Teams are Season-based
     -> every season there are new values
     -> values are calculated from the matches
+    workaround: frm and to_ are the last setted datefilters
+    I dont want to have requests inside the model
     """
     owner = models.ForeignKey(
         User,

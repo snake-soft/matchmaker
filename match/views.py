@@ -37,6 +37,8 @@ class MatchDetails(LoginRequiredMixin, DetailView):\
     model = Match
 
     def get_queryset(self):
+        Match.set_from_to(
+            self.request.session['from'], self.request.session['to'])
         return Match.objects.filter(owner=self.request.user)
 
 

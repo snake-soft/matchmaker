@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.views import View
 
 from player.models import Player
+from match.models import Match
 from .forms import MatchmakerForm
 from .models import ConstellationFactory
 
@@ -13,6 +14,8 @@ class MatchmakerView(LoginRequiredMixin, View):
 
     def get(self, request):
         """ get method of matchmaker """
+        Match.set_from_to(
+            self.request.session['from'], self.request.session['to'])
         context = {}
 
         if 'players' in request.GET:

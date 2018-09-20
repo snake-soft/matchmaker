@@ -36,6 +36,8 @@ class MatchmakerViewTestCase(TestCase):
     def test_get(self):
         """ test get method """
         get_data = {}
+        post_data = {'frm': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
+        self.client.post(reverse('set-date'), post_data)
         response = self.client.get(reverse('matchmaker'), get_data)
         self.assertTemplateUsed(response, 'matchmaker/matchmaker_form.html')
 
