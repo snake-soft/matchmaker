@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.views import View
 
 from player.models import Player
+from team.forms import TeamCreateForm
 from match.models import Match
 from .forms import MatchmakerForm
 from .models import ConstellationFactory
@@ -46,9 +47,8 @@ class MatchmakerView(LoginRequiredMixin, View):
             if len(request.GET.getlist('players')) \
                     < int(request.GET.get('count')):
                 form.errors['error'] = 'Choose more players !'
-
+        context["teamcreate_form"] = TeamCreateForm(owner=self.request.user)
         context["matchmaker_form"] = form
-
         return render(
             request,
             template_name="matchmaker/matchmaker_form.html",

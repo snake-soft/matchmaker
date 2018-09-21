@@ -50,5 +50,5 @@ $(document).ready(function() {
     $('#id_firstteam,#id_secondteam,#id_firstteam_goals,#id_secondteam_goals').on('change',function(){
     	loadMatchRealtime()
 	});
-} );
+});
 

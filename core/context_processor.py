@@ -1,6 +1,7 @@
 """ Default context """
 from datetime import date, datetime
 from calendar import monthrange
+from django.contrib.auth.forms import AuthenticationForm
 
 from .forms import TimeRangeForm
 
@@ -33,4 +34,5 @@ def default(request):
             ),
         'from': str_to_date(request.session['from']),
         'to': str_to_date(request.session['to']),
+        'login_form': AuthenticationForm,
     }

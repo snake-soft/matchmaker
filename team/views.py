@@ -301,6 +301,7 @@ class TeamCreate(LoginRequiredMixin, CreateView):\
         return initial
 
     def form_valid(self, form):
+        self.success_url = self.request.POST.get('next', reverse('ladder'))
         valid = False
         teamname = form.cleaned_data['teamname']
         owner = self.request.user
@@ -321,6 +322,5 @@ class TeamCreate(LoginRequiredMixin, CreateView):\
                 str(teamname_exists[0]) + ' team already exists'
         else:
             valid = True
-
         return super().form_valid(form) if valid \
             else super().form_invalid(form)
