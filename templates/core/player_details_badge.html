@@ -1,24 +1,23 @@
 {% load join_by_attr signed dict_get attrib_get list_get round to_percent elements %}
 
-<span class="badge badge-light" tabindex="0" data-trigger="focus" data-title="Details player {{ player.nick }} <small>({{ player.rating_as_int }})</small>" data-toggle="popover">
-	{{ player.nick }}
+<span class="btn badge badge-light" tabindex="0" data-trigger="focus" data-title="Details player {{ player.nick }} <small>({{ player.rating_as_int }})</small>" data-toggle="popover">
+	{{ player.nick }} <small>({{ player.rating_as_int }})</small>
 <div class="popover-content d-none">
 	<div class=" container-fluid">
 		<div class='row'>
 			{% if player.teams|length > 0 %}
 				{% for pteam in player.teams %}
 					{% if pteam.has_game %}
-						<div class='container-fluid'><div class='row'>Results with Team <a href='{% url 'team-details' pteam.pk %}' class='badge badge-light'>{{ pteam.get_team_name_or_members }}</a>:</div></div>
-						{% for match in pteam.matches_chronologic %}
-							<a href='{% url 'match-details' match.pk %}' class='badge badge-{% if match.goal_difference > 0 %}success{% elif match.goal_difference < 0 %}danger{% else %}dark{% endif %}'>
-							{% if pteam.pk is match.firstteam.pk %}
-								{{match.firstteam_goals}}:{{match.secondteam_goals}} vs.{{match.secondteam.get_team_name_or_members}}
-							{% else %}
-								{{match.secondteam_goals}}:{{match.firstteam_goals}} vs.{{match.firstteam.get_team_name_or_members}}
-							{% endif %}</a>
-						{% endfor %}
-						<div class='container-fluid'><div class='row'>(Score {{pteam.team_score}})</div></div>
-						<hr />
+								Results with Team {{ pteam.get_team_name_or_members }}:
+							{% for match in pteam.matches_chronologic %}
+								{% match_badge match pov_team=pteam t1class='success' t2class='danger' %}
+							{% endfor %}
+							<div class="container-fluid">
+								<div class="row">
+									(Score {{pteam.team_score}})
+								</div>
+								<hr>
+							</div>
 					{% endif %}
 				{%endfor%}
 			{% endif %}

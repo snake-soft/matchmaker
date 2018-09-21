@@ -1,76 +1,61 @@
-{% load signed dict_get %}
-
+{% load signed dict_get match_close %}
+{% with matches=team.matches_chronologic %}
 {% if team.has_game %}
 <div class="container-fluid">
 	<div class="progress" tabindex="0" data-trigger="focus" data-toggle="popover">
-			<div class="popover-content d-none">
-			{% for match in team.get_win_draw_lose.0 %}
-				<a href='{% url 'match-details' match.pk %}' class='badge badge-success'>
+		<div class="popover-content d-none">
+		{% for match in matches %}
+			<a href='{% url 'match-details' match.pk %}' class='badge badge-{% if match.goal_difference > 0 %}success{% elif match.goal_difference < 0 %}danger{% else %}dark{% endif %}'>
+			{% if team.pk is match.firstteam.pk %}
+				{{match.firstteam_goals}}:{{match.secondteam_goals}} vs.{{match.secondteam.get_team_name_or_members}}
+			{% else %}
+				{{match.secondteam_goals}}:{{match.firstteam_goals}} vs.{{match.firstteam.get_team_name_or_members}}
+			{% endif %}</a>
+		{% endfor %}
+		<hr />
+		{% if matches|match_close %}
+			<div class='container-fluid'><div class='row'>Close Victory/Defeat:</div></div>
+			<div class='progress progress-half'>
+				
+				<div class='progress-bar bg-success' role='progressbar' style='width: {{ team.close_win_lose_percent.0 }}%' aria-valuenow='{{ team.close_win_lose_percent.0 }}' aria-valuemin='0' aria-valuemax='100'><strong>{{ team.close_win_lose.0 | length }}</strong></div>
+				<div class='progress-bar bg-danger' role='progressbar' style='width: {{ team.close_win_lose_percent.1 }}%' aria-valuenow='{{ team.close_win_lose_percent.2 }}' aria-valuemin='0' aria-valuemax='100'><strong>{{ team.close_win_lose.1 | length }}</strong></div>
+			</div>
+			{% if team.id in team_realtime.keys %}
+				{% with rt_team=team_realtime|dict_get:team.id %}
+					{% if rt_team.close_wl.0 or rt_team.close_wl.1 %}
+						<div class='progress progress-realtime'>
+							<div class='progress-bar bg-success' role='progressbar' style='width: {{ rt_team.close_win_lose_percent.0 }}%' aria-valuenow='{{ rt_team.close_win_lose_percent.0 }}' aria-valuemin='0' aria-valuemax='100'>{{ rt_team.close_wl.0 | length }} ({{ rt_team.close_wl_diff.0 | signed }})</div>
+							<div class='progress-bar bg-danger' role='progressbar' style='width: {{ rt_team.close_win_lose_percent.1 }}%' aria-valuenow='{{ rt_team.close_win_lose_percent.2 }}' aria-valuemin='0' aria-valuemax='100'>{{ rt_team.close_wl.1 | length }} ({{ rt_team.close_wl_diff.1 | signed }})</div>
+						</div>
+					{% endif%}
+				{% endwith %}
+			{% endif%}
+			{% for match in matches|match_close %}
+				<a href='{% url 'match-details' match.pk %}' class='badge badge-{% if match.goal_difference == 1 %}success{% elif match.goal_difference == -1 %}danger{% endif %}'>
 				{% if team.pk is match.firstteam.pk %}
-					{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
+					{{match.firstteam_goals}}:{{match.secondteam_goals}} vs.{{match.secondteam.get_team_name_or_members}}
 				{% else %}
-					{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
+					{{match.secondteam_goals}}:{{match.firstteam_goals}} vs.{{match.firstteam.get_team_name_or_members}}
 				{% endif %}</a>
+			{% empty %}
 			{% endfor %}
-			{% for match in team.get_win_draw_lose.1 %}
-				<a href='{% url 'match-details' match.pk %}' class='badge badge-dark'>
-				{% if team.pk is match.firstteam.pk %}
-					{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
-				{% else %}
-					{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
-				{% endif %}</a>
-			{% endfor %}
-			{% for match in team.get_win_draw_lose.2 %}
-				<a href='{% url 'match-details' match.pk %}' class='badge badge-danger'>
-				{% if team.pk is match.firstteam.pk %}
-					{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
-				{% else %}
-					{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
-				{% endif %}</a>
-			{% endfor %}
-		
-			<!-- Team Close Win Lose inside popover-->
-			{% if team.close_win_lose.0 or team.close_win_lose.1 %}
-				<hr />
-				<div class='container-fluid'><div class='row'>Close Victory/Defeat:</div></div>
-				<div class='progress progress-half'>
-					
-					<div class='progress-bar bg-success' role='progressbar' style='width: {{ team.close_win_lose_percent.0 }}%' aria-valuenow='{{ team.close_win_lose_percent.0 }}' aria-valuemin='0' aria-valuemax='100'><strong>{{ team.close_win_lose.0 | length }}</strong></div>
-					<div class='progress-bar bg-danger' role='progressbar' style='width: {{ team.close_win_lose_percent.1 }}%' aria-valuenow='{{ team.close_win_lose_percent.2 }}' aria-valuemin='0' aria-valuemax='100'><strong>{{ team.close_win_lose.1 | length }}</strong></div>
-				</div>
-				{% if team.id in team_realtime.keys %}
-					{% with rt_team=team_realtime|dict_get:team.id %}
-						{% if rt_team.close_wl.0 or rt_team.close_wl.1 %}
-							<div class='progress progress-realtime'>
-									<div class='progress-bar bg-success' role='progressbar' style='width: {{ rt_team.close_win_lose_percent.0 }}%' aria-valuenow='{{ rt_team.close_win_lose_percent.0 }}' aria-valuemin='0' aria-valuemax='100'>{{ rt_team.close_wl.0 | length }} ({{ rt_team.close_wl_diff.0 | signed }})</div>
-									<div class='progress-bar bg-danger' role='progressbar' style='width: {{ rt_team.close_win_lose_percent.1 }}%' aria-valuenow='{{ rt_team.close_win_lose_percent.2 }}' aria-valuemin='0' aria-valuemax='100'>{{ rt_team.close_wl.1 | length }} ({{ rt_team.close_wl_diff.1 | signed }})</div>
-							</div>
-						{% endif%}
-					{% endwith %}
-				{% endif%}
-				{% for match in team.close_win_lose.0 %}
-					<a href='{% url 'match-details' match.pk %}' class='badge badge-success'>
-					{% if team.pk is match.firstteam.pk %}
-						{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
-					{% else %}
-						{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
-					{% endif %}</a>
-				{% endfor %}
-				{% for match in team.close_win_lose.1 %}
-					<a href='{% url 'match-details' match.pk %}' class='badge badge-danger'>
-					{% if team.pk is match.firstteam.pk %}
-						{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
-					{% else %}
-						{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
-					{% endif %}</a>
-				{% endfor %}
-			{% endif %}
-			<!-- /Team Close Win Lose inside popover-->
+		{% endif %}
 		</div>
-			
-			<div class="progress-bar bg-success" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.0 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.0 | length }}</strong></div>
-			<div class="progress-bar bg-dark" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.1 | length }}</strong></div>
-			<div class="progress-bar bg-danger" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.2 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.3 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.2 | length }}</strong></div>
+		<div class="progress-bar bg-success" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.0 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.0 | length }}</strong></div>
+		<div class="progress-bar bg-dark" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.1 | length }}</strong></div>
+		<div class="progress-bar bg-danger" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.2 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.3 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.2 | length }}</strong></div>
 	</div>
 </div>
 {% endif%}
+{% if team.id in team_realtime.keys %}
+	{% with rt_team=team_realtime|dict_get:team.id %}
+		<div class="container-fluid">
+			<div class="progress progress-realtime">
+				<div class="progress-bar bg-success" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.0 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.0 | length }}({{ rt_team.team_wdl_diff.0 | signed }})</div>
+				<div class="progress-bar bg-dark" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.1 | length }}({{ rt_team.team_wdl_diff.1 | signed }})</div>
+				<div class="progress-bar bg-danger" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.2 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.3 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.2 | length }}({{ rt_team.team_wdl_diff.2 | signed }})</div>
+			</div>
+		</div>
+	{% endwith %}
+{% endif %}
+{% endwith %}

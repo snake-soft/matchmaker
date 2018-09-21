@@ -1,0 +1,26 @@
+{% load dict_get signed join_by_attr elements %}
+<span class="btn btn-link text-{% if linkclass %}{{ linkclass }}{% else %}link{% endif %}" tabindex="0" data-trigger="focus" data-toggle="popover" data-title="{% if team.is_player_team %}Single{% else %}Multi{% endif %}-Player-Team">
+	<strong>{{ team.get_team_name_or_members }}</strong> ({{ team.team_rating_as_int }}
+	{% if team.id in team_realtime.keys %}
+		{% with rt_team=team_realtime|dict_get:team.id %}
+			<span class="text-{% if rt_team.strength_diff < 0 %}danger{% elif rt_team.strength_diff > 0%}success{% else %}primary{%endif%}">
+				{{ rt_team.strength_diff|signed}}={{ rt_team.strength}}
+			</span>
+		{% endwith %}
+	{% endif %})
+	<div class="popover-content d-none">
+		<div class=" container-fluid">
+			<div class='row'>
+				<a href="{% url 'team-details' team.id %}" class="btn btn-link">Details</a>
+				<hr />
+				<div class=" container-fluid">
+					<div class='row'>
+						{% for player in team.players.all %}
+							{% player_badge player %}
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</span>

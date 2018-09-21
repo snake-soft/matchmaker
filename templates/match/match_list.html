@@ -13,7 +13,7 @@ $(document).ready(function() {
 
 
 {% block content %}
-{% load humanize %}
+{% load humanize elements %}
 <h1>Match overview</h1>
 <div class="table-responsive">
 <table class="datatable table table-striped table-bordered table-hover" >
@@ -21,42 +21,39 @@ $(document).ready(function() {
 		<tr>
 			<th>ID</th>
 			<th>Time</th>
-			<th>First team</th>
-			<th>Second team</th>
+			<th>First team (and <span class="badge badge-light">Players</span>)</th>
+			<th>Second team (and <span class="badge badge-light">Players</span>)</th>
 			<th>Result</th>
-			<th>Rematches</th>
+			<th>Rematches (Timeline)</th>
 		</tr>
 	</thead>
 {% for match in object_list %}
-    <tr>
-    	<th><a href="{% url 'match-details' match.pk %}">{{match.pk}}</a></th>
-    	<td data-order="{{match.pk}}" title="{{match.date_time|naturaltime}}">{{ match.date_time }}</td>
-    	<td title="{{match.firstteam.verbose_name}}"><a href="{% url 'team-details' match.firstteam.pk %}" class="text-primary">{{match.firstteam}}</a></td>
-    	<td title="{{match.secondteam.verbose_name}}"><a href="{% url 'team-details' match.secondteam.pk %}" class="text-secondary">{{ match.secondteam }}</a></td>
-    	<td data-order="{{ match.goal_difference}}">{{ match.firstteam_goals}}:{{ match.secondteam_goals}} ({{ match.goal_difference}})</td>
-    	<td data-order="{{match.rematches | length}}">
+	<tr>
+		<th><a href="{% url 'match-details' match.pk %}">{{ match.pk }}</a></th>
+		<td data-order="{{match.pk}}" title="{{match.date_time|naturaltime}}">{{ match.date_time }}</td>
+		<td title="{{match.firstteam.verbose_name}}">
+			{% team_details_badge match.firstteam linkclass='primary'%}
+			{% for player in match.firstteam.players.all %}
+				{% player_details_badge player %}
+			{% endfor %}
+		</td>
+		<td title="{{match.secondteam.verbose_name}}">
+			{% team_details_badge match.secondteam linkclass='secondary'%}
+			{% for player in match.secondteam.players.all %}
+				{% player_details_badge player %}
+			{% endfor %}
+		</td>
+		<td data-order="{{ match.goal_difference}}">{% match_details_badge match t2show=False%}</td>
+		<td data-order="{{match.rematches | length}}">
 		{% if match.rematches %}
 			<div class="container-fluid" >
 				<div class="row">
-					<ul style="padding-left: 0;list-style-type: none;">
 					{% for rematch in match.rematches_erlier_later.0 %}
-						<li style="float:left;margin-right: 1px;">
-						{% if match.firstteam is rematch.firstteam %}
-							<a href="{% url 'match-details' rematch.pk %}" class="badge badge-{% if rematch.goal_difference > 0 %}primary{% elif rematch.goal_difference < 0 %}secondary{% else %}light{% endif %}">{{ rematch.firstteam_goals }}:{{ rematch.secondteam_goals }}</a>
-						{% else %}
-							<a href="{% url 'match-details' rematch.pk %}" class="badge badge-{% if rematch.goal_difference < 0 %}primary{% elif rematch.goal_difference > 0 %}secondary{% else %}light{% endif %}">{{ rematch.secondteam_goals }}:{{ rematch.firstteam_goals }}</a>
-						{% endif %}
-						</li>
+						{% match_details_badge rematch match.firstteam t2show=False %}
 					{% endfor %}
-					<li style="float:left;margin-right: 1px;"><span class="badge badge-success">this</span>
+					<span class="badge badge-success">this</span>
 					{% for rematch in match.rematches_erlier_later.1 %}
-						<li style="float:left;margin-right: 1px;">
-						{% if match.firstteam is rematch.firstteam %}
-							<a href="{% url 'match-details' rematch.pk %}" class="badge badge-{% if rematch.goal_difference > 0 %}primary{% elif rematch.goal_difference < 0 %}secondary{% else %}light{% endif %}">{{ rematch.firstteam_goals }}:{{ rematch.secondteam_goals }}</a>
-						{% else %}
-							<a href="{% url 'match-details' rematch.pk %}" class="badge badge-{% if rematch.goal_difference < 0 %}primary{% elif rematch.goal_difference > 0 %}secondary{% else %}light{% endif %}">{{ rematch.secondteam_goals }}:{{ rematch.firstteam_goals }}</a>
-						{% endif %}
-						</li>
+						{% match_details_badge rematch match.firstteam t2show=False %}
 					{% endfor %}
 					</ul>
 				</div>

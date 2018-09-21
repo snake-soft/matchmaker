@@ -15,8 +15,9 @@
 	<tr>
 		<th></th>
 		<td data-order="{{ team.team_rating_as_int }}">
+			{% team_details_badge team team_realtime %}
 			{% for player in team.players.all %}
-				{% player_details_badge player %}
+				{% player_details_badge player player_realtime%}
 			{%endfor%}
 		</td>
 
@@ -38,18 +39,7 @@
 
 		<!-- Team Win Draw Lose -->
 		<td data-order="{% if team.id in team_realtime.keys %}{{ team_realtime|dict_get:team.id|attrib_get:'team_wdl_factor'}}{% else %}{{ team.win_lose_factor }}{% endif %}">
-			{% team_wdl_bar team %}
-			{% if team.id in team_realtime.keys %}
-				{% with rt_team=team_realtime|dict_get:team.id %}
-				<div class="container-fluid">
-					<div class="progress progress-realtime">
-						<div class="progress-bar bg-success" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.0 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.0 | length }}({{ rt_team.team_wdl_diff.0 | signed }})</div>
-						<div class="progress-bar bg-dark" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.1 | length }}({{ rt_team.team_wdl_diff.1 | signed }})</div>
-						<div class="progress-bar bg-danger" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.2 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.3 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.2 | length }}({{ rt_team.team_wdl_diff.2 | signed }})</div>
-					</div>
-					</div>
-				{% endwith %}
-			{% endif %}
+			{% team_wdl_bar team team_realtime %}
 		</td>
 
 		<!-- Goals Own Foreign -->

@@ -1,0 +1,7 @@
+{% load join_by_attr signed dict_get attrib_get list_get round to_percent elements %}
+<a href="{% url 'match-details' match.pk %}" class="btn badge badge-{% if match.goal_difference > 0 %}{{ t1class }}{% elif match.goal_difference < 0 %}{{ t2class }}{% else %}light{% endif %}">
+	{{ match.firstteam_goals }}:{{ match.secondteam_goals }}
+	{% if t1show %} {{ match.firstteam }}{% endif %}
+	{% if t1show or t2show %} vs.{% endif %}
+	{% if t2show %} {{ match.secondteam }}{% endif %}
+</a>

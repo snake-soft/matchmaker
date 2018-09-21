@@ -1,0 +1,2 @@
+{% load join_by_attr signed dict_get attrib_get list_get round to_percent elements %}
+<a href="{% url 'team-details' team.id %}" class="btn btn-link text-{% if linkclass %}{{ linkclass }}{% else %}link{% endif %}"><strong>{{ team }}</strong> {{ team.strength }}</a>

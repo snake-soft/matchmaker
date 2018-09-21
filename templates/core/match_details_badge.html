@@ -1,0 +1,19 @@
+{% load join_by_attr signed dict_get attrib_get list_get round to_percent elements %}
+<span class="btn badge badge-{% if match.goal_difference > 0 %}{{ t1class }}{% elif match.goal_difference < 0 %}{{ t2class }}{% else %}light{% endif %}" tabindex="0" data-trigger="focus" data-title="Details match #{{ match.id }}" data-toggle="popover">
+	{{ match.firstteam_goals }}:{{ match.secondteam_goals }}
+	{% if t1show %} {{ match.firstteam.name }}{% endif %}
+	{% if t1show or t2show %} vs.{% endif %}
+	{% if t2show %} {{ match.secondteam.name }}{% endif %}
+</span>
+<div class="popover-content d-none">
+	<div class=" container-fluid">
+		{% with rematches=match.rematches %}
+			{% if rematches %}
+				{% for rematch in match.rematches %}
+					{% match_badge rematch pov_team=match.firstteam t2show=False %}
+				{% endfor %}
+			{% endif %}
+		{% endwith %}]
+	</div>
+</div>
+</span>
