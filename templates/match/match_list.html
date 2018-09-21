@@ -5,16 +5,9 @@
 
 {% block head %}
 <script>
-function loadDataTables(){
-    var t = $('#match-overview').DataTable( {
-    	"columnDefs": [ {
-    		"searchable": false,
-    		"orderable": true,
-    		"targets": 0
-    	} ],
-    	"order": [[ 0, 'asc' ]]
-    } );
-}
+$(document).ready(function() {
+	loadDataTables(1, 'asc');
+});
 </script>
 {% endblock %}
 
@@ -23,7 +16,7 @@ function loadDataTables(){
 {% load humanize %}
 <h1>Match overview</h1>
 <div class="table-responsive">
-<table id="match-overview" class="table table-striped table-bordered table-hover" >
+<table class="datatable table table-striped table-bordered table-hover" >
 	<thead>
 		<tr>
 			<th>ID</th>

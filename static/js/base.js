@@ -32,15 +32,22 @@ function loadMatchRealtime() {
 	}
 };
 
-function loadDataTables(){
-    var t = $('#matchmaker-result-table').DataTable( {
+function loadDataTables(sort, direction, firstColRanking=false){
+    var t = $('.datatable').DataTable( {
     	"columnDefs": [ {
     		"searchable": false,
     		"orderable": true,
     		"targets": 0
     	} ],
-    	"order": [[ 1, 'asc' ]]
+    	"order": [[ sort, direction]]
     } );
+    if (firstColRanking){
+    	t.on( 'order.dt search.dt', function () {
+    		t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+    			cell.innerHTML = i+1;
+    		} );
+    	} ).draw();
+    }
 }
 
 function increment(element){
@@ -65,10 +72,8 @@ function setPopover() {
 }
 
 $(document).ready(function() {
-	loadDataTables();
-    
-    $('#id_firstteam,#id_secondteam,#id_firstteam_goals,#id_secondteam_goals').on('change',function(){
-    	loadMatchRealtime()
+	$('#id_firstteam,#id_secondteam,#id_firstteam_goals,#id_secondteam_goals').on('change',function(){
+		loadMatchRealtime()
 	});
-    setPopover()
+	setPopover()
 });

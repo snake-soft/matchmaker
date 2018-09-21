@@ -1,7 +1,7 @@
 {% load static join_by_attr signed dict_get attrib_get list_get round to_percent elements %}
 <script>setPopover();</script>
 <div class="table-responsive">
-<table id="teams-realtime" class="table table-striped table-bordered table-hover" >
+<table class="datatable table table-striped table-bordered table-hover" >
 	<thead>
 		<tr>
 			<th style="width: 1%;">#</th>
@@ -15,19 +15,6 @@
 	<tr>
 		<th></th>
 		<td data-order="{{ team.team_rating_as_int }}">
-			<span class="btn btn-link" tabindex="0" data-trigger="focus" data-toggle="popover" data-html="true" data-content="
-			<div class='container-fluid'><div class='row'><strong>{% if team.is_player_team %}Single{% else %}Multi{% endif %}-Player-Team</strong></div></div>
-			">
-			<strong>{{ team.get_team_name_or_members }}</strong> ({{ team.team_rating_as_int }}
-				{% if team.id in team_realtime.keys %}
-					{% with rt_team=team_realtime|dict_get:team.id %}
-						<span class="text-{% if rt_team.strength_diff < 0 %}danger{% elif rt_team.strength_diff > 0%}success{% else %}primary{%endif%}">
-							{{ rt_team.strength_diff|signed}}={{ rt_team.strength}}
-						</span>
-					{% endwith %}
-				{% endif %})
-			<small>{% if not team.is_player_team and team.teamname %} - {{ team.players.all|join_by_attr:"nick" }}{% endif %}</small>
-			</span>
 			{% for player in team.players.all %}
 				{% player_details_badge player %}
 			{%endfor%}
@@ -95,7 +82,9 @@
 </tr>
 {% endfor %}
 </table>
-<script>
-	loadDataTables();
+<script>	
+	$(document).ready(function() {
+		loadDataTables(2, 'desc', true);
+	});
 </script>
 </div>

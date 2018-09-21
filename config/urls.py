@@ -41,7 +41,7 @@ urlpatterns = [
     path('set/date/', DateSetView.as_view(), name="set-date"),
     path('matchmaker/', MatchmakerView.as_view(), name="matchmaker"),
 
-    path('player/', PlayerList.as_view(), name='player-list'),
+    # path('player/', PlayerList.as_view(), name='player-list'),
     path('player/<pk>/', PlayerDetails.as_view(), name="player-details"),
     path('new/player/', PlayerCreate.as_view(), name="player-new"),
 
