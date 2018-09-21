@@ -85,7 +85,7 @@ class Team(models.Model):
 
     def get_team_name_or_members(self):
         """ returns teamname if existing else teamplayers """
-        return self.teamname if self.teamname else '<%s>' % (
+        return self.teamname if self.teamname else '[%s]' % (
             ', '.join([x.nick for x in self.players.all()]))
 
     @property

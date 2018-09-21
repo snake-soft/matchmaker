@@ -39,7 +39,9 @@ class Player(models.Model):
 
     def teams(self):
         """ return teams of this player """
-        return Team.objects.filter(players=self.pk)
+        ret = Team.objects.filter(players=self.pk)
+        print([x for x in ret])
+        return ret
 
     def get_win_draw_lose(self):
         """ returns tuple of three lists ([win], [draw], [lose]) """
