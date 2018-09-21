@@ -46,7 +46,17 @@ function loadDataTables(){
 			<div class="container-fluid" >
 				<div class="row">
 					<ul style="padding-left: 0;list-style-type: none;">
-					{% for rematch in match.rematches %}
+					{% for rematch in match.rematches_erlier_later.0 %}
+						<li style="float:left;margin-right: 1px;">
+						{% if match.firstteam is rematch.firstteam %}
+							<a href="{% url 'match-details' rematch.pk %}" class="badge badge-{% if rematch.goal_difference > 0 %}primary{% elif rematch.goal_difference < 0 %}secondary{% else %}light{% endif %}">{{ rematch.firstteam_goals }}:{{ rematch.secondteam_goals }}</a>
+						{% else %}
+							<a href="{% url 'match-details' rematch.pk %}" class="badge badge-{% if rematch.goal_difference < 0 %}primary{% elif rematch.goal_difference > 0 %}secondary{% else %}light{% endif %}">{{ rematch.secondteam_goals }}:{{ rematch.firstteam_goals }}</a>
+						{% endif %}
+						</li>
+					{% endfor %}
+					<li style="float:left;margin-right: 1px;"><span class="badge badge-success">this</span>
+					{% for rematch in match.rematches_erlier_later.1 %}
 						<li style="float:left;margin-right: 1px;">
 						{% if match.firstteam is rematch.firstteam %}
 							<a href="{% url 'match-details' rematch.pk %}" class="badge badge-{% if rematch.goal_difference > 0 %}primary{% elif rematch.goal_difference < 0 %}secondary{% else %}light{% endif %}">{{ rematch.firstteam_goals }}:{{ rematch.secondteam_goals }}</a>

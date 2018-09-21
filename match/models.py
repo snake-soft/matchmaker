@@ -78,6 +78,17 @@ class Match(models.Model):
         return [x for x in sorted(ret, key=lambda x: x.pk)
                 if x.pk is not self.pk]
 
+    @property
+    def rematches_erlier_later(self):
+        """ returns rematches (earlier, later) """
+        earlier, later = [], []
+        for match in self.rematches:
+            if match.date_time < self.date_time:
+                earlier.append(match)
+            else:
+                later.append(match)
+        return earlier, later
+
     @classmethod
     def previous_matches(cls, firstteam, secondteam):
         """ calculates previous matches by firstteam, secondteam """

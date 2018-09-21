@@ -85,8 +85,17 @@ class Team(models.Model):
 
     def get_team_name_or_members(self):
         """ returns teamname if existing else teamplayers """
-        return self.teamname if self.is_player_team else '%s <%s>' % (
-            self.teamname, ', '.join([x.nick for x in self.players.all()]))
+        return self.teamname if self.teamname else '<%s>' % (
+            ', '.join([x.nick for x in self.players.all()]))
+
+    @property
+    def has_game(self):
+        win, draw, lose = self.get_win_draw_lose
+        return True if win or draw or lose else False
+
+    @property
+    def win_lose_factor(self):
+        return len(self.get_win_draw_lose[0]) - len(self.get_win_draw_lose[1])
 
     @property
     def get_win_draw_lose(self):
@@ -120,6 +129,18 @@ class Team(models.Model):
         return win, draw, lose
 
     @property
+    def get_win_draw_lose_sum(self):
+        win, draw, lose = self.get_win_draw_lose
+        return len(win) + len(draw) + len(lose)
+
+    @property
+    def get_win_draw_lose_percent(self):
+        win, draw, lose = self.get_win_draw_lose
+        sum_ = len(win) + len(draw) + len(lose)
+        sum_ = 100 / sum_ if sum_ else 0
+        return len(win) * sum_, len(draw) * sum_, len(lose) * sum_
+
+    @property
     def close_win_lose(self):
         """ returns ([closewin-games], [loselose-games]) """
         close_win, close_lose = [], []
@@ -138,6 +159,13 @@ class Team(models.Model):
                 close_win.append(match)
 
         return (close_win, close_lose)
+
+    @property
+    def close_win_lose_percent(self):
+        win, lose = self.close_win_lose
+        sum_ = len(win) + len(lose)
+        sum_ = 100 / sum_ if sum_ else 0
+        return len(win) * sum_, len(lose) * sum_
 
     @property
     def close_wl_factor(self):
@@ -173,6 +201,13 @@ class Team(models.Model):
 
         foreign += sum_ if sum_ else 0
         return own, foreign
+
+    @property
+    def goal_own_foreign_percent(self):
+        own, foreign = self.goal_own_foreign
+        sum_ = own + foreign
+        sum_ = 100 / sum_ if sum_ else 0
+        return own * sum_, foreign * sum_
 
     @property
     def goal_factor(self):

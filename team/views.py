@@ -32,6 +32,7 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
         context = super().get_context_data(**kwargs)
         if 'firstteam' in self.request.GET and self.request.GET['firstteam']:
             context = self.init_teams(context)
+        context['max_score'] = self.max_score
         return context
 
     def init_teams(self, context):
@@ -82,10 +83,16 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
         context['team_realtime'][obj.own_team.pk] = obj
         return context
 
+    @property
+    def max_score(self):
+        return max([x.team_score for x in Team.objects.filter(
+                owner=self.request.user)])
+
     class TeamRealtimeValues:
         """ class for realtime calculated values of teams """
 
         def __init__(self, request, teams, goals, player_rt):
+            self.request = request
             self.own_team, enemy = teams
             self.own_goals, self.enemy_goals = goals
             self.own_team.set_from_to(
@@ -100,13 +107,26 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
 
         @property
         def team_score(self):
-            """ returns realtime score of own_team """
+            """ returns realtime score of own_team, percent """
             score = self.own_team.team_score
             if self.own_goals > self.enemy_goals:
                 score += 2
             elif self.own_goals == self.enemy_goals:
                 score += 1
             return score
+
+        @property
+        def max_score(self):
+            """ needs rework!!! """
+            return max([x.team_score for x in Team.objects.filter(
+                owner=self.request.user)])
+
+        @property
+        def team_score_percent(self):
+            sum_ = max([x.team_score for x in Team.objects.filter(
+                owner=self.request.user)])
+            sum_ = 100 / sum_ if sum_ else 0
+            return self.team_score * sum_
 
         @property
         def team_score_diff(self):
@@ -124,6 +144,13 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
             elif self.own_goals < self.enemy_goals:
                 wdl[2].append("Realtime")
             return wdl
+
+        @property
+        def get_win_draw_lose_percent(self):
+            win, draw, lose = self.team_wdl
+            sum_ = len(win) + len(draw) + len(lose)
+            sum_ = 100 / sum_ if sum_ else 0
+            return len(win) * sum_, len(draw) * sum_, len(lose) * sum_
 
         @property
         def team_wdl_diff(self):
@@ -152,6 +179,13 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
             return close_wl
 
         @property
+        def close_win_lose_percent(self):
+            win, lose = self.close_wl
+            sum_ = len(win) + len(lose)
+            sum_ = 100 / sum_ if sum_ else 0
+            return len(win) * sum_, len(lose) * sum_
+
+        @property
         def close_wl_factor(self):
             """ len close_win - len close_lose (for sorting close_win:lose) """
             return len(self.close_wl[0]) - len(self.close_wl[1])
@@ -173,6 +207,19 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
             own += self.own_goals
             foreign += self.enemy_goals
             return own, foreign
+
+        @property
+        def goal_own_foreign_diff(self):
+            own, foreign = self.realtime_goal_own_foreign
+            own_orig, foreign_orig = self.own_team.goal_own_foreign
+            return own - own_orig, foreign - foreign_orig
+
+        @property
+        def goal_own_foreign_percent(self):
+            own, foreign = self.realtime_goal_own_foreign
+            sum_ = own + foreign
+            sum_ = 100 / sum_ if sum_ else 0
+            return own * sum_, foreign * sum_
 
         @property
         def goal_factor(self):

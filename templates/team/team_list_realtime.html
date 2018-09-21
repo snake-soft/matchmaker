@@ -1,6 +1,25 @@
-{% load join_by_attr signed dict_get attrib_get list_get%}
-
+{% load join_by_attr signed dict_get attrib_get list_get round to_percent %}
+<style>
+.bg-success{
+	background-color: #28a74580 !important;
+}
+.bg-danger {
+	background-color: #dc354580 !important;
+}
+.bg-dark {
+	background-color: #343a4080 !important;
+}
+.bg-warning {
+	background-color: #ffc107b3 !important;
+}
+.badge{
+	margin: 1px;
+}
+</style>
 <script>
+$(function () {
+	  $('[data-toggle="popover"]').popover()
+})
 function loadDataTables(){
     var t = $('#teams-realtime').DataTable( {
     	"columnDefs": [ {
@@ -32,69 +51,145 @@ function loadDataTables(){
 	<tr>
 		<th></th>
 		<td data-order="{{ team.team_rating_as_int }}">
-			<strong>
-			{% if team.name != None %}
-				<a href="{% url 'team-details' team.pk %}">{{ team.get_team_name_or_members }}
-			{% else %}
-				<a href="{% url 'team-new' %}?players={{constellation.team1.player_ids|join:','}}&next={{request.path}}" type="button" class="btn btn-warning">Create Team
-			{% endif %}
-			({{ team.team_rating_as_int }}{% if team.id in team_realtime.keys %}<i>{{ team_realtime|dict_get:team.id|attrib_get:'strength_diff'|signed}}={{ team_realtime|dict_get:team.id|attrib_get:'strength'}}</i>{% endif%})</a></strong>
+			<span class="btn btn-link" tabindex="0" data-trigger="focus" data-toggle="popover" data-html="true" data-content="			
+			<a href='{% url 'team-details' team.pk %}'>{{ team.get_team_name_or_members }} ({{ team.team_rating_as_int }})</a>
 		
 			{% if not team.is_player_team or not team.name %}
 			<ul>
 			{% for player in team.players.all %}
-				<li><a href="{% url 'player-details' player.pk %}">{{player.nick}} ({{player.rating_as_int}}{% if player.pk in player_realtime.keys %}<i>{{ player_realtime|dict_get:player.pk|attrib_get:'elo_diff'|signed}}={{ player_realtime|dict_get:player.pk|attrib_get:'elo_as_int'}}</i>{% endif%})</a></li>
+				<li><a href='{% url 'player-details' player.pk %}'>{{player.nick}} ({{player.rating_as_int}})</a></li>
 			{% endfor %}
 			</ul>
 			{% endif %}
+			"><strong>{{ team.get_team_name_or_members }}</strong> ({{ team.team_rating_as_int }}
+			{% if team.id in team_realtime.keys %}
+				{% with rt_team=team_realtime|dict_get:team.id %}
+					<span class="text-{% if rt_team.strength_diff < 0 %}danger{% elif rt_team.strength_diff > 0%}success{% else %}primary{%endif%}">
+						{{ rt_team.strength_diff|signed}}={{ rt_team.strength}}
+					</span>
+				{% endwith %}
+			{% endif %})
+			<small>{% if not team.is_player_team and team.teamname %} - {{ team.players.all|join_by_attr:"nick" }}{% endif %}</small></span>
 		</td>
 
 		<!-- team_score -->
-		{% if team.id in team_realtime.keys %}
-			{% with rt_team=team_realtime|dict_get:team.id %}
-				<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'team_score'}}">{{ team.team_score }}
-					<br />{{ rt_team.team_score_diff|signed }}
-					<br />={{ rt_team.team_score }}
-				</td>
-			{% endwith %}
-		{% else %}
-			<td data-order="{{ team.team_score }}">{{ team.team_score }}</td>
-		{% endif%}
+		<td data-order="{% if team.id in team_realtime.keys %}{{ team_realtime|dict_get:team.id|attrib_get:'team_score'}}{% else %}{{ team.team_score }}{% endif %}">
+			<div class="progress" style="height: 30px;" tabindex="0" data-trigger="focus" data-toggle="popover" data-html="true" data-content="in {{ team.get_win_draw_lose_sum }} game{{team.get_win_draw_lose_sum|pluralize}}">
+				<div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="{{ team.team_score|to_percent:max_score}}" aria-valuemin="0" aria-valuemax="{{ team.team_score|to_percent:max_score}}"><strong>{{ team.team_score }}</strong></div>
+			</div>
+			{% if team.id in team_realtime.keys %}
+				{% with rt_team=team_realtime|dict_get:team.id %}
+						<div class="progress" style="height: 20px; opacity:0.5;">
+							<div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="{{ rt_team.team_score|to_percent:max_score}}" aria-valuemin="0" aria-valuemax="{{ max_score }}">{{ rt_team.team_score }}({{ rt_team.team_score_diff|signed }})</div>
+						</div>
+				{% endwith %}
+			{% endif%}
+		</td>
 
 		<!-- Team Win Draw Lose -->
-		{% if team.id in team_realtime.keys %}
-			{% with rt_team=team_realtime|dict_get:team.id %}
-				<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'team_wdl_factor'}}">{{ team.get_win_draw_lose.0 | length }}:{{ team.get_win_draw_lose.1 | length }}:{{ team.get_win_draw_lose.2 | length }}
-					<br />{{ rt_team.team_wdl_diff.0 | signed }}:{{ rt_team.team_wdl_diff.1 | signed }}:{{ rt_team.team_wdl_diff.2 | signed }}
-					<br />={{ rt_team.team_wdl.0 | length }}:{{ rt_team.team_wdl.1 | length }}:{{ rt_team.team_wdl.2 | length }}
-				</td>
-			{% endwith %}
-		{% else %}
-			<td>{{ team.get_win_draw_lose.0 | length }}:{{ team.get_win_draw_lose.1 | length }}:{{ team.get_win_draw_lose.2 | length }}</td>
-		{% endif%}
+		<td data-order="{% if team.id in team_realtime.keys %}{{ team_realtime|dict_get:team.id|attrib_get:'team_wdl_factor'}}{% else %}{{ team.win_lose_factor }}{% endif %}">
+			{% if team.has_game %}
+				<div class="progress" style="height: 30px;" tabindex="0" data-trigger="focus" data-toggle="popover" data-html="true" data-content="
+						{% for match in team.get_win_draw_lose.0 %}
+							<a href='{% url 'match-details' match.pk %}' class='badge badge-success'>
+							{% if team.pk is match.firstteam.pk %}
+								{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
+							{% else %}
+								{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
+							{% endif %}</a>
+						{% endfor %}
+						{% for match in team.get_win_draw_lose.1 %}
+							<a href='{% url 'match-details' match.pk %}' class='badge badge-dark'>
+							{% if team.pk is match.firstteam.pk %}
+								{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
+							{% else %}
+								{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
+							{% endif %}</a>
+						{% endfor %}
+						{% for match in team.get_win_draw_lose.2 %}
+							<a href='{% url 'match-details' match.pk %}' class='badge badge-danger'>
+							{% if team.pk is match.firstteam.pk %}
+								{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
+							{% else %}
+								{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
+							{% endif %}</a>
+						{% endfor %}"
+						>
+					<div class="progress-bar bg-success" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.0 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.0 | length }}</strong></div>
+					<div class="progress-bar bg-dark" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.1 | length }}</strong></div>
+					<div class="progress-bar bg-danger" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.2 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.3 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.2 | length }}</strong></div>
+				</div>
+				
+			{% endif%}
+			{% if team.id in team_realtime.keys %}
+				{% with rt_team=team_realtime|dict_get:team.id %}
+					<div class="progress" style="height: 20px; opacity:0.5;">
+						<div class="progress-bar bg-success" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.0 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.0 | length }}({{ rt_team.team_wdl_diff.0 | signed }})</div>
+						<div class="progress-bar bg-dark" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.1 | length }}({{ rt_team.team_wdl_diff.1 | signed }})</div>
+						<div class="progress-bar bg-danger" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.2 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.3 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.2 | length }}({{ rt_team.team_wdl_diff.2 | signed }})</div>
+					</div>
+				{% endwith %}
+			{% endif %}
+		</td>
 
 		<!-- Team Close Win Lose -->
-		{% if team.id in team_realtime.keys %}
-			{% with rt_team=team_realtime|dict_get:team.id %}
-				<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'close_wl_factor'}}">{{ team.close_win_lose.0 | length }}:{{ team.close_win_lose.1 | length }}
-					<br />{{ rt_team.close_wl_diff.0 | signed }}:{{ rt_team.close_wl_diff.1 | signed}}
-					<br />={{ rt_team.close_wl.0 | length }}:{{ rt_team.close_wl.1 | length }}
-				</td>
-			{% endwith %}
-		{% else %}
-			<td data-order="{{ team.close_wl_factor }}">{{ team.close_win_lose.0 | length }}:{{ team.close_win_lose.1 | length }}</td>
-		{% endif%}
+		<td data-order="{% if team.id in team_realtime.keys %}{{ team_realtime|dict_get:team.id|attrib_get:'close_wl_factor'}}{% else %}{{ team.close_wl_factor }}{% endif %}">
+			{% if team.close_win_lose.0 or team.close_win_lose.1 %}
+				<div class="progress" style="height: 30px;" tabindex="0" data-trigger="focus" data-toggle="popover" data-html="true" data-content="
+						{% for match in team.close_win_lose.0 %}
+							<a href='{% url 'match-details' match.pk %}' class='badge badge-success'>
+							{% if team.pk is match.firstteam.pk %}
+								{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
+							{% else %}
+								{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
+							{% endif %}</a>
+						{% endfor %}
+						{% for match in team.close_win_lose.1 %}
+							<a href='{% url 'match-details' match.pk %}' class='badge badge-danger'>
+							{% if team.pk is match.firstteam.pk %}
+								{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
+							{% else %}
+								{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
+							{% endif %}</a>
+						{% endfor %}"
+						>
+						<div class="progress-bar bg-success" role="progressbar" style="width: {{ team.close_win_lose_percent.0 }}%" aria-valuenow="{{ team.close_win_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.close_win_lose.0 | length }}</strong></div>
+						<div class="progress-bar bg-danger" role="progressbar" style="width: {{ team.close_win_lose_percent.1 }}%" aria-valuenow="{{ team.close_win_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.close_win_lose.1 | length }}</strong></div>
+				</div>
+			{% endif%}
+			{% if team.id in team_realtime.keys %}
+				{% with rt_team=team_realtime|dict_get:team.id %}
+					{% if rt_team.close_wl.0 or rt_team.close_wl.1 %}
+						<div class="progress" style="height: 20px; opacity:0.5;">
+								<div class="progress-bar bg-success" role="progressbar" style="width: {{ rt_team.close_win_lose_percent.0 }}%" aria-valuenow="{{ rt_team.close_win_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.close_wl.0 | length }} ({{ rt_team.close_wl_diff.0 | signed }})</div>
+								<div class="progress-bar bg-danger" role="progressbar" style="width: {{ rt_team.close_win_lose_percent.1 }}%" aria-valuenow="{{ rt_team.close_win_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.close_wl.1 | length }} ({{ rt_team.close_wl_diff.1 | signed }})</div>
+						</div>
+					{% endif%}
+				{% endwith %}
+			{% endif%}
+		</td>
 
 		<!-- Goals Own Foreign -->
+		<td data-order="{% if team.id in team_realtime.keys %}{{ team_realtime|dict_get:team.id|attrib_get:'goal_factor'}}{% else %}{{team.goal_factor}}{% endif %}">
+			<div class="progress" style="height: 30px;" tabindex="0" data-trigger="focus" data-toggle="popover" data-html="true" data-content="{{team.goal_factor|signed}}">
+			{% if team.goal_own_foreign.0 or team.goal_own_foreign.1 %}
+					<div class="progress-bar bg-success" role="progressbar" style="width: {{ team.goal_own_foreign_percent.0 }}%" aria-valuenow="{{ team.goal_own_foreign_percent.0 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.goal_own_foreign.0 }}</strong></div>
+					<div class="progress-bar bg-danger" role="progressbar" style="width: {{ team.goal_own_foreign_percent.1 }}%" aria-valuenow="{{ team.goal_own_foreign_percent.2 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.goal_own_foreign.1 }}</strong></div>
+			{% else %}
+					<div class="progress-bar bg-light text-dark" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">{{ team.close_win_lose.0 | length }}</div>
+					<div class="progress-bar bg-light text-dark" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">{{ team.close_win_lose.1 | length }}</div>
+			{% endif%}
+			</div>
+				
 		{% if team.id in team_realtime.keys %}
 			{% with rt_team=team_realtime|dict_get:team.id %}
-				<td data-order="{{ team_realtime|dict_get:team.id|attrib_get:'goal_factor'}}">{{ team.goal_own_foreign.0 }}:{{ team.goal_own_foreign.1 }}
-					<br />={{ rt_team.realtime_goal_own_foreign.0 }}:{{ rt_team.realtime_goal_own_foreign.1 }} ({{ rt_team.goal_factor }})
-				</td>
+				<div class="progress" style="height: 20px; opacity:0.5;">
+						<div class="progress-bar bg-success" role="progressbar" style="width: {{ rt_team.goal_own_foreign_percent.0 }}%" aria-valuenow="{{ rt_team.goal_own_foreign_percent.0 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.realtime_goal_own_foreign.0 }} ({{ rt_team.goal_own_foreign_diff.0 | signed }})</div>
+						<div class="progress-bar bg-danger" role="progressbar" style="width: {{ rt_team.goal_own_foreign_percent.1 }}%" aria-valuenow="{{ rt_team.goal_own_foreign_percent.2 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.realtime_goal_own_foreign.1 }} ({{ rt_team.goal_own_foreign_diff.1 | signed }})</div>
+				</div>
 			{% endwith %}
-		{% else %}
-			<td data-order="{{team.goal_factor}}">{{ team.goal_own_foreign.0 }}:{{ team.goal_own_foreign.1 }}</td>
 		{% endif%}
+		</td>
 {% empty %}
 <tr>
 	<th></th>
