@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Sum
+from django.db.models import Sum, Q
 
 from match.models import Match
 
@@ -127,6 +127,12 @@ class Team(models.Model):
             elif result < 0:
                 lose.append(match)
         return win, draw, lose
+
+    @property
+    def matches_chronologic(self):
+        return sorted(Match.objects.filter(Q(firstteam_id=self.pk) | Q(
+            secondteam_id=self.pk), date_time__range=(self.frm, self.to_)
+            ), key=id)
 
     @property
     def get_win_draw_lose_sum(self):

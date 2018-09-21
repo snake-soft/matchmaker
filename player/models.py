@@ -40,7 +40,6 @@ class Player(models.Model):
     def teams(self):
         """ return teams of this player """
         ret = Team.objects.filter(players=self.pk)
-        print([x for x in ret])
         return ret
 
     def get_win_draw_lose(self):
@@ -52,6 +51,11 @@ class Player(models.Model):
             draw += team_results[1]
             lose += team_results[2]
         return win, draw, lose
+
+    @property
+    def matches_chronologic(self):
+        import pdb; pdb.set_trace()  # <---------
+        return sorted()
 
     def get_close_win_lose(self):
         """ returns tuple of two lists ([close win], [close lose]) """

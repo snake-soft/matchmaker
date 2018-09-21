@@ -1,40 +1,5 @@
-{% load join_by_attr signed dict_get attrib_get list_get round to_percent %}
-<style>
-.bg-success{
-	background-color: #28a74580 !important;
-}
-.bg-danger {
-	background-color: #dc354580 !important;
-}
-.bg-dark {
-	background-color: #343a4080 !important;
-}
-.bg-warning {
-	background-color: #ffc107b3 !important;
-}
-.badge{
-	margin: 1px;
-}
-</style>
-<script>
-$(function () {
-	  $('[data-toggle="popover"]').popover()
-})
-function loadDataTables(){
-    var t = $('#teams-realtime').DataTable( {
-    	"columnDefs": [ {
-    		"searchable": false,
-    		"targets": 0
-    	} ],
-    	"order": [[ 2, 'desc' ]]
-    } );
-    t.on( 'order.dt search.dt', function () {
-    	t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-    		cell.innerHTML = i+1;
-    	} );
-    } ).draw();
-}
-</script>
+{% load static join_by_attr signed dict_get attrib_get list_get round to_percent elements %}
+<script>setPopover();</script>
 <div class="table-responsive">
 <table id="teams-realtime" class="table table-striped table-bordered table-hover" >
 	<thead>
@@ -46,7 +11,7 @@ function loadDataTables(){
 			<th class="w-25">Goals</th>
 		</tr>
 	</thead>
-{% for team in object_list %}{% if team.get_win_draw_lose_sum or team.id in team_realtime.keys %}
+{% for team in object_list %}
 	<tr>
 		<th></th>
 		<td data-order="{{ team.team_rating_as_int }}">
@@ -63,149 +28,38 @@ function loadDataTables(){
 				{% endif %})
 			<small>{% if not team.is_player_team and team.teamname %} - {{ team.players.all|join_by_attr:"nick" }}{% endif %}</small>
 			</span>
-
-<!-- Playerbatches -->
 			{% for player in team.players.all %}
-				<span class="badge badge-light" tabindex="0" data-trigger="focus" data-title="Details player {{ player.nick }} <small>({{ player.rating_as_int }})</small>" data-toggle="popover" data-html="true" data-content="
-				{% if player.teams|length > 1 %}
-					{% for pteam in player.teams %}
-						{% if not pteam.pk is team.pk %}
-							<div class='container-fluid'><div class='row'>Results with Team <a href='{% url 'team-details' pteam.pk %}' class='badge badge-light'>{{ pteam.get_team_name_or_members }}</a>:</div></div>
-							<div class='container-fluid'><div class='row'>Score {{pteam.team_score}}</div></div>
-							<div class='progress' style='height: 15px;'>
-								<div class='progress-bar bg-success' role='progressbar' style='width: {{ pteam.get_win_draw_lose_percent.0 }}%' aria-valuenow='{{ pteam.get_win_draw_lose_percent.0 }}' aria-valuemin='0' aria-valuemax='100'><strong>{{ pteam.get_win_draw_lose.0 | length }}</strong></div>
-								<div class='progress-bar bg-dark' role='progressbar' style='width: {{ pteam.get_win_draw_lose_percent.1 }}%' aria-valuenow='{{ pteam.get_win_draw_lose_percent.2 }}' aria-valuemin='0' aria-valuemax='100'><strong>{{ pteam.get_win_draw_lose.1 | length }}</strong></div>
-								<div class='progress-bar bg-danger' role='progressbar' style='width: {{ pteam.get_win_draw_lose_percent.2 }}%' aria-valuenow='{{ pteam.get_win_draw_lose_percent.3 }}' aria-valuemin='0' aria-valuemax='100'><strong>{{ pteam.get_win_draw_lose.2 | length }}</strong></div>
-							</div>
-							{% for match in pteam.get_win_draw_lose.0 %}
-								<a href='{% url 'match-details' match.pk %}' class='badge badge-success'>
-								{% if pteam.pk is match.firstteam.pk %}
-									{{match.firstteam_goals}}:{{match.secondteam_goals}} vs.{{match.secondteam.get_team_name_or_members}}
-								{% else %}
-									{{match.secondteam_goals}}:{{match.firstteam_goals}} vs.{{match.firstteam.get_team_name_or_members}}
-								{% endif %}</a>
-							{% endfor %}
-							{% for match in pteam.get_win_draw_lose.1 %}
-								<a href='{% url 'match-details' match.pk %}' class='badge badge-dark'>
-								{% if pteam.pk is match.firstteam.pk %}
-									{{match.firstteam_goals}}:{{match.secondteam_goals}} vs.{{match.secondteam.get_team_name_or_members}}
-								{% else %}
-									{{match.secondteam_goals}}:{{match.firstteam_goals}} vs.{{match.firstteam.get_team_name_or_members}}
-								{% endif %}</a>
-							{% endfor %}
-							{% for match in pteam.get_win_draw_lose.2 %}
-								<a href='{% url 'match-details' match.pk %}' class='badge badge-danger'>
-								{% if pteam.pk is match.firstteam.pk %}
-									{{match.firstteam_goals}}:{{match.secondteam_goals}} vs.{{match.secondteam.get_team_name_or_members}}
-								{% else %}
-									{{match.secondteam_goals}}:{{match.firstteam_goals}} vs.{{match.firstteam.get_team_name_or_members}}
-								{% endif %}</a>
-								
-							{% endfor %}
-							<hr />
-						{% endif %}
-					{%endfor%}
-					{% endif %}
-				">
-					{{ player.nick }}
-				</span>
+				{% player_details_badge player %}
 			{%endfor%}
-<!-- /Playerbatches -->
 		</td>
 
 		<!-- team_score -->
 		<td data-order="{% if team.id in team_realtime.keys %}{{ team_realtime|dict_get:team.id|attrib_get:'team_score'}}{% else %}{{ team.team_score }}{% endif %}">
-			<div class="progress" style="height: 30px;" tabindex="0" data-trigger="focus" data-toggle="popover" data-html="true" data-content="in {{ team.get_win_draw_lose_sum }} game{{team.get_win_draw_lose_sum|pluralize}}">
+			{% if team.has_game %}
+			<div class="progress" tabindex="0" data-trigger="focus" data-toggle="popover" data-html="true" data-content="in {{ team.get_win_draw_lose_sum }} game{{team.get_win_draw_lose_sum|pluralize}}">
 				<div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="{{ team.team_score|to_percent:max_score}}" aria-valuemin="0" aria-valuemax="{{ team.team_score|to_percent:max_score}}"><strong>{{ team.team_score }}</strong></div>
 			</div>
 			{% if team.id in team_realtime.keys %}
 				{% with rt_team=team_realtime|dict_get:team.id %}
-						<div class="progress" style="height: 20px; opacity:0.5;">
+						<div class="progress progress-realtime">
 							<div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="{{ rt_team.team_score|to_percent:max_score}}" aria-valuemin="0" aria-valuemax="{{ max_score }}">{{ rt_team.team_score }}({{ rt_team.team_score_diff|signed }})</div>
 						</div>
 				{% endwith %}
+			{% endif%}
 			{% endif%}
 		</td>
 
 		<!-- Team Win Draw Lose -->
 		<td data-order="{% if team.id in team_realtime.keys %}{{ team_realtime|dict_get:team.id|attrib_get:'team_wdl_factor'}}{% else %}{{ team.win_lose_factor }}{% endif %}">
-			{% if team.has_game %}
-				<div class="progress" style="height: 30px;" tabindex="0" data-trigger="focus" data-toggle="popover" data-html="true" data-content="
-						{% for match in team.get_win_draw_lose.0 %}
-							<a href='{% url 'match-details' match.pk %}' class='badge badge-success'>
-							{% if team.pk is match.firstteam.pk %}
-								{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
-							{% else %}
-								{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
-							{% endif %}</a>
-						{% endfor %}
-						{% for match in team.get_win_draw_lose.1 %}
-							<a href='{% url 'match-details' match.pk %}' class='badge badge-dark'>
-							{% if team.pk is match.firstteam.pk %}
-								{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
-							{% else %}
-								{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
-							{% endif %}</a>
-						{% endfor %}
-						{% for match in team.get_win_draw_lose.2 %}
-							<a href='{% url 'match-details' match.pk %}' class='badge badge-danger'>
-							{% if team.pk is match.firstteam.pk %}
-								{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
-							{% else %}
-								{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
-							{% endif %}</a>
-						{% endfor %}
-
-						<!-- Team Close Win Lose inside popover-->
-						{% if team.close_win_lose.0 or team.close_win_lose.1 %}
-							<hr />
-							<div class='container-fluid'><div class='row'>Close Victory/Defeat:</div></div>
-							<div class='progress' style='height: 15px;'>
-								
-								<div class='progress-bar bg-success' role='progressbar' style='width: {{ team.close_win_lose_percent.0 }}%' aria-valuenow='{{ team.close_win_lose_percent.0 }}' aria-valuemin='0' aria-valuemax='100'><strong>{{ team.close_win_lose.0 | length }}</strong></div>
-								<div class='progress-bar bg-danger' role='progressbar' style='width: {{ team.close_win_lose_percent.1 }}%' aria-valuenow='{{ team.close_win_lose_percent.2 }}' aria-valuemin='0' aria-valuemax='100'><strong>{{ team.close_win_lose.1 | length }}</strong></div>
-							</div>
-							{% if team.id in team_realtime.keys %}
-								{% with rt_team=team_realtime|dict_get:team.id %}
-									{% if rt_team.close_wl.0 or rt_team.close_wl.1 %}
-										<div class='progress' style='height: 15px; opacity:0.5;'>
-												<div class='progress-bar bg-success' role='progressbar' style='width: {{ rt_team.close_win_lose_percent.0 }}%' aria-valuenow='{{ rt_team.close_win_lose_percent.0 }}' aria-valuemin='0' aria-valuemax='100'>{{ rt_team.close_wl.0 | length }} ({{ rt_team.close_wl_diff.0 | signed }})</div>
-												<div class='progress-bar bg-danger' role='progressbar' style='width: {{ rt_team.close_win_lose_percent.1 }}%' aria-valuenow='{{ rt_team.close_win_lose_percent.2 }}' aria-valuemin='0' aria-valuemax='100'>{{ rt_team.close_wl.1 | length }} ({{ rt_team.close_wl_diff.1 | signed }})</div>
-										</div>
-									{% endif%}
-								{% endwith %}
-							{% endif%}
-							{% for match in team.close_win_lose.0 %}
-								<a href='{% url 'match-details' match.pk %}' class='badge badge-success'>
-								{% if team.pk is match.firstteam.pk %}
-									{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
-								{% else %}
-									{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
-								{% endif %}</a>
-							{% endfor %}
-							{% for match in team.close_win_lose.1 %}
-								<a href='{% url 'match-details' match.pk %}' class='badge badge-danger'>
-								{% if team.pk is match.firstteam.pk %}
-									{{match.firstteam_goals}}:{{match.secondteam_goals}}vs.{{match.secondteam.get_team_name_or_members}}
-								{% else %}
-									{{match.secondteam_goals}}:{{match.firstteam_goals}}vs.{{match.firstteam.get_team_name_or_members}}
-								{% endif %}</a>
-							{% endfor %}
-						{% endif%}
-						<!-- /Team Close Win Lose inside popover-->
-						">
-					<div class="progress-bar bg-success" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.0 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.0 | length }}</strong></div>
-					<div class="progress-bar bg-dark" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.1 | length }}</strong></div>
-					<div class="progress-bar bg-danger" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.2 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.3 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.2 | length }}</strong></div>
-				</div>
-				
-			{% endif%}
+			{% team_wdl_bar team %}
 			{% if team.id in team_realtime.keys %}
 				{% with rt_team=team_realtime|dict_get:team.id %}
-					<div class="progress" style="height: 20px; opacity:0.5;">
+				<div class="container-fluid">
+					<div class="progress progress-realtime">
 						<div class="progress-bar bg-success" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.0 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.0 | length }}({{ rt_team.team_wdl_diff.0 | signed }})</div>
 						<div class="progress-bar bg-dark" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.1 | length }}({{ rt_team.team_wdl_diff.1 | signed }})</div>
 						<div class="progress-bar bg-danger" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.2 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.3 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.2 | length }}({{ rt_team.team_wdl_diff.2 | signed }})</div>
+					</div>
 					</div>
 				{% endwith %}
 			{% endif %}
@@ -214,21 +68,21 @@ function loadDataTables(){
 		<!-- Goals Own Foreign -->
 		<td data-order="{% if team.id in team_realtime.keys %}{{ team_realtime|dict_get:team.id|attrib_get:'goal_factor'}}{% else %}{{team.goal_factor}}{% endif %}">
 			{% if team.goal_own_foreign.0 or team.goal_own_foreign.1 %}
-			<div class="progress" style="height: 30px;" tabindex="0" data-trigger="focus" data-toggle="popover" data-html="true" data-content="{{team.goal_factor|signed}}">
+			<div class="progress" tabindex="0" data-trigger="focus" data-toggle="popover" data-html="true" data-content="{{team.goal_factor|signed}}">
 					<div class="progress-bar bg-success" role="progressbar" style="width: {{ team.goal_own_foreign_percent.0 }}%" aria-valuenow="{{ team.goal_own_foreign_percent.0 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.goal_own_foreign.0 }}</strong></div>
 					<div class="progress-bar bg-danger" role="progressbar" style="width: {{ team.goal_own_foreign_percent.1 }}%" aria-valuenow="{{ team.goal_own_foreign_percent.2 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.goal_own_foreign.1 }}</strong></div>
 			</div>
 			{% endif%}
 		{% if team.id in team_realtime.keys %}
 			{% with rt_team=team_realtime|dict_get:team.id %}
-				<div class="progress" style="height: 20px; opacity:0.5;">
+				<div class="progress progress-realtime">
 						<div class="progress-bar bg-success" role="progressbar" style="width: {{ rt_team.goal_own_foreign_percent.0 }}%" aria-valuenow="{{ rt_team.goal_own_foreign_percent.0 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.realtime_goal_own_foreign.0 }} ({{ rt_team.goal_own_foreign_diff.0 | signed }})</div>
 						<div class="progress-bar bg-danger" role="progressbar" style="width: {{ rt_team.goal_own_foreign_percent.1 }}%" aria-valuenow="{{ rt_team.goal_own_foreign_percent.2 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.realtime_goal_own_foreign.1 }} ({{ rt_team.goal_own_foreign_diff.1 | signed }})</div>
 				</div>
 			{% endwith %}
 		{% endif%}
 		</td>
-{% endif %}{% empty %}
+{% empty %}
 <tr>
 	<th></th>
 	<td>
@@ -241,5 +95,7 @@ function loadDataTables(){
 </tr>
 {% endfor %}
 </table>
-<script>loadDataTables()</script>
+<script>
+	loadDataTables();
+</script>
 </div>

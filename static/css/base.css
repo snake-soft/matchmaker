@@ -49,6 +49,10 @@ nav form > *{
 	margin: 0 5px;
 }
 
+#main-nav{
+	margin-bottom: 20px;
+}
+
 .helptext{
 	display: none;
 	list-style-type: none;
@@ -57,8 +61,42 @@ input:focus ~ .helptext{
 	display: block;
 }
 
+.badge{
+	margin: 1px;
+}
+
+.progress{
+	height: 30px;
+}
+
+.progress-realtime{
+	height: 15px!important;
+	opacity:0.6;
+}
+
+#teams-realtime .bg-success{
+	background-color: #28a74580 !important;
+}
+#teams-realtime .bg-danger {
+	background-color: #dc354580 !important;
+}
+#teams-realtime .bg-dark {
+	background-color: #343a4080 !important;
+}
+#teams-realtime .bg-warning {
+	background-color: #ffc107b3 !important;
+}
+
 #id_nick, #id_teamname, #id_username, #id_password, #id_password1, #id_password2{
 	width: 100%;
+}
+
+#id_count li{
+	float:left;
+	margin-right: 10px;
+}
+#id_count label{
+	margin: 0;
 }
 
 @media (min-width: 858px) {

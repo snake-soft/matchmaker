@@ -4,41 +4,9 @@ Matchmaker
 {% endblock %}
 {% block var_link %}{% endblock %}
 
-
 {% block head %}
-<style>
-#id_count li{
-	float:left;
-	margin-right: 10px;
-}
-#id_count label{
-	margin: 0;
-}
-</style>
+{% load elements %}
 <script>
-$(function () {
-	  $('[data-toggle="popover"]').popover()
-})
-function loadDataTables(){
-    var t = $('#matchmaker-result-table').DataTable( {
-    	"columnDefs": [ {
-    		"searchable": false,
-    		"orderable": true,
-    		"targets": 0
-    	} ],
-    	"order": [[ 1, 'asc' ]]
-    } );
-}
-
-function increment(element){
-	$(element).get(0).value++; loadMatchRealtime();
-}
-
-function decrement(element){
-	if ($(element).val() > 0){
-		$(element).get(0).value--; loadMatchRealtime();
-	}
-}
 </script>
 {% endblock %} 
 
@@ -84,13 +52,13 @@ function decrement(element){
 {% for constellation in constellations %}
 <tr>
 <!-- Team 1 -->
-<td data-order="{{ team.team_rating_as_int }}">
+<td data-order="{{ constellation.team1.team.team_rating_as_int }}">
 	<strong>
 	{% if constellation.team1.team.name != None %}
 		<a href="{% url 'team-details' constellation.team1.team.id %}" class="text-primary">{{ constellation.team1.team }}</a>
 	{% else %}
 		<span href="#" tabindex="0" class="btn btn-warning" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Create Team" data-container="body" type="button" data-html="true">
-			<div id="popover-content" class="d-none">
+			<div class="popover-content d-none">
 				<form method="post" action="{%url 'team-new'%}">{% csrf_token %}
 					Teamname (optional): {{teamcreate_form.teamname}}
 					{% for player in constellation.team1.players %}
@@ -105,7 +73,7 @@ function decrement(element){
 	</strong>
 	{% if not constellation.team1.team.is_player_team or not constellation.team1.team.name %}
 		{% for player in constellation.team1.players %}
-			<a href="{% url 'player-details' player.pk %}" class="badge badge-light">{{player.nick}} ({{player.rating_as_int}})</a>
+			{% player_details_badge player %}
 		{% endfor %}
 	{% endif %}
 </td>
@@ -113,8 +81,8 @@ function decrement(element){
 
 <!-- Balance -->
 <td data-order="{{ constellation.difference }}">
-	<div class="progress" style="height: 30px;" tabindex="0" data-trigger="focus" data-toggle="popover" data-placement="top" data-html="true">
-		<div id="popover-content" class="d-none">
+	<div class="progress" tabindex="0" data-trigger="focus" data-toggle="popover" data-placement="top" data-html="true">
+		<div class="popover-content d-none">
 			{% if constellation.previous_matches %}
 			<table>
 				<tr><th colspan=3>Played games:</tr>
@@ -140,17 +108,13 @@ function decrement(element){
 	{% if constellation.previous_matches %}
 	<div class="container-fluid" >
 		<div class="row">
-			<ul style="padding-left: 0;list-style-type: none;">
 			{% for match in constellation.previous_matches %}
-				<li style="float:left;margin-right: 1px;">
 				{% if match.firstteam.pk is constellation.team1.team.pk %}
 					<a href="{% url 'match-details' match.pk %}" class="badge badge-{% if match.goal_difference > 0 %}primary{% elif match.goal_difference < 0 %}secondary{% else %}light{% endif %}">{{ match.firstteam_goals }}:{{ match.secondteam_goals }}</a>
 				{% else %}
 					<a href="{% url 'match-details' match.pk %}" class="badge badge-{% if match.goal_difference < 0 %}primary{% elif match.goal_difference > 0 %}secondary{% else %}light{% endif %}">{{ match.secondteam_goals }}:{{ match.firstteam_goals }}</a>
 				{% endif %}
-				</li>
 			{% endfor %}
-			</ul>
 		</div>
 	</div>
 	{% endif %}
@@ -158,12 +122,12 @@ function decrement(element){
 <!-- /Balance -->
 
 <!-- Team 2 -->
-<td data-order="{{ team.team_rating_as_int }}"><strong>
+<td data-order="{{ constellation.team1.team.team_rating_as_int }}"><strong>
 	{% if constellation.team2.team.name != None %}
-		<a href="{% url 'team-details' constellation.team2.team.id %}" class="text-secondary">{{ constellation.team2.team }}
+		<a href="{% url 'team-details' constellation.team2.team.id %}" class="text-secondary">{{ constellation.team2.team }}</a></strong>
 	{% else %}
 		<span href="#" tabindex="0" class="btn btn-warning" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Create Team" data-container="body" type="button" data-html="true">
-			<div id="popover-content" class="d-none">
+			<div class="popover-content d-none">
 				<form method="post" action="{%url 'team-new'%}">{% csrf_token %}
 					Teamname (optional): {{teamcreate_form.teamname}}
 					{% for player in constellation.team2.players %}
@@ -175,7 +139,6 @@ function decrement(element){
 			</div>
 			Create Team ({{ constellation.team2.strength }})</span>
 	{% endif %}
-	</a></strong>
 
 	{% if not constellation.team2.team.is_player_team or not constellation.team2.team.name %}
 	{% for player in constellation.team2.players %}

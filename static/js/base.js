@@ -32,6 +32,17 @@ function loadMatchRealtime() {
 	}
 };
 
+function loadDataTables(){
+    var t = $('#matchmaker-result-table').DataTable( {
+    	"columnDefs": [ {
+    		"searchable": false,
+    		"orderable": true,
+    		"targets": 0
+    	} ],
+    	"order": [[ 1, 'asc' ]]
+    } );
+}
+
 function increment(element){
 	$(element).get(0).value++;
 	loadMatchRealtime();
@@ -44,11 +55,20 @@ function decrement(element){
 	}
 }
 
+function setPopover() {
+	$('[data-toggle="popover"]').popover({
+		html: true,
+		content: function(){
+			return $(this).find('.popover-content').html();
+		}
+	})
+}
+
 $(document).ready(function() {
 	loadDataTables();
     
     $('#id_firstteam,#id_secondteam,#id_firstteam_goals,#id_secondteam_goals').on('change',function(){
     	loadMatchRealtime()
 	});
+    setPopover()
 });
-

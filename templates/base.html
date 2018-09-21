@@ -19,14 +19,6 @@
 	<link rel="shortcut icon" type="image/png" href="{% static "images/favicon.ico" %}"/>
 	<script>
 		var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
-		$(function () {
-			$('[data-toggle="popover"]').popover({
-					html: true,
-					content: function(){
-						return $(this).find('#popover-content').html();
-					}
-				})
-			})
 	</script>
 	<script src="{% static "js/base.js" %}"></script>
 	<link rel="stylesheet" href="{% static "css/base.css" %}"/>
@@ -34,7 +26,7 @@
 	{% endblock %}
 </head>
 <body>
-<nav id="main-nav" style="margin-bottom: 20px;" class="navbar navbar-expand-lg navbar-light bg-light">
+<nav id="main-nav" class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="btn btn-outline-success navbar-brand" href="{% url 'matchmaker' %}">Matchmaker</a>
   <a class="btn btn-outline-success navbar-brand" href="{% url 'match-new' %}">Match</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
