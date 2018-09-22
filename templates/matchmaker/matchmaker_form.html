@@ -137,7 +137,7 @@ Matchmaker
 
 	{% if not constellation.team2.team.is_player_team or not constellation.team2.team.name %}
 	{% for player in constellation.team2.players %}
-		<a href="{% url 'player-details' player.pk %}" class="badge badge-light">{{player.nick}} ({{player.rating_as_int}})</a>
+		{% player_details_badge player %}
 	{% endfor %}
 	</ul>
 	{% endif %}

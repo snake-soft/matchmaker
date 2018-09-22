@@ -67,6 +67,7 @@ input:focus ~ .helptext{
 
 .progress{
 	height: 30px;
+	width: 100%;
 }
 
 .progress-realtime{

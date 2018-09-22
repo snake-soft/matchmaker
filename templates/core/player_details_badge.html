@@ -1,27 +1,6 @@
 {% load join_by_attr signed dict_get attrib_get list_get round to_percent elements %}
-
-<span class="btn badge badge-light" tabindex="0" data-trigger="focus" data-title="Details player {{ player.nick }} <small>({{ player.rating_as_int }})</small>" data-toggle="popover">
-	{{ player.nick }} <small>({{ player.rating_as_int }})</small>
-<div class="popover-content d-none">
-	<div class=" container-fluid">
-		<div class='row'>
-			{% if player.teams|length > 0 %}
-				{% for pteam in player.teams %}
-					{% if pteam.has_game %}
-								Results with Team {{ pteam.get_team_name_or_members }}:
-							{% for match in pteam.matches_chronologic %}
-								{% match_badge match pov_team=pteam t1class='success' t2class='danger' %}
-							{% endfor %}
-							<div class="container-fluid">
-								<div class="row">
-									(Score {{pteam.team_score}})
-								</div>
-								<hr>
-							</div>
-					{% endif %}
-				{%endfor%}
-			{% endif %}
-		</div>
-	</div>
-</div>
+<span data-href="{% url 'player-details' player.pk %}" class="popover-lazy btn badge badge-light" tabindex="0"
+		data-title="Details player {{ player.nick }} <small>({{ player.rating_as_int }})</small>" 
+		data-trigger="focus" data-toggle="popover-lazy" data-title="testpopup">
+	{{ player.nick }}
 </span>

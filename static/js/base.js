@@ -71,9 +71,29 @@ function setPopover() {
 	})
 }
 
+function setPopoverLazy() {
+	$('[data-toggle="popover-lazy"]').popover({
+	    "html": true,
+	    "content": function(){
+	        var div_id =  "tmp-id-" + $.now();
+	        return details_in_popup($(this).attr('data-href'), div_id);
+	    }
+	});
+}
+function details_in_popup(link, div_id){
+    $.ajax({
+        url: link,
+        success: function(response){
+            $('#'+div_id).html(response);
+        }
+    });
+    return '<div id="'+ div_id +'">Loading...</div>';
+}
+
 $(document).ready(function() {
 	$('#id_firstteam,#id_secondteam,#id_firstteam_goals,#id_secondteam_goals').on('change',function(){
 		loadMatchRealtime()
 	});
 	setPopover()
+	setPopoverLazy()
 });
