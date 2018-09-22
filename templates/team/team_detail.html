@@ -17,12 +17,12 @@
 				{% endif %}
 			</tr>
 
-{% if team.has_game %}
+			{% if team.has_game %}
 			<tr><th>Win/draw/lose:</th></tr>
 			<tr><td>
 				<div class="progress">
 					<div class="progress-bar bg-success" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.0 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.0 | length }}</strong></div>
-					<div class="progress-bar bg-dark" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.1 | length }}</strong></div>
+					<div class="progress-bar bg-light text-secondary" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.1 | length }}</strong></div>
 					<div class="progress-bar bg-danger" role="progressbar" style="width: {{ team.get_win_draw_lose_percent.2 }}%" aria-valuenow="{{ team.get_win_draw_lose_percent.3 }}" aria-valuemin="0" aria-valuemax="100"><strong>{{ team.get_win_draw_lose.2 | length }}</strong></div>
 				</div>
 			</td></tr>
@@ -55,14 +55,13 @@
 		
 			<div class="popover-content d-none">
 			{% for match in matches %}
-				<a href='{% url 'match-details' match.pk %}' class='badge badge-{% if match.goal_difference > 0 %}success{% elif match.goal_difference < 0 %}danger{% else %}dark{% endif %}'>
+				<a href='{% url 'match-details' match.pk %}' class='badge badge-{% if match.goal_difference > 0 %}success{% elif match.goal_difference < 0 %}danger{% else %}secondary{% endif %}'>
 				{% if team.pk is match.firstteam.pk %}
 					{{match.firstteam_goals}}:{{match.secondteam_goals}} vs.{{match.secondteam.get_team_name_or_members}}
 				{% else %}
 					{{match.secondteam_goals}}:{{match.firstteam_goals}} vs.{{match.firstteam.get_team_name_or_members}}
 				{% endif %}</a>
 			{% endfor %}
-			<hr />
 			
 				<hr>
 
@@ -88,7 +87,7 @@ No games played, yet.
 		<div class="container-fluid">
 			<div class="progress progress-realtime">
 				<div class="progress-bar bg-success" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.0 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.0 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.0 | length }}({{ rt_team.team_wdl_diff.0 | signed }})</div>
-				<div class="progress-bar bg-dark" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.1 | length }}({{ rt_team.team_wdl_diff.1 | signed }})</div>
+				<div class="progress-bar bg-light text-secondary" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.1 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.2 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.1 | length }}({{ rt_team.team_wdl_diff.1 | signed }})</div>
 				<div class="progress-bar bg-danger" role="progressbar" style="width: {{ rt_team.get_win_draw_lose_percent.2 }}%" aria-valuenow="{{ rt_team.get_win_draw_lose_percent.3 }}" aria-valuemin="0" aria-valuemax="100">{{ rt_team.team_wdl.2 | length }}({{ rt_team.team_wdl_diff.2 | signed }})</div>
 			</div>
 		</div>

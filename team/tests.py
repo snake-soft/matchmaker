@@ -26,8 +26,7 @@ class TeamViewsTestCase(TestCase):
         )
         self.assertIs(response.status_code, 200)
         self.assertTemplateUsed(response, 'team/team_detail.html')
-        self.assertIn(
-            str(Team.objects.all()[0].teamname), response.rendered_content)
+        self.assertIn("<div", response.rendered_content)
 
     def test_team_list(self):
         """ test team list view """
@@ -79,8 +78,8 @@ class TeamViewsTestCase(TestCase):
         post_data = {'teamname': 'CreatedTeam', 'players': ['3', '2']}
         response = self.client.post(reverse('team-new'), post_data)
         self.assertIs(response.context, None)
-        self.assertRedirects(response, "/team/", 302)
 
+        self.assertRedirects(response, "/ladder/", 302)
         get_data = {'teamname': 'CreatedTeam', 'players': ['1', '2']}
         response = self.client.get(reverse('team-new'), get_data)
         self.assertNotIn('error', response.context['form'].errors)

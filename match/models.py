@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from copy import deepcopy
 
 
 class Match(models.Model):
@@ -112,6 +113,16 @@ class Match(models.Model):
                 self.secondteam_goals - self.firstteam_goals,
                 self.secondteam
             )
+
+    def pov(self, pov_team):
+        self_copy = deepcopy(self)
+        if self.firstteam != pov_team:
+            self_copy.firstteam, self_copy.secondteam = \
+                self_copy.secondteam, self_copy.firstteam
+
+            self_copy.firstteam_goals, self_copy.secondteam_goals = \
+                self_copy.secondteam_goals, self_copy.firstteam_goals
+        return self_copy
 
     def save(self, *args, **kwargs):  # pylint: disable=W0221
         if self.firstteam.pk is self.secondteam.pk:

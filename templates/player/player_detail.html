@@ -4,10 +4,22 @@
 		{% if player.teams|length > 0 %}
 			{% for pteam in player.teams %}
 				{% if pteam.has_game %}
-							Results with Team {{ pteam.get_team_name_or_members }}:
-						{% for match in pteam.matches_chronologic %}
-							{% match_badge match pov_team=pteam t1class='success' t2class='danger' %}
-						{% endfor %}
+						<div class="container-fluid">
+							<div class="row">
+								{% if pteam.is_player_team %}
+									Single Player Results:
+								{% else %}
+									Results with Team {{ pteam.get_team_name_or_members }}:
+								{% endif %}
+							</div>
+						</div>
+						<div class="container-fluid">
+							<div class="row">
+								{% for match in pteam.matches_chronologic %}
+									{% match_badge match pov_team=pteam t1class='success' t2class='danger' %}
+								{% endfor %}
+							</div>
+						</div>
 						<div class="container-fluid">
 							<div class="row">
 								(Score {{pteam.team_score}})

@@ -1,0 +1,7 @@
+<div class="container-fluid">
+	<div class="progress{% if add_class %} {{ add_class }}" progress-realtime">
+	{% for value in val_dict %}
+		<div class="progress-bar bg-{{ value.class }}" role="progressbar" style="width: {{ value.percent }}%" aria-valuenow="{{ value.percent }}" aria-valuemin="0" aria-valuemax="100">{{ value.text }}</div>
+	{% endfor %}
+	</div>
+</div>
