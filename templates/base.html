@@ -59,10 +59,10 @@
 		{% if request.user.is_authenticated %}
 			<a class="nav-link" href="{% url 'logout' %}">Log out {{ request.user.username }}</a>
 		{% else %}
-			<a href="#" class="nav-link" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Login" data-container="body" type="button" data-html="true">
-			<div id="popover-content" class="d-none">
+			<a href="#" class="nav-link" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Login" data-container="body" data-html="true">
+			<div class="d-none popover-content">
 				<form method="post" action="{%url 'login'%}">{% csrf_token %}
-					{{login_form}}
+					{{ login_form }}
 				<button class="btn btn-primary btn-block mt-3" type="submit">Login</button>
 				</form>
 			</div>
