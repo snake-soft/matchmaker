@@ -8,8 +8,11 @@ body{
 	font-size:1em;
 	background: #a8c296; /* Old browsers */
 	overflow-y: scroll;
-  margin: 0px;
-  padding: 0px;
+	margin: 0px;
+	padding: 0px;
+	background-repeat: no-repeat;
+	background-position: bottom center;
+	background-size: 66%;
 }
 * {
 	box-sizing: border-box;
