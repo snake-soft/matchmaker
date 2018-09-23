@@ -25,69 +25,102 @@
 	{% block head %}
 	{% endblock %}
 </head>
+
 <body>
 <nav id="main-nav" class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="btn btn-outline-success navbar-brand" href="{% url 'matchmaker' %}">Matchmaker</a>
-  <a class="btn btn-outline-success navbar-brand" href="{% url 'match-new' %}">Match</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'ladder' %}">Ladder</a>
-      </li>
-
-      <li class="nav-item <!--active-->">
-        <a class="nav-link" href="{% url 'match-list' %}">Matches<span class="sr-only">(current)</span></a>
-      </li>
-
-	<li class="nav-item dropdown">
-	        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-	          Create New
-	        </a>
-	        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-	          <a class="dropdown-item" href="{% url 'team-new' %}">Team</a>
-	          <a class="dropdown-item" href="{% url 'player-new' %}">Player</a>
-     </li>
-      <li class="nav-item <!--active-->">
-        <a class="nav-link" href="{% url 'home' %}">Manual</a>
-      </li>
-
-      <li class="nav-item <!--active-->">
-		{% if request.user.is_authenticated %}
-			<a class="nav-link" href="{% url 'logout' %}">Log out {{ request.user.username }}</a>
-		{% else %}
-			<a href="#" class="nav-link" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Login" data-container="body" data-html="true">
+	<a class="btn btn-outline-success navbar-brand" href="{% url 'matchmaker' %}">Balancer</a>
+	<a class="btn btn-outline-success navbar-brand" href="{% url 'match-new' %}">Tracker</a>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item">
+			<a class="nav-link" href="{% url 'ladder' %}">Ladder</a>
+		</li>
+		<li class="nav-item <!--active-->">
+			<a class="nav-link" href="{% url 'match-list' %}">Matches<span class="sr-only">(current)</span></a>
+		</li>
+		<li class="nav-item">
+			<a href="#" class="nav-link" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="New Player" data-container="body" data-html="true">
 			<div class="d-none popover-content">
-				<form method="post" action="{%url 'login'%}">{% csrf_token %}
-					{{ login_form }}
-				<button class="btn btn-primary btn-block mt-3" type="submit">Login</button>
-				</form>
+				{% if request.user.is_authenticated %}
+					<form method="post" action="{%url 'player-new'%}">{% csrf_token %}
+						{{ new_player_form }}
+						<input type="hidden" name="next" value="{{ request.get_raw_uri }}">
+						<button class="btn btn-primary btn-block mt-3" type="submit">Create Player</button>
+					</form>
+				{% else %}
+					Login or Register <br />
+					(completely free)
+				{% endif %}
 			</div>
-			Log in</a>
-		{% endif %}
-      </li>
-    </ul>
-
-
-    <form class="form-inline my-2 my-lg-0" method="post" action="{% url 'set-date' %}">{% csrf_token %}
-      <label for="id_from">From:{{time_range_form.frm}}</label>
-      <label for="id_to">To:{{time_range_form.to}}</label>
-      <input type="hidden" name="next" value="{{ request.path }}">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Filter</button>
-    </form>
-  </div>
+			New Player
+			</a>
+		</li>
+		<li class="nav-item">
+			<span class="btn nav-link" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="New Team" data-container="body" data-html="true">
+			<div class="d-none popover-content">
+				{% if request.user.is_authenticated %}
+					<form method="post" action="{%url 'login'%}">{% csrf_token %}
+						{{ new_team_form }}
+						<input type="hidden" name="next" value="{{ request.get_raw_uri }}">
+						<button class="btn btn-primary btn-block mt-3" type="submit">Create Team</button>
+					</form>
+				{% else %}
+					Login or Register <br />
+					(completely free)
+				{% endif %}
+			</div>
+			New Team
+			</span>
+		</li>
+		<li class="nav-item">
+			<span class="btn nav-link" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Date" data-container="body" data-html="true">
+			<div class="d-none popover-content">
+				{% if request.user.is_authenticated %}
+					<form method="post" action="{% url 'set-date' %}">{% csrf_token %}
+						{{ time_range_form }}
+						<input type="hidden" name="next" value="{{ request.get_raw_uri }}">
+						<button class="btn btn-primary btn-block mt-3" type="submit">Set</button>
+					</form>
+				{% else %}
+					Login or Register <br />
+					(completely free)
+				{% endif %}
+			</div>
+			Date
+			</span>
+		</li>
+	</ul>
+	<ul class="nav navbar-nav justify-content-end">
+		<li class="nav-item <!--active-->">
+			<a class="nav-link" href="{% url 'home' %}">Manual</a>
+		</li>
+		<li class="nav-item <!--active-->">
+			{% if request.user.is_authenticated %}
+				<a class="nav-link" href="{% url 'logout' %}">Log out {{ request.user.username }}</a>
+			{% else %}
+				<span id="login" class="btn nav-link" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Login" data-container="body" data-html="true">
+				<div class="d-none popover-content">
+					<form method="post" action="{%url 'login'%}">{% csrf_token %}
+						{{ login_form }}
+					<button class="btn btn-primary btn-block mt-3" type="submit">Login</button>
+					</form>
+					<a href="{% url 'signup' %}">Register</a>
+				</div>
+				Log in</span>
+			{% endif %}
+		</li>
+	</ul>
 </nav>
-
-	<div id="content" class="container-fluid">
-		<div class="row">
-		 <div class="col-sm">
-	            {% block content %}
-			    {% endblock %}
-		    </div>
-	    </div>
+<div id="content" class="container-fluid">
+	<div class="row">
+		<div class="col-sm">
+			{% block content %}
+			{% endblock %}
+		</div>
 	</div>
+</div>
 </body>
 </html>

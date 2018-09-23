@@ -4,7 +4,7 @@
 
 {% block content %}
 	<div class="container">
-		<h2>Sign up</h2>
+		<h2>Register</h2>
 		<form method="post">
 			{% if form.errors %}
 			<div class="alert alert-danger" role="alert">
@@ -19,7 +19,7 @@
 			<table class="table table-striped table-bordered table-hover">
 				{{ form.as_table }}
 			</table>
-			<button class="btn btn-primary btn-block" type="submit">Sign up</button>
+			<button class="btn btn-primary btn-block" type="submit">Register</button>
 			<br />
 			<a href="{% url 'login' %}">Login</a>
 		</form>

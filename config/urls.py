@@ -19,7 +19,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 from core.views import StartView
 from core.views import DateSetView
-from player.views import PlayerList, PlayerDetails, PlayerCreate
+from player.views import PlayerDetails, PlayerCreate
 from team.views import TeamList, TeamDetails, TeamCreate, TeamListRealtime
 from match.views import MatchList, MatchDetails, MatchCreate
 from matchmaker.views import MatchmakerView

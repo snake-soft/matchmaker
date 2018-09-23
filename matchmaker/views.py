@@ -47,7 +47,6 @@ class MatchmakerView(LoginRequiredMixin, View):
             if len(request.GET.getlist('players')) \
                     < int(request.GET.get('count')):
                 form.errors['error'] = 'Choose more players !'
-        context["teamcreate_form"] = TeamCreateForm(owner=self.request.user)
         context["matchmaker_form"] = form
         return render(
             request,

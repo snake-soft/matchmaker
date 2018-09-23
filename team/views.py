@@ -1,6 +1,6 @@
 """ views of team module """
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.urls import reverse
 
 from player.models import Player, Elo
@@ -86,7 +86,7 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
     @property
     def max_score(self):
         return max([x.team_score for x in Team.objects.filter(
-                owner=self.request.user)])
+            owner=self.request.user)])
 
     class TeamRealtimeValues:
         """ class for realtime calculated values of teams """
@@ -285,11 +285,6 @@ class TeamCreate(LoginRequiredMixin, CreateView):\
     model = Team
     form_class = TeamCreateForm
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['owner'] = self.request.user
-        return kwargs
-
     def get_initial(self):
         self.success_url = self.request.GET['next']\
             if 'next' in self.request.GET else reverse('team-list')
@@ -299,6 +294,11 @@ class TeamCreate(LoginRequiredMixin, CreateView):\
             initial['players'] = [
                 int(x) for x in self.request.GET['players'].split(',')]
         return initial
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_valid(self, form):
         self.success_url = self.request.POST.get('next', reverse('ladder'))

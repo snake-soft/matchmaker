@@ -45,4 +45,4 @@ class PlayerCreate(LoginRequiredMixin, CreateView):\
         return super().form_valid(form)
 
     def get_initial(self):
-        self.success_url = reverse('ladder')  # self.request.path
+        self.success_url = self.request.POST.get('next', reverse('ladder'))

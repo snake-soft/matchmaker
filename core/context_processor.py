@@ -4,6 +4,8 @@ from calendar import monthrange
 from django.contrib.auth.forms import AuthenticationForm
 
 from .forms import TimeRangeForm
+from player.forms import PlayerCreateForm
+from team.forms import TeamCreateForm
 
 
 def date_to_str(date_obj):
@@ -25,7 +27,7 @@ def default(request):
             date.today().replace(day=monthrange(
                 date.today().year,
                 date.today().month)[1]))
-    return {
+    context = {
         'time_range_form': TimeRangeForm(
             initial={
                 'frm': request.session["from"],
@@ -35,4 +37,7 @@ def default(request):
         'from': str_to_date(request.session['from']),
         'to': str_to_date(request.session['to']),
         'login_form': AuthenticationForm,
-    }
+        'new_player_form': PlayerCreateForm,
+        'new_team_form': TeamCreateForm(request=request),
+        }
+    return context

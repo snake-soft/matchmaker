@@ -9,9 +9,11 @@ class TeamCreateForm(forms.ModelForm):
     """ Team creation form """
 
     def __init__(self, *args, **kwargs):
-        owner = kwargs.pop('owner')
+        self.request = kwargs.pop('request')
         super().__init__(*args, **kwargs)
-        self.fields['players'].queryset = Player.objects.filter(owner=owner)
+        self.fields['players'].queryset = Player.objects.filter(
+            owner=self.request.user if self.request.user.is_authenticated
+            else False)
 
     class Meta:
         model = Team
