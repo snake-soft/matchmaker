@@ -68,16 +68,25 @@ function setPopover() {
 		content: function(){
 			return $(this).find('.popover-content').html();
 		},
+		trigger: 'focus'
+	});
+
+	$('[data-toggle="popover-manual"]').popover({
+		html: true,
+		content: function(){
+			return $(this).find('.popover-content').html();
+		},
 		title : function(){
 			return $(this).attr('data-title') + '<button onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</button>';
 		},
 		trigger: 'manual'
 	});
-	$('[data-toggle="popover"]').click(function(){
+
+	$('[data-toggle="popover-manual"]').click(function(){
 		$(this).popover('show');
 	});
 	/* Workaround for checkboxes inside popover */
-	$('[data-toggle="popover"]').popover().find('label').click(function(){
+	$('[data-toggle="popover-manual"]').popover().find('label').click(function(){
 		var id = $(this).attr('for');
 		var box = $('#' + id);
 		if (box.attr("checked") == "checked"){
@@ -86,17 +95,16 @@ function setPopover() {
 			$('#' + id).attr( "checked", true );
 		}
 	});
-}
 
-function setPopoverLazy() {
 	$('[data-toggle="popover-lazy"]').popover({
-	    html: true,
-	    content: function(){
-	        var div_id =  "tmp-id-" + $.now();
-	        return details_in_popup($(this).attr('data-href'), div_id);
-	    }
+		html: true,
+		content: function(){
+			var div_id =  "tmp-id-" + $.now();
+			return details_in_popup($(this).attr('data-href'), div_id);
+		}
 	});
 }
+
 function details_in_popup(link, div_id){
     $.ajax({
         url: link,
@@ -130,5 +138,4 @@ $(document).ready(function() {
 /* For All */
 $(document).ready(function() {
 	setPopover()
-	setPopoverLazy()
 });

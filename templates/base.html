@@ -22,10 +22,6 @@
 		var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 	</script>
 	<style>
-		svg{
-			height: 16px;
-			width:16px;
-		}
 	</style>
 	<script src="{% static "js/base.js" %}"></script>
 	<link rel="stylesheet" href="{% static "css/base.css" %}"/>
@@ -57,7 +53,7 @@
 
 <!-- New Player -->
 		<li class="nav-item">
-			<span class="btn nav-link text-left" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="New Player" data-container="body" data-html="true">
+			<span class="btn nav-link text-left" tabindex="0" data-placement="bottom" data-toggle="popover-manual" data-trigger="click" data-title="New Player" data-container="body" data-html="true">
 			<div class="d-none popover-content">
 				{% if request.user.is_authenticated %}
 					<form method="post" action="{%url 'player-new'%}">{% csrf_token %}
@@ -77,7 +73,7 @@
 
 <!-- New Team -->
 		<li class="nav-item">
-			<span class="btn nav-link  text-left" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="New Team" data-container="body" data-html="true">
+			<span class="btn nav-link  text-left" tabindex="0" data-placement="bottom" data-toggle="popover-manual" data-trigger="click" data-title="New Team" data-container="body" data-html="true">
 			<div class="d-none popover-content">
 				{% if request.user.is_authenticated %}
 					<form method="post" action="{%url 'login'%}">{% csrf_token %}
@@ -97,7 +93,7 @@
 
 <!-- Date -->
 		<li class="nav-item">
-			<span class="btn nav-link text-left" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Date" data-container="body" data-html="true">
+			<span class="btn nav-link text-left" tabindex="0" data-placement="bottom" data-toggle="popover-manual" data-trigger="click" data-title="Date" data-container="body" data-html="true">
 			<div class="d-none popover-content">
 				{% if request.user.is_authenticated %}
 					<form method="post" action="{% url 'set-date' %}">{% csrf_token %}
@@ -131,7 +127,7 @@
 	<ul class="nav navbar-nav justify-content-end">
 <!-- Tipps -->
 		<li class="nav-item <!--active-->">
-			<span class="btn nav-link text-right" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Tipps" data-container="body" data-html="true">
+			<span class="btn nav-link text-right" tabindex="0" data-placement="bottom" data-toggle="popover-manual" data-title="Tipps" data-container="body" data-html="true">
 				<div class="d-none popover-content">
 					{% block tipps %}{% endblock tipps %}
 				</div>
@@ -151,7 +147,7 @@
 			{% if request.user.is_authenticated %}
 				<a class="nav-link text-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Log out {{ request.user.username }}</a>
 			{% else %}
-				<span id="login" class="btn nav-link text-right" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Login" data-container="body" data-html="true">
+				<span id="login" class="btn nav-link text-right" data-placement="bottom" data-toggle="popover-manual" data-title="Login" data-container="body" data-html="true">
 				<div class="d-none popover-content">
 					<form method="post" action="{%url 'login'%}">{% csrf_token %}
 						{{ login_form }}
