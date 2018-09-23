@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
-{% block title %}Home / Manual{% endblock %}
-{% block var_link %}{% endblock %}
+{% block title %}Table Soccer Matchmaker{% endblock %}
+{% block description %}ts-matchmaker stands for Table Soccer Matchmaker and is a tool to balance and track your tablesoccer matches.{% endblock %}
+{% block keywords %}table, soccer, tablesoccer, matchmaker, match, maker, tool, balance, rank, ladder, team, track, tracker{% endblock %}
 
 {% block tipps %}
 	<div class="alert alert-success" role="alert">
@@ -11,16 +12,14 @@
 
 {% block head %}
 <style>
-#donation-form{
-	border: none!important;
-	-webkit-box-shadow: none!important;
-	box-shadow: none!important;
-}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="table-responsive">
+<h1 class="text-success">Table Soccer Matchmaker</h1>
+<h2 class="text-success">The ultimate tool to balance and track your tablesoccer matches.</h2>
+<hr />
 <div class="accordion" id="accordionExample">
 {% if not request.user.is_authenticated %}
   <div class="card">
