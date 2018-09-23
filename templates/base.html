@@ -10,6 +10,7 @@
 	<script src="{% static "js/popper.min.js" %}"></script>
 	<script src="{% static "bootstrap-4.1.2-dist/js/bootstrap.min.js" %}"></script>
 	<link rel="stylesheet" href="{% static "bootstrap-4.1.2-dist/css/bootstrap.min.css" %}">
+
 	<link rel="stylesheet" href="{% static "fontawesome-free-5.1.0-web/css/all.css" %}">
 
 	<link rel="stylesheet" type="text/css" href="{% static "DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}"/>
@@ -20,6 +21,12 @@
 	<script>
 		var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 	</script>
+	<style>
+		svg{
+			height: 16px;
+			width:16px;
+		}
+	</style>
 	<script src="{% static "js/base.js" %}"></script>
 	<link rel="stylesheet" href="{% static "css/base.css" %}"/>
 	{% block head %}
@@ -28,21 +35,29 @@
 
 <body>
 <nav id="main-nav" class="navbar navbar-expand-lg navbar-light bg-light">
-	<a class="btn btn-outline-success navbar-brand" href="{% url 'matchmaker' %}">Balancer</a>
-	<a class="btn btn-outline-success navbar-brand" href="{% url 'match-new' %}">Tracker</a>
+	<a class="btn navbar-brand{% if request.path == '/balancer/' %} active{% endif %}" href="{% url 'matchmaker' %}"><i class="fas fa-balance-scale"></i> Balancer</a>
+	<a class="btn navbar-brand {% if request.path == '/tracker/' %} active{% endif %}" href="{% url 'match-new' %}"><i class="fas fa-stopwatch"></i> Tracker</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	</button>
 	<div class="collapse navbar-collapse" id="navbarSupportedContent">
 	<ul class="navbar-nav mr-auto">
+
+<!-- Ladder -->
 		<li class="nav-item">
-			<a class="nav-link" href="{% url 'ladder' %}">Ladder</a>
+			<a class="nav-link{% if request.path == '/ladder/' %} active{% endif %}" href="{% url 'ladder' %}"><i class="fas fa-trophy"></i> Ladder</a>
 		</li>
-		<li class="nav-item <!--active-->">
-			<a class="nav-link" href="{% url 'match-list' %}">Matches<span class="sr-only">(current)</span></a>
+<!-- /Ladder -->
+
+<!-- Matches -->
+		<li class="nav-item{% if request.path == '/match/' %} active{% endif %}">
+			<a class="nav-link" href="{% url 'match-list' %}"><i class="fas fa-futbol"></i> Matches</a>
 		</li>
+<!-- /Matches -->
+
+<!-- New Player -->
 		<li class="nav-item">
-			<a href="#" class="nav-link" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="New Player" data-container="body" data-html="true">
+			<span class="btn nav-link text-left" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="New Player" data-container="body" data-html="true">
 			<div class="d-none popover-content">
 				{% if request.user.is_authenticated %}
 					<form method="post" action="{%url 'player-new'%}">{% csrf_token %}
@@ -55,11 +70,14 @@
 					(completely free)
 				{% endif %}
 			</div>
-			New Player
-			</a>
+			<i class="fas fa-user-alt"></i> New Player
+			</span>
 		</li>
+<!-- /New Player -->
+
+<!-- New Team -->
 		<li class="nav-item">
-			<span class="btn nav-link" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="New Team" data-container="body" data-html="true">
+			<span class="btn nav-link  text-left" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="New Team" data-container="body" data-html="true">
 			<div class="d-none popover-content">
 				{% if request.user.is_authenticated %}
 					<form method="post" action="{%url 'login'%}">{% csrf_token %}
@@ -72,15 +90,31 @@
 					(completely free)
 				{% endif %}
 			</div>
-			New Team
+			<i class="fas fa-user-friends"></i> New Team
 			</span>
 		</li>
+<!-- /New Team -->
+
+<!-- Date -->
 		<li class="nav-item">
-			<span class="btn nav-link" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Date" data-container="body" data-html="true">
+			<span class="btn nav-link text-left" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Date" data-container="body" data-html="true">
 			<div class="d-none popover-content">
 				{% if request.user.is_authenticated %}
 					<form method="post" action="{% url 'set-date' %}">{% csrf_token %}
-						{{ time_range_form }}
+						<table>
+							<tr>
+								<td>From:</td>
+							</tr>
+							<tr>
+								<td>{{ time_range_form.frm }}</td>
+							</tr>
+							<tr>
+								<td>To:</td>
+							</tr>
+							<tr>
+								<td>{{ time_range_form.to }}</td>
+							</tr>
+						</table>
 						<input type="hidden" name="next" value="{{ request.get_raw_uri }}">
 						<button class="btn btn-primary btn-block mt-3" type="submit">Set</button>
 					</form>
@@ -89,19 +123,35 @@
 					(completely free)
 				{% endif %}
 			</div>
-			Date
+				<i class="fas fa-calendar-alt"></i> Date
 			</span>
 		</li>
+<!-- /Date -->
 	</ul>
 	<ul class="nav navbar-nav justify-content-end">
+<!-- Tipps -->
 		<li class="nav-item <!--active-->">
-			<a class="nav-link" href="{% url 'home' %}">Manual</a>
+			<span class="btn nav-link text-right" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Tipps" data-container="body" data-html="true">
+				<div class="d-none popover-content">
+					{% block tipps %}{% endblock tipps %}
+				</div>
+				<i class="fas fa-info-circle"></i> Tipps
+			</span>
+		 </li>
+<!-- /Tipps -->
+
+<!-- Manual -->
+		<li class="nav-item {% if request.path == '/' %} active{% endif %}">
+			<a class="nav-link text-right" href="{% url 'home' %}"><i class="fas fa-book"></i> Manual</a>
 		</li>
+<!-- /Manual -->
+
+<!-- Login Logout -->
 		<li class="nav-item <!--active-->">
 			{% if request.user.is_authenticated %}
-				<a class="nav-link" href="{% url 'logout' %}">Log out {{ request.user.username }}</a>
+				<a class="nav-link text-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Log out {{ request.user.username }}</a>
 			{% else %}
-				<span id="login" class="btn nav-link" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Login" data-container="body" data-html="true">
+				<span id="login" class="btn nav-link text-right" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Login" data-container="body" data-html="true">
 				<div class="d-none popover-content">
 					<form method="post" action="{%url 'login'%}">{% csrf_token %}
 						{{ login_form }}
@@ -109,9 +159,10 @@
 					</form>
 					<a href="{% url 'signup' %}">Register</a>
 				</div>
-				Log in</span>
+				<i class="fas fa-sign-in-alt"></i> Log in</span>
 			{% endif %}
 		</li>
+<!-- /Login Logout -->
 	</ul>
 </nav>
 <div id="content" class="container-fluid">

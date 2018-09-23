@@ -33,6 +33,10 @@ class Player(models.Model):
         """ return rating as int """
         return self.player_rating(as_int=True)
 
+    @property
+    def score(self):
+        return sum([team.team_score for team in self.teams()])
+
     def player_rating(self, as_int=False):
         """ return player rating """
         return int(self.rating + 0.5) if as_int else self.rating
@@ -54,8 +58,8 @@ class Player(models.Model):
 
     @property
     def matches_chronologic(self):
-        import pdb; pdb.set_trace()  # <---------
-        return sorted()
+        lst_of_lsts = [team.matches_chronologic for team in self.teams()]
+        return sorted([y for x in lst_of_lsts for y in x])
 
     def get_close_win_lose(self):
         """ returns tuple of two lists ([close win], [close lose]) """
@@ -84,11 +88,25 @@ class Player(models.Model):
             )
             team.players.add(self)
 
+    def __eq__(self, other):
+        return self.pk == other.pk
+
+    def __lt__(self, other):
+        if not self.matches_chronologic:
+            return False
+        if self.player_rating() != other.player_rating():
+            return self.player_rating() > other.player_rating()
+        else:
+            return self.score > other.score
+
     def __str__(self):
-        return str("%s (%s)" % (
-            self.nick,
-            self.player_rating(as_int=True)
-        ))
+        if self.matches_chronologic:
+            return str("%s (%s)" % (
+                self.nick,
+                self.player_rating(as_int=True)
+            ))
+        else:
+            return self.nick
 
 
 class Elo:

@@ -67,14 +67,31 @@ function setPopover() {
 		html: true,
 		content: function(){
 			return $(this).find('.popover-content').html();
+		},
+		title : function(){
+			return $(this).attr('data-title') + '<button onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</button>';
+		},
+		trigger: 'manual'
+	});
+	$('[data-toggle="popover"]').click(function(){
+		$(this).popover('show');
+	});
+	/* Workaround for checkboxes inside popover */
+	$('[data-toggle="popover"]').popover().find('label').click(function(){
+		var id = $(this).attr('for');
+		var box = $('#' + id);
+		if (box.attr("checked") == "checked"){
+			$('#' + id).attr( "checked", false );
+		} else {
+			$('#' + id).attr( "checked", true );
 		}
-	})
+	});
 }
 
 function setPopoverLazy() {
 	$('[data-toggle="popover-lazy"]').popover({
-	    "html": true,
-	    "content": function(){
+	    html: true,
+	    content: function(){
 	        var div_id =  "tmp-id-" + $.now();
 	        return details_in_popup($(this).attr('data-href'), div_id);
 	    }
@@ -90,10 +107,28 @@ function details_in_popup(link, div_id){
     return '<div id="'+ div_id +'">Loading...</div>';
 }
 
+/* Tracker Funktion */
 $(document).ready(function() {
+	$('#new-match-form').submit(function() {
+		   return confirm("Is the game really finished and ready for saving?");
+	});
+	$('.middle').click(function(){
+		var x = $('#id_firstteam').find(":selected").val()
+		$('#id_firstteam').val($('#id_secondteam').find(":selected").val());
+		$('#id_secondteam').val(x);
+
+		x = $('#id_firstteam_goals').val()
+		$('#id_firstteam_goals').val($('#id_secondteam_goals').val());
+		$('#id_secondteam_goals').val(x);
+		loadMatchRealtime();
+	});
 	$('#id_firstteam,#id_secondteam,#id_firstteam_goals,#id_secondteam_goals').on('change',function(){
 		loadMatchRealtime()
 	});
+});
+
+/* For All */
+$(document).ready(function() {
 	setPopover()
 	setPopoverLazy()
 });

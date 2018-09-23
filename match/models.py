@@ -136,6 +136,12 @@ class Match(models.Model):
             self.new_result()
             super().save(*args, **kwargs)
 
+    def __eq__(self, other):
+        return self.pk == other.pk
+
+    def __lt__(self, other):
+        return self.pk < other.pk
+
     def __str__(self):
         return str("ID%s: %s vs. %s (%s:%s)" % (
             self.id,

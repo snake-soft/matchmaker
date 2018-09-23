@@ -2,8 +2,12 @@
 {% block title %}
 Matchmaker
 {% endblock %}
-{% block var_link %}{% endblock %}
-
+{% block tipps %}
+	<div class="alert alert-success" role="alert">
+		You can choose more players than really playing.
+	</div>
+	<hr />
+{% endblock %}
 {% block head %}
 {% load elements %}
 <script>
@@ -11,6 +15,13 @@ Matchmaker
 		loadDataTables(1, 'asc');
 	});
 </script>
+<style>
+th{width:1%;}
+#matchmaker #id_players li{
+	float:left;
+	margin-right: 5px;
+}
+</style>
 {% endblock %} 
 
 
@@ -20,12 +31,8 @@ Matchmaker
 	<form method="get">
 		{% if matchmaker_form.fields.players.choices|length >= 2%}
 			{% if matchmaker_form.errors %}
-		  		<div class="alert alert-danger" role="alert">
-		  			{{ matchmaker_form.errors.error }}
-				</div>
-			{% else %}
-				<div class="alert alert-success" role="alert">
-					You can choose more players than really playing.
+				<div class="alert alert-danger" role="alert">
+					{{ matchmaker_form.errors.error }}
 				</div>
 			{% endif %}
 		{% else %}
@@ -34,7 +41,19 @@ Matchmaker
 			</div>
 		{% endif %}
 		<table class="table table-striped table-bordered table-hover">
-			{{ matchmaker_form.as_table }}
+			<tr>
+				<th>Players:</th>
+			</tr>
+			<tr>
+				<td>{{ matchmaker_form.players }}</td>
+			</tr>
+			<tr>
+				<th>Constellation:</th>
+			</tr>
+			<tr>
+				<td>{{ matchmaker_form.count }}</td>
+			</tr>
+			
 		</table>
 		<input class="btn btn-primary btn-block" type="submit" value="Calculate Teams" />
 	</form>
@@ -151,7 +170,7 @@ Matchmaker
 				{% if constellation.team1.team.name != None and constellation.team2.team.name != None %}
 					<a href="{% url 'match-new' %}?firstteam={{constellation.team1.team.id}}&secondteam={{constellation.team2.team.id}}" type="button" class="btn btn-success">Start</a>
 				{% else %}
-					<div class="alert alert-info" role="alert">
+					<div class="alert alert-info p-2" role="alert">
 						Create Teams first
 					</div>
 				{% endif %}

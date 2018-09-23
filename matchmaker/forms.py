@@ -9,13 +9,9 @@ class MatchmakerForm(forms.Form):
 
     def __init__(self, request, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        choices = sorted(
-            Player.objects.filter(owner=request.user),
-            key=lambda x: x.rating,
-            reverse=True
-        )
-        choices = tuple((x.pk, "%s (%s)" % (x.nick, x.rating_as_int))
-                        for x in choices)
+        choices = sorted(Player.objects.filter(owner=request.user))
+        c = ((x.pk, x) for x in choices)
+        choices = tuple(c)
         self.fields['players'] = forms.MultipleChoiceField(
             choices=choices,
             widget=forms.CheckboxSelectMultiple,

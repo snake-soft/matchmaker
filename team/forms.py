@@ -5,6 +5,15 @@ from player.models import Player
 from .models import Team
 
 
+class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    def __init__(self, attrs=None, choices=()):
+        forms.CheckboxSelectMultiple.__init__(self, attrs=attrs, choices=choices)
+
+    def id_for_label(self, id_, index=None):
+        id_ += '_nav'
+        return forms.CheckboxSelectMultiple.id_for_label(self, id_, index=index)
+
+
 class TeamCreateForm(forms.ModelForm):
     """ Team creation form """
 
@@ -18,4 +27,4 @@ class TeamCreateForm(forms.ModelForm):
     class Meta:
         model = Team
         fields = ['teamname', 'players']
-        widgets = {'players': forms.CheckboxSelectMultiple()}
+        widgets = {'players': CheckboxSelectMultiple()}

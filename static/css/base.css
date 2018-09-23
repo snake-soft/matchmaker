@@ -16,6 +16,7 @@ body{
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 }
+
 #main-nav{
 	-webkit-box-shadow: 0 0 3px 3px #858585;
 	box-shadow: 0 0 3px 3px #858585;
@@ -28,6 +29,11 @@ ul{
 	list-style-type: none;
 	padding-left: 0;
 }
+
+.active{
+	text-shadow: 4px 4px 2px rgba(150, 150, 150, 1);
+}
+
 .win *{color: green;}
 .draw *{color: #575757;}
 .lose *{color: red;}
@@ -98,6 +104,43 @@ input:focus ~ .helptext{
 }
 #id_count label{
 	margin: 0;
+}
+
+#match-form td{
+border: 0;
+}
+#match-form, #match-form input, #match-form select{
+	text-align: center;
+}
+#id_firstteam, #id_secondteam{
+	height: 30px;
+}
+#id_firstteam_goals, #id_secondteam_goals, .plus, .minus{
+	height: 70px;
+}
+#firstteam-controls *{
+	float: left;
+}
+#secondteam-controls *{
+	float: right;
+}
+
+#id_firstteam, #id_secondteam{
+	width: 100%;
+}
+#id_firstteam_goals, #id_secondteam_goals{
+	width: 29%;
+	min-width:50px;
+}
+.plus{
+	width: 50%;
+}
+.minus{
+	width: 20%;
+}
+.middle{
+	display: table-cell;
+	vertical-align: middle!important;
 }
 
 @media (min-width: 858px) {

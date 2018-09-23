@@ -2,6 +2,12 @@
 {% block title %}Match overview{% endblock %}
 {% block var_link %}{% endblock %}
 
+{% block tipps %}
+	<div class="alert alert-success" role="alert">
+		The timeline views the Matches with same teams in chronological order.
+	</div>
+	<hr />
+{% endblock %}
 
 {% block head %}
 <script>
@@ -14,7 +20,6 @@ $(document).ready(function() {
 
 {% block content %}
 {% load humanize elements %}
-<h1>Match overview</h1>
 <div class="table-responsive">
 <table class="datatable table table-striped table-bordered table-hover" >
 	<thead>

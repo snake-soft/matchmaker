@@ -39,7 +39,7 @@ urlpatterns = [
 
     path('', StartView.as_view(), name="home"),
     path('set/date/', DateSetView.as_view(), name="set-date"),
-    path('matchmaker/', MatchmakerView.as_view(), name="matchmaker"),
+    path('balancer/', MatchmakerView.as_view(), name="matchmaker"),
 
     # path('player/', PlayerList.as_view(), name='player-list'),
     path('player/<pk>/', PlayerDetails.as_view(), name="player-details"),
@@ -53,5 +53,5 @@ urlpatterns = [
 
     path('match/', MatchList.as_view(), name="match-list"),
     path('match/<pk>/', MatchDetails.as_view(), name="match-details"),
-    path('new/match/', MatchCreate.as_view(), name="match-new"),
+    path('tracker/', MatchCreate.as_view(), name="match-new"),
 ]

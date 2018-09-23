@@ -91,7 +91,7 @@ class Team(models.Model):
     @property
     def has_game(self):
         win, draw, lose = self.get_win_draw_lose
-        return True if win or draw or lose else False
+        return win or draw or lose
 
     @property
     def win_lose_factor(self):
