@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'account',
     'core',
     'player',
+    'playergroup',
     'team',
     'match',
     'matchmaker',

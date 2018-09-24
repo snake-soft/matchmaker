@@ -4,17 +4,24 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 
 from team.models import Team
+from playergroup.models import Playergroup
 
 
 class Player(models.Model):
     """ Player stats are long-term statistics that are not deleted """
-    owner = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-    )
+    username = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    playergroups = models.ManyToManyField(Playergroup)
+
+    selected_playergroups = (Playergroup)
+
+    email = models.EmailField(null=True)
+
+    owner = models.ForeignKey(  # !!!
+        User, on_delete=models.CASCADE,)
+
     nick = models.CharField(
-        max_length=50, verbose_name="Nickname"
-    )
+        max_length=50, verbose_name="Playername")
 
     rating = models.FloatField(
         verbose_name="Player Rating",
