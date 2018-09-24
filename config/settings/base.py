@@ -12,17 +12,17 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 from pathlib import Path
 
+# REMEMBER REMEMBER !!!:
 __all__ = ['BASE_DIR', 'INSTALLED_APPS', 'MIDDLEWARE', 'ROOT_URLCONF',
            'TEMPLATES', 'WSGI_APPLICATION', 'DATABASES',
            'AUTH_PASSWORD_VALIDATORS', 'LANGUAGE_CODE', 'TIME_ZONE',
            'USE_I18N', 'USE_L10N', 'USE_TZ', 'STATIC_URL', 'STATIC_ROOT',
            'STATICFILES_DIRS', 'LOGIN_URL', 'LOGIN_REDIRECT_URL',
-           'LOGOUT_REDIRECT_URL']
+           'LOGOUT_REDIRECT_URL', 'AUTH_USER_MODEL']
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = str(Path(__file__).resolve().parent.parent.parent)
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -41,11 +41,13 @@ INSTALLED_APPS = [
     'account',
     'core',
     'player',
-    'playergroup',
+    'community',
     'team',
     'match',
     'matchmaker',
 ]
+
+AUTH_USER_MODEL = 'player.Player'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

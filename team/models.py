@@ -1,8 +1,6 @@
 """ model for team objects """
 from datetime import date, datetime, timedelta
-
 from django.db import models
-from django.contrib.auth.models import User
 from django.db.models import Sum, Q
 
 from match.models import Match
@@ -15,10 +13,9 @@ class Team(models.Model):
     workaround: frm and to_ are the last setted datefilters
     I dont want to have requests inside the model
     """
-    owner = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-    )
+    #owner = models.ForeignKey('community.PlayGroup', on_delete=models.CASCADE)
+    communities = models.ManyToManyField('community.Community')
+
     teamname = models.CharField(
         max_length=50, verbose_name="Teamname",
         blank=True,
@@ -27,6 +24,10 @@ class Team(models.Model):
 
     frm = datetime(2000, 1, 1).date()
     to_ = datetime(3000, 1, 1).date()
+
+    @property
+    def owner(self):
+        return self.owner
 
     @classmethod
     def set_from_to(cls, frm, to_):

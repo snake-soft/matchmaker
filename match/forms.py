@@ -9,10 +9,14 @@ class MatchCreateForm(forms.ModelForm):
     """ match creation form """
 
     def __init__(self, *args, **kwargs):
-        owner = kwargs.pop('owner')
+        community = kwargs.pop('community')
         super().__init__(*args, **kwargs)
-        self.fields['firstteam'].queryset = Team.objects.filter(owner=owner)
-        self.fields['secondteam'].queryset = Team.objects.filter(owner=owner)
+
+        self.fields['firstteam'].queryset = \
+            Team.objects.filter(communities=community)
+
+        self.fields['secondteam'].queryset = \
+            Team.objects.filter(communities=community)
 
     class Meta:
         model = Match

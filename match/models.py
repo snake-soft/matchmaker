@@ -1,8 +1,6 @@
 """ Match model """
 from datetime import date, datetime, timedelta
-
 from django.db import models
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from copy import deepcopy
 
@@ -12,10 +10,9 @@ class Match(models.Model):
     workaround: frm and to_ are the last setted datefilters
     I dont want to have requests inside the model
     """
-    owner = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-    )
+    community = models.ForeignKey(
+        'community.Community', on_delete=models.CASCADE)
+
     firstteam = models.ForeignKey(
         'team.Team',
         related_name='Team1',
@@ -50,6 +47,10 @@ class Match(models.Model):
 
     frm = datetime(2000, 1, 1).date()
     to_ = datetime(3000, 1, 1).date()
+
+    @property
+    def owner(self):
+        return self.community
 
     @classmethod
     def set_from_to(cls, frm, to_):

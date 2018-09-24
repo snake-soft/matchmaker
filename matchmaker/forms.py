@@ -9,7 +9,8 @@ class MatchmakerForm(forms.Form):
 
     def __init__(self, request, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        choices = sorted(Player.objects.filter(owner=request.user))
+        choices = sorted(request.user.active_community.players) \
+            if request.user.active_community else []
         c = ((x.pk, x) for x in choices)
         choices = tuple(c)
         self.fields['players'] = forms.MultipleChoiceField(

@@ -1,24 +1,24 @@
 """ model for player objects """
 from django.db import models
-from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
+from django.contrib.auth.models import AbstractUser
 
 from team.models import Team
-from playergroup.models import Playergroup
 
 
-class Player(models.Model):
+class Player(AbstractUser):
     """ Player stats are long-term statistics that are not deleted """
-    username = models.OneToOneField(User, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name = "Player"
+        verbose_name_plural = "Players"
 
-    playergroups = models.ManyToManyField(Playergroup)
+    active_community = models.ForeignKey('community.Community', on_delete=models.SET_NULL, null=True)
+    #===========================================================================
+    # password = AbstractBaseUser.password
+    # password.default = None
+    #===========================================================================
 
-    selected_playergroups = (Playergroup)
-
-    email = models.EmailField(null=True)
-
-    owner = models.ForeignKey(  # !!!
-        User, on_delete=models.CASCADE,)
+    email = models.EmailField(null=True, blank=True)
 
     nick = models.CharField(
         max_length=50, verbose_name="Playername")
@@ -77,23 +77,25 @@ class Player(models.Model):
             lose += team_results[1]
         return win, lose
 
-    def save(self, *args, **kwargs):  # pylint: disable=W0221
-        new = False if self.pk else True
-        if new:
-            if Player.objects.filter(nick__iexact=self.nick, owner=self.owner):
-                raise ValueError("Player %s exists already." % (self.nick))
-
-            if Team.objects.filter(
-                    teamname__iexact=self.nick, owner=self.owner):
-                raise ValueError("Team %s exists already." % (self.nick))
-
-        super().save(*args, **kwargs)
-        if new:
-            team = Team.objects.create(
-                teamname=self.nick,
-                owner=self.owner,
-            )
-            team.players.add(self)
+#=========================================================================
+#     def save(self, *args, **kwargs):  # pylint: disable=W0221
+#         new = False if self.pk else True
+#         if new:
+#             if Player.objects.filter(nick__iexact=self.nick): # , owner=self.owner):
+#                 raise ValueError("Player %s exists already." % (self.nick))
+#
+#             if Team.objects.filter(
+#                     teamname__iexact=self.nick): # , owner=self.owner):
+#                 raise ValueError("Team %s exists already." % (self.nick))
+#
+#         super().save(*args, **kwargs)
+#         if new:
+#             team = Team.objects.create(
+#                 teamname=self.nick,
+#                 # owner=self.owner,
+#             )
+#             team.players.add(self)
+#=========================================================================
 
     def __eq__(self, other):
         return self.pk == other.pk

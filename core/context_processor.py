@@ -38,6 +38,6 @@ def default(request):
         'to': str_to_date(request.session['to']),
         'login_form': AuthenticationForm,
         'new_player_form': PlayerCreateForm,
-        'new_team_form': TeamCreateForm(request=request),
+        #'new_team_form': TeamCreateForm(request=request),        !!!
         }
     return context

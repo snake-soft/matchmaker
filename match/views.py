@@ -25,10 +25,7 @@ class MatchList(LoginRequiredMixin, ListView):\
             to_ = to_.strftime('%Y-%m-%d')
         else:
             to_ = '3000-01-01'
-        return Match.objects.filter(
-            date_time__range=[frm, to_],
-            owner=self.request.user
-        )
+        return Match.objects.filter(community=self.request.user.active_community)
 
 
 class MatchDetails(LoginRequiredMixin, DetailView):\
@@ -50,7 +47,7 @@ class MatchCreate(LoginRequiredMixin, CreateView):\
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['owner'] = self.request.user
+        kwargs['community'] = self.request.user.active_community
         return kwargs
 
     def get_initial(self):

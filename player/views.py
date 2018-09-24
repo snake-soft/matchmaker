@@ -14,7 +14,7 @@ class PlayerList(LoginRequiredMixin, ListView):\
 
     def get_queryset(self):
         """ get only own players """
-        return Player.objects.filter(owner=self.request.user)
+        return Player.objects.filter()
 
 
 class PlayerDetails(LoginRequiredMixin, DetailView):\
@@ -22,9 +22,11 @@ class PlayerDetails(LoginRequiredMixin, DetailView):\
     """ view details of single player """
     model = Player
 
-    def get_queryset(self):
-        """ get only own players """
-        return Player.objects.filter(owner=self.request.user)
+    #===========================================================================
+    # def get_queryset(self):
+    #     """ get only own players """
+    #     return Player.objects.filter(owner=self.request.user)
+    #===========================================================================
 
 
 class PlayerCreate(LoginRequiredMixin, CreateView):\
@@ -37,8 +39,8 @@ class PlayerCreate(LoginRequiredMixin, CreateView):\
         name = form.cleaned_data['nick']
         owner = self.request.user
         form.instance.owner = owner
-        player_exists = Player.objects.filter(nick__iexact=name, owner=owner)
-        team_exists = Team.objects.filter(teamname__iexact=name, owner=owner)
+        player_exists = Player.objects.filter(nick__iexact=name)
+        team_exists = Team.objects.filter(teamname__iexact=name)
         if player_exists or team_exists:
             form.errors['error'] = name + ' already exists'
             return super().form_invalid(form)
