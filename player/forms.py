@@ -2,7 +2,7 @@
 from django import forms
 
 from player.models import Player
-from .models import Team
+#from .models import Team
 
 
 class PlayerCreateForm(forms.ModelForm):
@@ -29,4 +29,4 @@ class PlayerCreateForm(forms.ModelForm):
 
     class Meta:
         model = Player
-        fields = ['nick']
+        fields = ['name']

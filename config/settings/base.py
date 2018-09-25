@@ -17,8 +17,8 @@ __all__ = ['BASE_DIR', 'INSTALLED_APPS', 'MIDDLEWARE', 'ROOT_URLCONF',
            'AUTH_PASSWORD_VALIDATORS', 'LANGUAGE_CODE', 'TIME_ZONE',
            'USE_I18N', 'USE_L10N', 'USE_TZ', 'STATIC_URL', 'STATIC_ROOT',
            'STATICFILES_DIRS', 'LOGIN_URL', 'LOGIN_REDIRECT_URL',
-           'LOGOUT_REDIRECT_URL']
-
+           'LOGOUT_REDIRECT_URL', 'AUTH_USER_MODEL']
+AUTH_USER_MODEL = 'player.Player'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = str(Path(__file__).resolve().parent.parent.parent)
@@ -40,10 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'account',
     'core',
+    'elo',
     'player',
     'team',
     'match',
     'matchmaker',
+    'community',
 ]
 
 MIDDLEWARE = [

@@ -53,7 +53,7 @@ ul{
 .draw *{color: #575757;}
 .lose *{color: red;}
 
-.table-responsive, #content form{
+.bg{
 	background-color: white;
 	padding: 10px;
 	border: 1px solid grey;

@@ -20,11 +20,17 @@ class TeamCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         super().__init__(*args, **kwargs)
-        self.fields['players'].queryset = Player.objects.filter(
-            owner=self.request.user if self.request.user.is_authenticated
-            else False)
+        user = self.request.user
+        if user.is_authenticated and user.active_community:
+            self.fields['players'].queryset = user.active_community.players
+        else:
+            self.fields['players'].queryset = Player.objects.none()
+        #=======================================================================
+        # else:
+        #     self.fields['players'].queryset = ''
+        #=======================================================================
 
     class Meta:
         model = Team
-        fields = ['teamname', 'players']
+        fields = ['name', 'players']
         widgets = {'players': CheckboxSelectMultiple()}

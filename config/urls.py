@@ -19,6 +19,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 from core.views import StartView
 from core.views import DateSetView
+from account.views import AccountView
+from community.views import CommunityView
 from player.views import PlayerDetails, PlayerCreate
 from team.views import TeamList, TeamDetails, TeamCreate, TeamListRealtime
 from match.views import MatchList, MatchDetails, MatchCreate
@@ -27,15 +29,16 @@ from account.views import SignUpView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('signup/', SignUpView.as_view(
+    path('register/', SignUpView.as_view(
         template_name='account/signup.html',), name='signup'),
-
+    path('account/', AccountView.as_view(), name='account'),
     path('login/', LoginView.as_view(
         template_name='account/login.html',), name='login'),
 
     path('logout/', LogoutView.as_view(
         template_name='account/logout.html',), name='logout'),
 
+    path('community/', CommunityView.as_view(), name='community'),
 
     path('', StartView.as_view(), name="home"),
     path('set/date/', DateSetView.as_view(), name="set-date"),

@@ -12,10 +12,6 @@ class Match(models.Model):
     workaround: frm and to_ are the last setted datefilters
     I dont want to have requests inside the model
     """
-    owner = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-    )
     firstteam = models.ForeignKey(
         'team.Team',
         related_name='Team1',
