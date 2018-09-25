@@ -1,10 +1,9 @@
 """ Default context """
 from datetime import date, datetime
 from calendar import monthrange
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 
 from .forms import TimeRangeForm
-from player.forms import PlayerCreateForm
 from team.forms import TeamCreateForm
 
 
@@ -37,7 +36,7 @@ def default(request):
         'from': str_to_date(request.session['from']),
         'to': str_to_date(request.session['to']),
         'login_form': AuthenticationForm,
-        'new_player_form': PlayerCreateForm,
-        #'new_team_form': TeamCreateForm(request=request),        !!!
+        'password_change_form': PasswordChangeForm(request.user),
+        'new_team_form': TeamCreateForm(request=request),
         }
     return context

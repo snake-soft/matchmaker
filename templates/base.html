@@ -18,6 +18,9 @@
 	<script type="text/javascript" src="{% static "DataTables-1.10.18/js/jquery.dataTables.min.js" %}"></script>
 	<script type="text/javascript" src="{% static "DataTables-1.10.18/js/dataTables.bootstrap4.min.js" %}"></script>
 
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
 	<script>
 		var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 	</script>
@@ -50,26 +53,6 @@
 			<a class="nav-link" href="{% url 'match-list' %}"><i class="fas fa-futbol"></i> Matches</a>
 		</li>
 <!-- /Matches -->
-
-<!-- New Player -->
-		<li class="nav-item">
-			<span class="btn nav-link text-left" tabindex="0" data-placement="bottom" data-toggle="popover-manual" data-trigger="click" data-title="New Player" data-container="body" data-html="true">
-			<div class="d-none popover-content">
-				{% if request.user.is_authenticated %}
-					<form method="post" action="{%url 'player-new'%}">{% csrf_token %}
-						{{ new_player_form }}
-						<input type="hidden" name="next" value="{{ request.get_raw_uri }}">
-						<button class="btn btn-primary btn-block mt-3" type="submit">Create Player</button>
-					</form>
-				{% else %}
-					Login or Register <br />
-					(completely free)
-				{% endif %}
-			</div>
-			<i class="fas fa-user-alt"></i> New Player
-			</span>
-		</li>
-<!-- /New Player -->
 
 <!-- New Team -->
 		<li class="nav-item">
@@ -142,10 +125,30 @@
 		</li>
 <!-- /Manual -->
 
+
+<!-- Community -->
+		<li class="nav-item">
+			<!--{% if request.user.is_authenticated %}  IS GAMEMASTER -->
+				<a class="nav-link text-right" href="{% url 'community' %}"><i class="fas fa-user-alt"></i> Community: {{ request.user.active_community }}</a>
+			<!-- {% else %}
+				<span id="login" class="btn nav-link text-right" data-placement="bottom" data-toggle="popover-manual" data-title="Login" data-container="body" data-html="true">
+				<div class="d-none popover-content">
+					<form method="post" action="{%url 'login'%}">{% csrf_token %}
+						{{ login_form }}
+					<button class="btn btn-primary btn-block mt-3" type="submit">Login</button>
+					</form>
+					<a href="{% url 'signup' %}">Register</a>
+				</div>
+				<i class="fas fa-user-alt"></i> Community: {{ request.user.active_community }}</span>
+			{% endif %} -->
+		</li>
+<!-- /Community -->
+
+
 <!-- Login Logout -->
 		<li class="nav-item">
 			{% if request.user.is_authenticated %}
-				<a class="nav-link text-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Log out {{ request.user.username }}</a>
+				<a class="nav-link text-right" href="{% url 'account' %}"><i class="fas fa-user-alt"></i> Profile: {{ request.user.username|title }}</a>
 			{% else %}
 				<span id="login" class="btn nav-link text-right" data-placement="bottom" data-toggle="popover-manual" data-title="Login" data-container="body" data-html="true">
 				<div class="d-none popover-content">
@@ -172,7 +175,7 @@
 
 <div id="logo" class="container fixed-bottom" style="z-index: -100;">
 	<div class ="row">
-		<img class="img-responsive" src="{% static "images/logo.png" %}" alt="Chania"> 
+		<img class="img-responsive" src="{% static "images/logo.png" %}" alt="logo"> 
 	</div>
 </div>
 </body>

@@ -5,4 +5,4 @@ from django.contrib.auth.admin import UserAdmin
 from .models import Player
 
 
-admin.site.register(Player, UserAdmin)
+admin.site.register(Player)

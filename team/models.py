@@ -2,6 +2,7 @@
 from datetime import date, datetime, timedelta
 from django.db import models
 from django.db.models import Sum, Q
+from django.conf import settings
 
 from match.models import Match
 
@@ -20,7 +21,7 @@ class Team(models.Model):
         max_length=50, verbose_name="Teamname",
         blank=True,
     )
-    players = models.ManyToManyField('player.Player')
+    players = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
     frm = datetime(2000, 1, 1).date()
     to_ = datetime(3000, 1, 1).date()

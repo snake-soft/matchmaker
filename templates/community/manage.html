@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Community{% endblock %}
+
+{% block content %}
+	<div class="container bg">
+		{{ community_switch }}
+		<form id="communityForm" method="post">
+			<table class="table table-striped table-bordered table-hover">
+				{% if form.errors %}
+				<div class="alert alert-danger" role="alert">
+					{{ form.errors }}
+					</div>
+				{% endif %}
+				{% csrf_token %}
+					{{ form.as_table }}
+			</table>
+			<button for="communityForm" class="btn btn-primary btn-block" type="submit">Change Userdata</button>
+		</form>
+		<br />
+		<div class="btn-group" role="group" aria-label="Basic example">
+			<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#pwChangeForm" aria-expanded="false" aria-controls="pwChangeForm">
+				Change Password
+			</button>
+			<a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+		</div>
+		<div class="collapse" id="pwChangeForm">
+			<div class="card card-body">
+				<form method="post">
+					<table class="table table-striped table-bordered table-hover">
+						{{ password_change_form.as_table }}
+					</table>
+					<button class="btn btn-primary btn-block" type="submit">Set new password</button>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}

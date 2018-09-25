@@ -12,16 +12,14 @@ class Player(AbstractUser):
         verbose_name = "Player"
         verbose_name_plural = "Players"
 
-    active_community = models.ForeignKey('community.Community', on_delete=models.SET_NULL, null=True)
-    #===========================================================================
-    # password = AbstractBaseUser.password
-    # password.default = None
-    #===========================================================================
+    active_community = models.ForeignKey('community.Community', on_delete=models.SET_NULL, null=True, blank=True, related_name='active_community')
+    single_team = models.OneToOneField('team.Team', on_delete=models.CASCADE, null=True, blank=True)
+    gamemaster = models.ManyToManyField('community.Community', blank=True, related_name='gamemasters_set')
 
     email = models.EmailField(null=True, blank=True)
 
     nick = models.CharField(
-        max_length=50, verbose_name="Playername")
+        max_length=50, verbose_name="Playername", blank=True,)
 
     rating = models.FloatField(
         verbose_name="Player Rating",
@@ -77,45 +75,39 @@ class Player(AbstractUser):
             lose += team_results[1]
         return win, lose
 
-#=========================================================================
-#     def save(self, *args, **kwargs):  # pylint: disable=W0221
-#         new = False if self.pk else True
-#         if new:
-#             if Player.objects.filter(nick__iexact=self.nick): # , owner=self.owner):
-#                 raise ValueError("Player %s exists already." % (self.nick))
-#
-#             if Team.objects.filter(
-#                     teamname__iexact=self.nick): # , owner=self.owner):
-#                 raise ValueError("Team %s exists already." % (self.nick))
-#
-#         super().save(*args, **kwargs)
-#         if new:
-#             team = Team.objects.create(
-#                 teamname=self.nick,
-#                 # owner=self.owner,
-#             )
-#             team.players.add(self)
-#=========================================================================
+    def save(self, *args, **kwargs):  # pylint: disable=W0221
+        super().save(*args, **kwargs)
+        if not bool(self.pk):
+            team = Team.objects.create()
+            team.players.add(self)
+            self.single_team = team
+            self.save()
 
-    def __eq__(self, other):
-        return self.pk == other.pk
+    #===========================================================================
+    # def __eq__(self, other):
+    #     return self.pk == other.pk
+    #===========================================================================
 
-    def __lt__(self, other):
-        if not self.matches_chronologic:
-            return False
-        if self.player_rating() != other.player_rating():
-            return self.player_rating() > other.player_rating()
-        else:
-            return self.score > other.score
+    #===========================================================================
+    # def __lt__(self, other):
+    #     if not self.matches_chronologic:
+    #         return False
+    #     if self.player_rating() != other.player_rating():
+    #         return self.player_rating() > other.player_rating()
+    #     else:
+    #         return self.score > other.score
+    #===========================================================================
 
-    def __str__(self):
-        if self.matches_chronologic:
-            return str("%s (%s)" % (
-                self.nick,
-                self.player_rating(as_int=True)
-            ))
-        else:
-            return self.nick
+    #===========================================================================
+    # def __str__(self):
+    #     if self.matches_chronologic:
+    #         return str("%s (%s)" % (
+    #             self.nick,
+    #             self.player_rating(as_int=True)
+    #         ))
+    #     else:
+    #         return self.nick
+    #===========================================================================
 
 
 class Elo:

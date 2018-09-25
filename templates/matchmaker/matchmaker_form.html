@@ -25,7 +25,7 @@ th{width:1%;}
 
 {% block content %}
 {% load join_by_attr %}
-<div id="matchmaker" class="container">
+<div id="matchmaker" class="container bg">
 	<form method="get">
 		{% if matchmaker_form.fields.players.choices|length >= 2%}
 			{% if matchmaker_form.errors %}

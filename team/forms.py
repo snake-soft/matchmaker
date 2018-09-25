@@ -1,7 +1,6 @@
 """ team forms """
 from django import forms
 
-from player.models import Player
 from .models import Team
 
 
@@ -20,9 +19,7 @@ class TeamCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         super().__init__(*args, **kwargs)
-        self.fields['players'].queryset = Player.objects.filter(
-            owner=self.request.user if self.request.user.is_authenticated
-            else False)
+        self.fields['players'].queryset = Team.objects.filter(communities=self.request.user.active_community if self.request.user.is_authenticated else False)
 
     class Meta:
         model = Team

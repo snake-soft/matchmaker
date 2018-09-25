@@ -27,7 +27,7 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
     def get_queryset(self):
         Team.set_from_to(
             self.request.session['from'], self.request.session['to'])
-        return Team.objects.filter(owner=self.request.user)
+        return Team.objects.filter(communities=self.request.user.active_community)
 
     def get_context_data(self, **kwargs):  # pylint: disable=W0221
         context = super().get_context_data(**kwargs)
@@ -87,7 +87,7 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
     @property
     def max_score(self):
         return max([x.team_score for x in Team.objects.filter(
-            owner=self.request.user)])
+            communities=self.request.user.active_community)])
 
     class TeamRealtimeValues:
         """ class for realtime calculated values of teams """
@@ -120,12 +120,12 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
         def max_score(self):
             """ needs rework!!! """
             return max([x.team_score for x in Team.objects.filter(
-                owner=self.request.user)])
+                communities=self.request.user.active_community)])
 
         @property
         def team_score_percent(self):
             sum_ = max([x.team_score for x in Team.objects.filter(
-                owner=self.request.user)])
+                communities=self.request.user.active_community)])
             sum_ = 100 / sum_ if sum_ else 0
             return self.team_score * sum_
 
@@ -277,7 +277,7 @@ class TeamDetails(LoginRequiredMixin, DetailView):\
     model = Team
 
     def get_queryset(self):
-        return Team.objects.filter(owner=self.request.user)
+        return Team.objects.filter(communities=self.request.user.active_community)
 
 
 class TeamCreate(LoginRequiredMixin, CreateView):\
@@ -305,7 +305,7 @@ class TeamCreate(LoginRequiredMixin, CreateView):\
         self.success_url = self.request.POST.get('next', reverse('ladder'))
         valid = False
         teamname = form.cleaned_data['teamname']
-        owner = self.request.user
+        owner = self.request.user.active_community
         form.instance.owner = owner
         existing_team = self.model.players_have_team(
             [Player.objects.get(pk=int(x), owner=owner)
