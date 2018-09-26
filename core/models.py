@@ -10,7 +10,7 @@ class PlayerTeamBase(models.Model):
     to_ = datetime(3000, 1, 1).date()
     communities = None   # FROM PLAYERS!!!
     strength = None
-    players = None
+    get_players = None
     new_result = None
     active_community = None
 

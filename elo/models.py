@@ -1,28 +1,53 @@
+from django.db import models
+from django.core.validators import MinValueValidator
 
 
-class Elo:
+class Elo(models.Model):
     """ Class for managing a Elo-like rating System
     to evaluate the skills of a Player
     Differences to the Original Elo-System are:
     - Goal difference is considered
     - K value calculation simplified
     """
+    player = models.ForeignKey('player.Player', on_delete=models.CASCADE)
+    match = models.ForeignKey('match.Match', on_delete=models.CASCADE)
 
-    def __init__(self, current_elo=1000):
-        self.elo = current_elo
+    strength = models.FloatField(default=1000, validators=[
+                                 MinValueValidator(0.0)],)
 
-    def new_result(self, enemy_elo, goal_diff):
+    previous_elo = None
+
+    @classmethod
+    def new_result(cls, player, match):
         """ returns new result from existing elo and goal difference """
-        exp = self.expected(enemy_elo)
-        return self.new_elo(exp, goal_diff)
+        result = __class__.objects.create(player=player, match=match)
+        result.previous_elo = player.strength
+        match_pov = match.pov(player)
+        expected = result.expected(match_pov.secondteam.strength)
+        result.strength = result.new_elo(
+            expected, match_pov.firstteam_goals - match_pov.secondteam_goals)
+        result.save()
+        return result
+        # ======================================================================
+        # exp = self.expected(enemy_elo)
+        # return self.new_elo(exp, goal_diff)
+        # ======================================================================
+
+
+    #===========================================================================
+    # def new_result(self, enemy_elo, goal_diff):
+    #     """ returns new result from existing elo and goal difference """
+    #     exp = self.expected(enemy_elo)
+    #     return self.new_elo(exp, goal_diff)
+    #===========================================================================
 
     def expected(self, enemy_elo):
         """ returns the excepted match result """
-        return Elo._expected(self.elo, enemy_elo)
+        return Elo._expected(self.previous_elo, enemy_elo)
 
     def new_elo(self, exp, goal_diff):
         """ returns new elo from expected and goal difference """
-        return Elo._new_elo(self.elo, exp, goal_diff)
+        return Elo._new_elo(self.previous_elo, exp, goal_diff)
 
     @staticmethod
     def mapper(value, range_from, range_to, limit_to=True):
@@ -73,6 +98,9 @@ class Elo:
         new_elo = old + k * (score - exp)
         return new_elo if new_elo >= 0 else 0
 
+    class Meta:
+        get_latest_by = 'pk'
+
     def __str__(self):
         ''' I love chess but against hard enemys my brain hurts '''
-        return str(int(self.elo + 0.5))
+        return str(int(self.strength + 0.5))

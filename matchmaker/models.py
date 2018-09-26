@@ -2,7 +2,6 @@
 from itertools import combinations as comb
 from math import ceil
 from team.models import Team
-from player.models import Elo
 from match.models import Match
 
 

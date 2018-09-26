@@ -7,6 +7,7 @@ class CommunityMembership(models.Model):
                                   on_delete=models.CASCADE)
     owner = models.BooleanField(default=False)
     gamemaster = models.BooleanField(default=False)
+    accepted = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('member', 'community')
@@ -21,8 +22,8 @@ class Community(models.Model):
 
     @property
     def gamemasters(self):
-        import pdb; pdb.set_trace()  # <---------
-        return 
+        import pdb; pdb.set_trace()
+        return self
 
     @property
     def players(self):

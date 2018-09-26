@@ -27,7 +27,7 @@ class MatchList(LoginRequiredMixin, ListView):\
             to_ = '3000-01-01'
         return Match.objects.filter(
             date_time__range=[frm, to_],
-            owner=self.request.user
+            #owner=self.request.user
         )
 
 
@@ -39,7 +39,7 @@ class MatchDetails(LoginRequiredMixin, DetailView):\
     def get_queryset(self):
         Match.set_from_to(
             self.request.session['from'], self.request.session['to'])
-        return Match.objects.filter(owner=self.request.user)
+        return Match.objects.filter() #owner=self.request.user)
 
 
 class MatchCreate(LoginRequiredMixin, CreateView):\
@@ -50,7 +50,7 @@ class MatchCreate(LoginRequiredMixin, CreateView):\
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['owner'] = self.request.user
+        #kwargs['owner'] = self.request.user
         return kwargs
 
     def get_initial(self):
@@ -73,8 +73,10 @@ class MatchCreate(LoginRequiredMixin, CreateView):\
         return initial
 
     def form_valid(self, form):
-        owner = self.request.user
-        form.instance.owner = owner
+        #=======================================================================
+        # owner = self.request.user
+        # form.instance.owner = owner
+        #=======================================================================
         valid = False
         if form.cleaned_data['firstteam_goals'] \
                 == 0 and form.cleaned_data['secondteam_goals'] == 0:

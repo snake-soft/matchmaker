@@ -7,31 +7,38 @@ from core.models import PlayerTeamBase
 class Team(PlayerTeamBase):
     players = models.ManyToManyField('player.Player')
     community = None
+
     @property
     def strength(self):
-        return sum(player.strength for player in self.players)
+        return sum(player.strength for player in self.get_players)
 
-    def new_result(self, goal_diff, enemy):
-        for player in self.players.all():
-            player.new_result(goal_diff, enemy)
+    def new_result(self, match):
+        return [player.new_result(match) for player in self.get_players]
+
+    @property
+    def get_players(self):
+        return [x for x in self.players.all()]
 
     @classmethod
     def team_exists(cls, players):
-        return [team for team in cls.objects.all() \
+        return [team for team in cls.objects.all()
                 if sorted(players, key=lambda x: x.pk) == sorted(
-                    team.players.all(), key=lambda x: x.pk)]
+                    team.get_players, key=lambda x: x.pk)]
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        if len(__class__.team_exists(self.players.all())) > 1:
+        if len(__class__.team_exists(self.get_players)) > 1:
             self.delete()
             raise ValueError("Team exists")
 
     def __str__(self):
-        if self.name:
-            return self.name
-        else:
-            return '%s' % (", ".join([str(x) for x in self.players.all()]))
+        name = self.name if self.name else \
+            ", ".join([str(x) for x in self.get_players])
+        return '%s (%s)' % (name, self.strength)
+
+    def get_team_name_or_members(self):
+        """ returns teamname if existing else teamplayers """
+        return str(self)
 
 #===============================================================================
 #class Team(models.Model):

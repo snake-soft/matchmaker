@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.urls import reverse
 
-from player.models import Player, Elo
+from player.models import Player
 from .models import Team
 from .forms import TeamCreateForm
 

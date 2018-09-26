@@ -2,7 +2,6 @@
 from datetime import date, datetime, timedelta
 
 from django.db import models
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from copy import deepcopy
 
@@ -98,27 +97,25 @@ class Match(models.Model):
 
     def new_result(self):
         """ sets new result to players """
-        for player in self.firstteam.players.all():
-            player.new_result(
-                self.firstteam_goals - self.secondteam_goals,
-                self.secondteam
-            )
+        self.firstteam.new_result(self)
+        self.secondteam.new_result(self)
 
-        for player in self.secondteam.players.all():
-            player.new_result(
-                self.secondteam_goals - self.firstteam_goals,
-                self.secondteam
-            )
+    def pov(self, pov):
+        """ pov = team or player, first and secondteam =team or player """
 
-    def pov(self, pov_team):
-        self_copy = deepcopy(self)
-        if self.firstteam != pov_team:
+        def switch_teams():
+            self_copy = deepcopy(self)
             self_copy.firstteam, self_copy.secondteam = \
                 self_copy.secondteam, self_copy.firstteam
-
             self_copy.firstteam_goals, self_copy.secondteam_goals = \
                 self_copy.secondteam_goals, self_copy.firstteam_goals
-        return self_copy
+            return self_copy
+
+        if pov not in self.firstteam.get_players \
+                and pov not in self.secondteam.get_players:
+            raise ValidationError(str(pov) + ' not in match ' + str(self))
+
+        return switch_teams() if pov in self.secondteam.get_players else self
 
     def save(self, *args, **kwargs):  # pylint: disable=W0221
         if self.firstteam.pk is self.secondteam.pk:
@@ -129,8 +126,8 @@ class Match(models.Model):
                 params={'value': self.firstteam.pk},
             )
         else:
-            self.new_result()
             super().save(*args, **kwargs)
+            self.new_result()
 
     def __eq__(self, other):
         return self.pk == other.pk
