@@ -1,7 +1,7 @@
 """ views of account """
 from django.shortcuts import redirect
 from django.views import generic
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth import get_user_model
 
@@ -25,7 +25,17 @@ class AccountView(generic.UpdateView):
     template_name = 'account/account.html'
     model = get_user_model()
     success_url = '/'
-    fields = ['nick', 'email', 'active_community']
+    fields = ['name', 'email', 'active_community']
+
+    def post(self, request, *args, **kwargs):
+        form = PasswordChangeForm(request.POST)
+        form.is_valid()
+        import pdb; pdb.set_trace()  # <---------
+        return generic.UpdateView.post(self, request, *args, **kwargs)
 
     def get_object(self, queryset=None):
         return self.request.user
+
+    def get_context_data(self, **kwargs):
+        self.extra_context = {'pw_form': PasswordChangeForm(user=self.request.user)}
+        return generic.UpdateView.get_context_data(self, **kwargs)
