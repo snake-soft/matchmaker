@@ -9,6 +9,11 @@ class Team(PlayerTeamBase):
     community = None
 
     @property
+    def single_team(self):
+        return str(self.players.all()[0]) if len(self.players.all()) is 1\
+            else False
+
+    @property
     def strength(self):
         return sum(player.strength for player in self.get_players)
 
@@ -27,9 +32,6 @@ class Team(PlayerTeamBase):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        if len(__class__.team_exists(self.get_players)) > 1:
-            self.delete()
-            raise ValueError("Team exists")
 
     def __str__(self):
         name = self.name if self.name else \

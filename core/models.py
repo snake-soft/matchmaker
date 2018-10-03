@@ -1,11 +1,10 @@
 from django.db import models
 from match.models import Match
 from datetime import date, datetime, timedelta
-from django.utils.decorators import classproperty
 
 
 class PlayerTeamBase(models.Model):
-    name = models.CharField(max_length=50, verbose_name="Playername", blank=True)
+    name = models.CharField(max_length=50, verbose_name="Name", blank=True)
     frm = datetime(2000, 1, 1).date()
     to_ = datetime(3000, 1, 1).date()
     communities = None   # FROM PLAYERS!!!

@@ -1,14 +1,13 @@
-""" tests for matchmaker module """
+""" tests for balancer module """
 from django.shortcuts import reverse
 from django.test import TestCase
 
-from config.tests import TestBase
-from . import apps
-from .models import ConstellationFactory, Constellation
+from config.tests import TestBasebalancerfrom . import apps
+from balancer import ConstellationFactory, Constellation
 
 
 class MatchmakerModelTestCase(TestCase):
-    """ Test for matchmaker model """
+    """ Test for balancer model """
 
     def setUp(self):
         """ setup """
@@ -25,7 +24,7 @@ class MatchmakerModelTestCase(TestCase):
 
 
 class MatchmakerViewTestCase(TestCase):
-    """ Tests for matchmaker views  """
+    """ Tests for balancer views  """
 
     def setUp(self):
         """ setup MatchmakerViewTestCase """
@@ -38,22 +37,22 @@ class MatchmakerViewTestCase(TestCase):
         get_data = {}
         post_data = {'frm': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
         self.client.post(reverse('set-date'), post_data)
-        response = self.client.get(reverse('matchmaker'), get_data)
-        self.assertTemplateUsed(response, 'matchmaker/matchmaker_form.html')
+        response = self.client.get(reverse('balancer'), get_data)
+        self.assertTemplateUsed(response, 'balancer/matchmaker_form.html')
 
         get_data = {'players': [1, 2], 'count': 2, }
-        response = self.client.get(reverse('matchmaker'), get_data)
-        self.assertTemplateUsed(response, 'matchmaker/matchmaker_form.html')
+        response = self.client.get(reverse('balancer'), get_data)
+        self.assertTemplateUsed(response, 'balancer/matchmaker_form.html')
 
         get_data = {'players': [1, 2], 'count': 3, }
-        response = self.client.get(reverse('matchmaker'), get_data)
-        self.assertTemplateUsed(response, 'matchmaker/matchmaker_form.html')
+        response = self.client.get(reverse('balancer'), get_data)
+        self.assertTemplateUsed(response, 'balancer/matchmaker_form.html')
         self.assertIn('error', response.context['matchmaker_form'].errors)
 
     def test_post(self):
         """ test post method """
         post_data = {'last_players': [1, 2], 'count': 2}
-        self.client.post(reverse('matchmaker'), post_data)
+        self.client.post(reverse('balancer'), post_data)
 
 
 class AppsTestCase(TestCase):

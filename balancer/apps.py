@@ -4,4 +4,4 @@ from django.apps import AppConfig
 
 class MatchmakerConfig(AppConfig):
     """ match apps config """
-    name = 'matchmaker'
+    name = 'balancer'

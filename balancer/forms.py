@@ -1,15 +1,15 @@
-""" forms for matchmaker views """
+""" forms for balancer views """
 from django import forms
 
 from player.models import Player
 
 
-class MatchmakerForm(forms.Form):
-    """ form for matchmaker """
+class BalancerForm(forms.Form):
+    """ form for balancer """
 
     def __init__(self, request, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        choices = sorted(Player.objects.filter(owner=request.user))
+        choices = sorted(Player.objects.filter())
         c = ((x.pk, x) for x in choices)
         choices = tuple(c)
         self.fields['players'] = forms.MultipleChoiceField(

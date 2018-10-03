@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'player',
     'team',
     'match',
-    'matchmaker',
+    'balancer',
     'community',
 ]
 

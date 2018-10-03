@@ -24,7 +24,7 @@ from community.views import CommunityView
 from player.views import PlayerDetails, PlayerCreate
 from team.views import TeamList, TeamDetails, TeamCreate, TeamListRealtime
 from match.views import MatchList, MatchDetails, MatchCreate
-from matchmaker.views import MatchmakerView
+from balancer.views import MatchmakerView
 from account.views import SignUpView
 
 urlpatterns = [
@@ -42,7 +42,7 @@ urlpatterns = [
 
     path('', StartView.as_view(), name="home"),
     path('set/date/', DateSetView.as_view(), name="set-date"),
-    path('balancer/', MatchmakerView.as_view(), name="matchmaker"),
+    path('balancer/', MatchmakerView.as_view(), name="balancer"),
 
     # path('player/', PlayerList.as_view(), name='player-list'),
     path('player/<pk>/', PlayerDetails.as_view(), name="player-details"),

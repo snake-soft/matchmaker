@@ -4,14 +4,16 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from core.models import PlayerTeamBase
+from elo.models import Elo # WEG!!!
 from team.models import Team
-from elo.models import Elo
 
 
 class Player(PlayerTeamBase, AbstractUser):
+
     email = models.EmailField(null=True, blank=True)
 
-    elos = models.ManyToManyField('match.Match', through='elo.Elo', through_fields=('player', 'match'))
+    elos = models.ManyToManyField('match.Match', through='elo.Elo',
+                                  through_fields=('player', 'match'))
 
     communities = models.ManyToManyField(
         'community.Community', blank=True,
@@ -29,12 +31,6 @@ class Player(PlayerTeamBase, AbstractUser):
     def elo(self):
         return self.elo_set.latest() if self.elo_set.all() else False
 
-    #===========================================================================
-    # @strength.setter
-    # def strength(self, match):
-    #     pass
-    #===========================================================================
-
     @property
     def teams(self):
         return [None]  # team_set
@@ -48,11 +44,46 @@ class Player(PlayerTeamBase, AbstractUser):
         return [self]
     players = get_players
 
+    def get_communitymembership(self, community):
+        return community.communitymembership_set.get(member=self)
+
     def new_result(self, match):
-        return Elo.new_result(player=self, match=match)
+        import pdb; pdb.set_trace()  # <---------
+        return self.elos.objects.latest()#Elo.new_result(player=self, match=match)
+
+    def __lt__(self, other):
+        return self.strength < other.strength  # IF no games --> 0
 
     def save(self, *args, **kwargs):
+        is_new = self.id is None
+#===============================================================================
+#         if new:
+#             if Player.objects.filter(nick__iexact=self.nick, owner=self.owner):
+#                 raise ValueError("Player %s exists already." % (self.nick))
+# 
+#             if Team.objects.filter(
+#                     teamname__iexact=self.nick, owner=self.owner):
+#                 raise ValueError("Team %s exists already." % (self.nick))
+#===============================================================================
+
         super().save(*args, **kwargs)
+        if is_new:
+            team = Team.objects.create()
+            team.players.add(self)
+        #=======================================================================
+        # is_new = self.id is None
+        # single_team = Team.objects.create()
+        # #single_team.save()
+        # self.single_team = single_team
+        #=======================================================================
+        #=======================================================================
+        # super().save(*args, **kwargs)
+        #=======================================================================
+
+        #=======================================================================
+        # single_team.players.add(self)
+        # single_team.save()
+        #=======================================================================
 
     def __str__(self):
         return '%s (%s)' % (

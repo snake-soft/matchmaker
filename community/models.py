@@ -9,6 +9,9 @@ class CommunityMembership(models.Model):
     gamemaster = models.BooleanField(default=False)
     accepted = models.BooleanField(default=False)
 
+    def __str__(self):
+        return str(self.member)
+
     class Meta:
         unique_together = ('member', 'community')
 

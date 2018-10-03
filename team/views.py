@@ -14,7 +14,7 @@ class TeamList(LoginRequiredMixin, ListView):\
     model = Team
 
     def get_queryset(self):
-        return Team.objects.filter(owner=self.request.user)
+        return Team.objects.filter()  # owner=self.request.user)
 
 
 class TeamListRealtime(LoginRequiredMixin, ListView):\

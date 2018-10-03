@@ -1,4 +1,4 @@
-""" views for matchmaker module """
+""" views for balancer module """
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views import View
@@ -6,15 +6,15 @@ from django.views import View
 from player.models import Player
 from team.forms import TeamCreateForm
 from match.models import Match
-from .forms import MatchmakerForm
-from .models import ConstellationFactory
+from balancer.forms import BalancerForm
+from balancer.models import ConstellationFactory
 
 
 class MatchmakerView(LoginRequiredMixin, View):
-    """ matchmaker himself """
+    """ balancer himself """
 
     def get(self, request):
-        """ get method of matchmaker """
+        """ get method of balancer """
         Match.set_from_to(
             self.request.session['from'], self.request.session['to'])
         context = {}
@@ -33,7 +33,7 @@ class MatchmakerView(LoginRequiredMixin, View):
             and request.session['last_players'] \
             else ''
 
-        form = MatchmakerForm(request, initial={
+        form = BalancerForm(request, initial={
             'count': initial_count,
             'players': initial_players,
         })
@@ -50,6 +50,6 @@ class MatchmakerView(LoginRequiredMixin, View):
         context["matchmaker_form"] = form
         return render(
             request,
-            template_name="matchmaker/matchmaker_form.html",
+            template_name="balancer/matchmaker_form.html",
             context=context,
         )

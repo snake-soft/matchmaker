@@ -17,8 +17,9 @@ class CommunityView (LoginRequiredMixin, View):
 
         ManageCommunityForm.base_fields['players'].choices = \
             [(x.pk, x) for x in Player.objects.all()]
-        ManageCommunityForm.base_fields['players'].initial = \
-            [x.pk for x in request.user.active_community.player_set.all()]
+        if request.user.active_community:
+            ManageCommunityForm.base_fields['players'].initial = \
+                [x.pk for x in request.user.active_community.player_set.all()]
 
         return render(request, template_name="community/manage.html",
             context={'community_manage': ManageCommunityForm},)
@@ -31,14 +32,18 @@ class CommunityView (LoginRequiredMixin, View):
                 request.user.active_community = Community.objects.get(pk=int(
                     form.cleaned_data.get('select_form')))
 
-            for player in Player.objects.filter(id__in=[int(x) for x in form.cleaned_data.get('players')]):
-                print(request.user.active_community.player_set.all())
-                if player not in request.user.active_community.player_set.all():
-                    CommunityMembership(community=request.user.active_community, member=player)
-
-            for player in request.user.active_community.player_set.all():
-                if player.pk not in form.cleaned_data.get('players') and not CommunityMembership.objects.get(member=player).owner:
-                    CommunityMembership.objects.get(member=player).delete()
+            for player in Player.objects.filter(
+                    id__in=[int(x)for x in form.cleaned_data.get('players')]):
+                if player not in request.user.active_community.players:
+                    CommunityMembership(
+                        community=request.user.active_community, member=player)
+            for player in request.user.active_community.players:
+                membership = player.get_communitymembership(
+                    request.user.active_community)
+                if player.pk not in form.cleaned_data.get('players'):
+                    [x.delete() for x in CommunityMembership.objects.filter(
+                        community=request.user.active_community, member=player
+                        ) if not x.owner and not x.gamemaster]
             # request.user.active_community in Player.objects.filter(id__in=[int(x) for x in form.cleaned_data.get('players')])[0].communities.all()
             #request.user.active_community.player_set(Player.objects.filter(id__in=[int(x) for x in form.cleaned_data.get('players')]))
             #===================================================================

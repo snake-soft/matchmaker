@@ -1,4 +1,4 @@
-""" matchmaker model (no database) """
+""" balancer model (no database) """
 from itertools import combinations as comb
 from math import ceil
 from team.models import Team

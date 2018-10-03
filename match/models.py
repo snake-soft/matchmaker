@@ -1,9 +1,8 @@
 """ Match model """
 from datetime import date, datetime, timedelta
-
+from copy import deepcopy
 from django.db import models
 from django.core.exceptions import ValidationError
-from copy import deepcopy
 
 
 class Match(models.Model):
