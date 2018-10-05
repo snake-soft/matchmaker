@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import Group, GroupManager
+from core.shared import list_compare
 
 
 class CommunityMembership(models.Model):
@@ -21,8 +23,14 @@ class Community(models.Model):
     name = models.CharField(max_length=50, verbose_name="Name", blank=True)
 
     @property
+    def owner(self):
+        return [x.member for x in self.communitymembership_set.filter(
+            owner=True)]
+
+    @property
     def gamemasters(self):
-        return self.communitymembership_set.filter(owner=True)
+        return [x.member for x in self.communitymembership_set.filter(
+            gamemaster=True)]
 
     @property
     def players(self):
@@ -32,25 +40,46 @@ class Community(models.Model):
     def teams(self):
         return self.team_set.all()
 
+    def is_community_admin(self, player):
+        return player in self.gamemasters or player in self.owner
+
+    def remove_player(self, member):
+        if member in self.players:
+            [x.delete() for x in self.communitymembership_set.filter(
+                member=member) if not x.owner]
+
+    def add_player(self, member):
+        if member not in self.players:
+            self.communitymembership_set.create(member=member).save()
+
     def set_players(self, playerlist):
-
-        def list_compare(old, new):
-            """ return{'rem':[miss in new], 'add':[miss in old]} """
-            return {
-                'rem': [x for x in old if x not in new],
-                'add': [x for x in new if x not in old]
-                }
-
         result = list_compare(self.players, playerlist)
-        for player in result['add']:
-            self.communitymembership_set.create(member=player)
+        for member in result['add']:
+            self.add_player(member)
+        for member in result['rem']:
+            self.remove_player(member)
 
-        for player in result['rem']:
-            [x.delete() for x in self.communitymembership_set.all()
-             if not x.owner and not x.gamemaster]
+    def remove_gamemaster(self, member):
+        if member in self.gamemasters:
+            membership = self.communitymembership_set.get(member=member)
+            membership.gamemaster = False
+            membership.save()
+
+    def add_gamemaster(self, member):
+        if member not in self.gamemasters:
+            membership = self.communitymembership_set.get(member=member)
+            membership.gamemaster = True
+            membership.save()
+
+    def set_gamemasters(self, gmlist):
+        result = list_compare(self.gamemasters, gmlist)
+        print(result)
+        for member in result['add']:
+            self.add_gamemaster(member)
+        for member in result['rem']:
+            self.remove_gamemaster(member)
 
     def __str__(self):
-        print(self.gamemasters)
         return self.name
 
     class Meta:

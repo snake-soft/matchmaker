@@ -1,1 +1,4 @@
-django>=2
+django
+pylint
+pylint-django
+pycodestyle

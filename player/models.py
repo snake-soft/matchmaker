@@ -56,34 +56,11 @@ class Player(PlayerTeamBase, AbstractUser):
 
     def save(self, *args, **kwargs):
         is_new = self.id is None
-#===============================================================================
-#         if new:
-#             if Player.objects.filter(nick__iexact=self.nick, owner=self.owner):
-#                 raise ValueError("Player %s exists already." % (self.nick))
-# 
-#             if Team.objects.filter(
-#                     teamname__iexact=self.nick, owner=self.owner):
-#                 raise ValueError("Team %s exists already." % (self.nick))
-#===============================================================================
 
         super().save(*args, **kwargs)
         if is_new:
             team = Team.objects.create()
             team.players.add(self)
-        #=======================================================================
-        # is_new = self.id is None
-        # single_team = Team.objects.create()
-        # #single_team.save()
-        # self.single_team = single_team
-        #=======================================================================
-        #=======================================================================
-        # super().save(*args, **kwargs)
-        #=======================================================================
-
-        #=======================================================================
-        # single_team.players.add(self)
-        # single_team.save()
-        #=======================================================================
 
     def __str__(self):
         return '%s (%s)' % (
