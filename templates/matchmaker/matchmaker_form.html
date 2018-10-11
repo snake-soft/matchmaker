@@ -80,7 +80,7 @@ th{width:1%;}
 	{% if constellation.team1.team.name != None %}
 		{% team_details_badge constellation.team1.team linkclass='primary' %}
 	{% else %}
-		<span href="#" tabindex="0" class="btn btn-warning" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Create Team" data-container="body" type="button" data-html="true">
+		<span href="#" tabindex="0" class="btn btn-warning" data-placement="bottom" data-toggle="popover-manual" data-trigger="click" data-title="Create Team" data-container="body" type="button" data-html="true">
 			<div class="popover-content d-none">
 				<form method="post" action="{%url 'team-new'%}">{% csrf_token %}
 					Teamname (optional): {{new_team_form.teamname}}
@@ -141,14 +141,14 @@ th{width:1%;}
 	{% if constellation.team2.team.name != None %}
 		{% team_details_badge constellation.team2.team linkclass='secondary' %}
 	{% else %}
-		<span href="#" tabindex="0" class="btn btn-warning" data-placement="bottom" data-toggle="popover" data-trigger="click" data-title="Create Team" data-container="body" type="button" data-html="true">
+		<span href="#" tabindex="0" class="btn btn-warning" data-placement="bottom" data-toggle="popover-manual" data-trigger="click" data-title="Create Team" data-container="body" type="button" data-html="true">
 			<div class="popover-content d-none">
 				<form method="post" action="{%url 'team-new'%}">{% csrf_token %}
-					Teamname (optional): {{teamcreate_form.teamname}}
+					Teamname (optional): {{new_team_form.teamname}}
 					{% for player in constellation.team2.players %}
 						<input type="hidden" name="players" value="{{ player.pk }}">
-						<input type="hidden" name="next" value="{{ request.get_raw_uri }}">
 					{% endfor %}
+					<input type="hidden" name="next" value="{{ request.get_raw_uri }}">
 				<button class="btn btn-primary btn-block mt-3" type="submit">Create Team</button>
 				</form>
 			</div>
