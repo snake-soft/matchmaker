@@ -7,7 +7,7 @@ from match.models import Match, TeamMatchBase
 
 
 class Team(TeamMatchBase, models.Model):  # pylint: disable=too-many-public-methods
-      # :TODO: Rebuild with Team as subclass
+    # :TODO: Rebuild with Team as subclass
     """ Teams are Season-based
     -> every season there are new values
     -> values are calculated from the matches
