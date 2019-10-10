@@ -1,13 +1,34 @@
 """ Match model """
-from datetime import date, datetime, timedelta
-
+from copy import deepcopy
+from datetime import datetime, timedelta, date
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from copy import deepcopy
 
 
-class Match(models.Model):
+class TeamMatchBase():  # pylint: disable=too-few-public-methods
+    """ Class to deduplicate team and match model"""
+    frm = datetime(2000, 1, 1).date()
+    to_ = datetime(3000, 1, 1).date()
+
+    @classmethod
+    def set_from_to(cls, frm, to_):
+        """ sets new date filter """
+        def to_date(date_x):
+            """ date_x may be date, datetime or string object
+            returns date object
+            """
+            return {
+                datetime: lambda: date_x.date,
+                date: lambda: date_x,
+                str: lambda: datetime.strptime(date_x, '%Y-%m-%d').date(),
+            }.get(type(date_x))()
+
+        cls.frm = to_date(frm)
+        cls.to_ = to_date(to_) + timedelta(days=1)
+
+
+class Match(TeamMatchBase, models.Model):
     """ Match model
     workaround: frm and to_ are the last setted datefilters
     I dont want to have requests inside the model
@@ -47,25 +68,6 @@ class Match(models.Model):
         blank=True,
         verbose_name="Finish-Date",
     )
-
-    frm = datetime(2000, 1, 1).date()
-    to_ = datetime(3000, 1, 1).date()
-
-    @classmethod
-    def set_from_to(cls, frm, to_):
-        """ sets new date filter """
-        def to_date(date_x):
-            """ date_x may be date, datetime or string object
-            returns date object
-            """
-            return {
-                datetime: lambda: date_x.date,
-                date: lambda: date_x,
-                str: lambda: datetime.strptime(date_x, '%Y-%m-%d').date(),
-            }.get(type(date_x))()
-
-        cls.frm = to_date(frm)
-        cls.to_ = to_date(to_) + timedelta(days=1)
 
     @property
     def goal_difference(self):
@@ -115,6 +117,7 @@ class Match(models.Model):
             )
 
     def pov(self, pov_team):
+        """ changes the point of view """
         self_copy = deepcopy(self)
         if self.firstteam != pov_team:
             self_copy.firstteam, self_copy.secondteam = \
@@ -132,9 +135,8 @@ class Match(models.Model):
                 ),
                 params={'value': self.firstteam.pk},
             )
-        else:
-            self.new_result()
-            super().save(*args, **kwargs)
+        self.new_result()
+        super().save(*args, **kwargs)
 
     def __eq__(self, other):
         return self.pk == other.pk

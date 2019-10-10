@@ -1,20 +1,20 @@
 """ model for team objects """
-from datetime import date, datetime, timedelta
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum, Q
 
-from match.models import Match
+from match.models import Match, TeamMatchBase
 
 
-class Team(models.Model):
+class Team(TeamMatchBase, models.Model):  # pylint: disable=too-many-public-methods
+      # :TODO: Rebuild with Team as subclass
     """ Teams are Season-based
     -> every season there are new values
     -> values are calculated from the matches
     workaround: frm and to_ are the last setted datefilters
     I dont want to have requests inside the model
     """
+
     owner = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -25,29 +25,10 @@ class Team(models.Model):
     )
     players = models.ManyToManyField('player.Player')
 
-    frm = datetime(2000, 1, 1).date()
-    to_ = datetime(3000, 1, 1).date()
-
-    @classmethod
-    def set_from_to(cls, frm, to_):
-        """ sets new date filter """
-        def to_date(date_x):
-            """ date_x may be date, datetime or string object
-            returns date object
-            """
-            return {
-                datetime: lambda: date_x.date,
-                date: lambda: date_x,
-                str: lambda: datetime.strptime(date_x, '%Y-%m-%d').date(),
-            }.get(type(date_x))()
-
-        cls.frm = to_date(frm)
-        cls.to_ = to_date(to_) + timedelta(days=1)
-
     @property
     def is_player_team(self):
         """ True if only one player in team """
-        return len(self.players.all()) is 1
+        return len(self.players.all()) == 1
 
     @property
     def name(self):
@@ -90,11 +71,13 @@ class Team(models.Model):
 
     @property
     def has_game(self):
+        """ true if team has already a game """
         win, draw, lose = self.get_win_draw_lose
-        return win or draw or lose
+        return win or draw or lose  # :TODO:
 
     @property
     def win_lose_factor(self):
+        """ Returns the value of wins-loses """
         return len(self.get_win_draw_lose[0]) - len(self.get_win_draw_lose[1])
 
     @property
@@ -109,7 +92,7 @@ class Team(models.Model):
             result = match.firstteam_goals - match.secondteam_goals
             if result > 0:
                 win.append(match)
-            elif result is 0:
+            elif result == 0:
                 draw.append(match)
             elif result < 0:
                 lose.append(match)
@@ -122,7 +105,7 @@ class Team(models.Model):
             result = match.secondteam_goals - match.firstteam_goals
             if result > 0:
                 win.append(match)
-            elif result is 0:
+            elif result == 0:
                 draw.append(match)
             elif result < 0:
                 lose.append(match)
@@ -130,17 +113,23 @@ class Team(models.Model):
 
     @property
     def matches_chronologic(self):
-        return sorted(Match.objects.filter(Q(firstteam_id=self.pk) | Q(
-            secondteam_id=self.pk), date_time__range=(self.frm, self.to_)
-            ), key=id)
+        """ returns the matches of the team cronological ordered """
+        return sorted(
+            Match.objects.filter(
+                Q(firstteam_id=self.pk) | Q(secondteam_id=self.pk
+                                            ), date_time__range=(
+                                                self.frm, self.to_
+                                                )), key=id)
 
     @property
     def get_win_draw_lose_sum(self):
+        """ returns win, draw, lost games """
         win, draw, lose = self.get_win_draw_lose
         return len(win) + len(draw) + len(lose)
 
     @property
     def get_win_draw_lose_percent(self):
+        """ percentage of w,d,l """
         win, draw, lose = self.get_win_draw_lose
         sum_ = len(win) + len(draw) + len(lose)
         sum_ = 100 / sum_ if sum_ else 0
@@ -152,22 +141,23 @@ class Team(models.Model):
         close_win, close_lose = [], []
         for match in Match.objects.filter(
                 firstteam=self, date_time__range=(self.frm, self.to_)):
-            if match.goal_difference is 1:
+            if match.goal_difference == 1:
                 close_win.append(match)
-            elif match.goal_difference is -1:
+            elif match.goal_difference == -1:
                 close_lose.append(match)
 
         for match in Match.objects.filter(
                 secondteam=self, date_time__range=(self.frm, self.to_)):
-            if match.goal_difference is 1:
+            if match.goal_difference == 1:
                 close_lose.append(match)
-            elif match.goal_difference is -1:
+            elif match.goal_difference == -1:
                 close_win.append(match)
 
         return (close_win, close_lose)
 
     @property
     def close_win_lose_percent(self):
+        """ calculates the lose won and lost games """
         win, lose = self.close_win_lose
         sum_ = len(win) + len(lose)
         sum_ = 100 / sum_ if sum_ else 0
@@ -210,6 +200,7 @@ class Team(models.Model):
 
     @property
     def goal_own_foreign_percent(self):
+        """ goal percentage """
         own, foreign = self.goal_own_foreign
         sum_ = own + foreign
         sum_ = 100 / sum_ if sum_ else 0

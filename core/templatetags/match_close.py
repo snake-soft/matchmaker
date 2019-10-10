@@ -13,8 +13,9 @@ def match_close(match_or_list_of_matches):
     def is_close(match):
         return match.firstteam_goals - match.secondteam_goals in [-1, 1]
 
-    if type(match_or_list_of_matches) is Match:
+    if isinstance(match_or_list_of_matches, Match):
         return is_close(match_or_list_of_matches)
-    elif type(match_or_list_of_matches) is list:
+
+    if isinstance(match_or_list_of_matches, list):
         return ([match for match in match_or_list_of_matches
                  if is_close(match)])

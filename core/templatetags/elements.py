@@ -6,7 +6,7 @@ register = template.Library()
 
 
 @register.inclusion_tag('core/bar.html')
-def bar(add_class, val_dict):
+def bar(add_class, val_dict):  # pylint: disable=blacklisted-name
     """  NOT FINISHED
     :param add_class: additional classes for progressbar
     :param val_dict: [{'percent': 0, 'text': 'bla']}
@@ -47,8 +47,9 @@ def team_badge(team, team_realtime=False, linkclass=False):
 
 
 @register.inclusion_tag('core/match_badge.html')
-def match_badge(match, pov_team=False, t1class='primary',
-                t2class='secondary', t1show=False, t2show=True):
+def match_badge(match, pov_team=False, t1class='primary', t2class='secondary',
+                t1show=False, t2show=True):
+    # pylint: disable=too-many-arguments
     """ sf """
     return {
         'match': match.pov(pov_team) if pov_team else match,
@@ -61,6 +62,7 @@ def match_badge(match, pov_team=False, t1class='primary',
 @register.inclusion_tag('core/match_details_badge.html')
 def match_details_badge(match, pov_team=False, t1class='primary',
                         t2class='secondary', t1show=False, t2show=True):
+    # pylint: disable=too-many-arguments
     """ fdsf """
     return {
         'match': match.pov(pov_team) if pov_team else match,

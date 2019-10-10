@@ -1,6 +1,6 @@
 """ views of team module """
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, CreateView, FormView
+from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse
 
 from player.models import Player, Elo
@@ -85,10 +85,11 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
 
     @property
     def max_score(self):
+        """ teams max score """
         return max([x.team_score for x in Team.objects.filter(
             owner=self.request.user)])
 
-    class TeamRealtimeValues:
+    class TeamRealtimeValues:  # :TODO: Rebuild with Team as subclass
         """ class for realtime calculated values of teams """
 
         def __init__(self, request, teams, goals, player_rt):
@@ -123,6 +124,7 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
 
         @property
         def team_score_percent(self):
+            """ percent of the team score """
             sum_ = max([x.team_score for x in Team.objects.filter(
                 owner=self.request.user)])
             sum_ = 100 / sum_ if sum_ else 0
@@ -147,6 +149,7 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
 
         @property
         def get_win_draw_lose_percent(self):
+            """ w,d,l percent """
             win, draw, lose = self.team_wdl
             sum_ = len(win) + len(draw) + len(lose)
             sum_ = 100 / sum_ if sum_ else 0
@@ -180,6 +183,7 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
 
         @property
         def close_win_lose_percent(self):
+            """ close w,d,l percent """
             win, lose = self.close_wl
             sum_ = len(win) + len(lose)
             sum_ = 100 / sum_ if sum_ else 0
@@ -210,12 +214,14 @@ class TeamListRealtime(LoginRequiredMixin, ListView):\
 
         @property
         def goal_own_foreign_diff(self):
+            """ difference of own and foreign goals """
             own, foreign = self.realtime_goal_own_foreign
             own_orig, foreign_orig = self.own_team.goal_own_foreign
             return own - own_orig, foreign - foreign_orig
 
         @property
         def goal_own_foreign_percent(self):
+            """ own and foreign goals percent """
             own, foreign = self.realtime_goal_own_foreign
             sum_ = own + foreign
             sum_ = 100 / sum_ if sum_ else 0

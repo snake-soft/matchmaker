@@ -108,22 +108,6 @@ class MatchViewsTestCase(TestCase):
         self.assertIn('firstteam', response.context['form'].errors)
 
 
-class DateSetViewTestCase(TestCase):
-    """ Tests setting new date """
-
-    def setUp(self):
-        """ setup """
-        testbase = TestBase()
-        self.client = testbase.client
-        self.db_ = testbase.db_
-
-    def test_post(self):
-        """ set new date """
-        post_data = {'from': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
-        response = self.client.post(reverse('set-date'), post_data)
-        self.assertRedirects(response, post_data['next'], 302)
-
-
 class MatchModelsTestCase(TestCase):
     """ Tests match model (most methods are tested by views above) """
 

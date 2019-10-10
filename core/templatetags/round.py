@@ -6,7 +6,7 @@ register = template.Library()
 
 
 @register.filter
-def round(float_, after_comma=0):
+def round(float_, after_comma=0):  # pylint: disable=W0622
     """ tag """
     factor = 10**after_comma
     float_ = int(float_ * factor + 0.5) / factor

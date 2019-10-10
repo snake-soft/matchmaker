@@ -4,7 +4,6 @@ from django.shortcuts import render
 from django.views import View
 
 from player.models import Player
-from team.forms import TeamCreateForm
 from match.models import Match
 from .forms import MatchmakerForm
 from .models import ConstellationFactory

@@ -3,9 +3,9 @@ from datetime import date, datetime
 from calendar import monthrange
 from django.contrib.auth.forms import AuthenticationForm
 
-from .forms import TimeRangeForm
 from player.forms import PlayerCreateForm
 from team.forms import TeamCreateForm
+from .forms import TimeRangeForm
 
 
 def date_to_str(date_obj):

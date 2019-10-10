@@ -35,6 +35,7 @@ class Player(models.Model):
 
     @property
     def score(self):
+        """ return player score """
         return sum([team.team_score for team in self.teams()])
 
     def player_rating(self, as_int=False):
@@ -58,6 +59,7 @@ class Player(models.Model):
 
     @property
     def matches_chronologic(self):
+        """ return matches in cronological order """
         lst_of_lsts = [team.matches_chronologic for team in self.teams()]
         return sorted([y for x in lst_of_lsts for y in x])
 
@@ -71,7 +73,7 @@ class Player(models.Model):
         return win, lose
 
     def save(self, *args, **kwargs):  # pylint: disable=W0221
-        new = False if self.pk else True
+        new = not self.pk
         if new:
             if Player.objects.filter(nick__iexact=self.nick, owner=self.owner):
                 raise ValueError("Player %s exists already." % (self.nick))
@@ -96,8 +98,7 @@ class Player(models.Model):
             return False
         if self.player_rating() != other.player_rating():
             return self.player_rating() > other.player_rating()
-        else:
-            return self.score > other.score
+        return self.score > other.score
 
     def __str__(self):
         if self.matches_chronologic:
@@ -105,8 +106,7 @@ class Player(models.Model):
                 self.nick,
                 self.player_rating(as_int=True)
             ))
-        else:
-            return self.nick
+        return self.nick
 
 
 class Elo:

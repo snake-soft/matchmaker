@@ -6,12 +6,15 @@ from .models import Team
 
 
 class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    """Team selection form"""
     def __init__(self, attrs=None, choices=()):
-        forms.CheckboxSelectMultiple.__init__(self, attrs=attrs, choices=choices)
+        forms.CheckboxSelectMultiple.__init__(
+            self, attrs=attrs, choices=choices)
 
     def id_for_label(self, id_, index=None):
         id_ += '_nav'
-        return forms.CheckboxSelectMultiple.id_for_label(self, id_, index=index)
+        return forms.CheckboxSelectMultiple.id_for_label(
+            self, id_, index=index)
 
 
 class TeamCreateForm(forms.ModelForm):

@@ -76,3 +76,7 @@ class DateSetViewTestCase(TestCase):
         post_data = {'frm': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
         response = self.client.post(reverse('set-date'), post_data)
         self.assertRedirects(response, post_data['next'], 302)
+
+        post_data = {'from': '2018-01-01', 'to': '2018-01-31', 'next': '/'}
+        response = self.client.post(reverse('set-date'), post_data)
+        self.assertRedirects(response, post_data['next'], 302)

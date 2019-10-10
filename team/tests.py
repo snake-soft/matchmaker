@@ -135,13 +135,15 @@ class TeamModelsTestCase(TestCase):
         self.assertIs(
             type(self.db_.nameless_team.get_team_name_or_members()), str)
 
-    def test_win_draw_lose(self):
-        """ test win_draw_lose """
-        pass
-        #self.assertIs(type(self.db_.dimension.get_win_draw_lose[0][0]), Match)
-        #self.assertIs(type(self.db_.dimension.get_win_draw_lose[1][0]), Match)
-        #self.assertIs(type(self.db_.dimension.get_win_draw_lose[2][0]), Match)
-        #self.assertIs(type(self.db_.dimension.close_wl_factor), int)
+    # ==========================================================================
+    # def test_win_draw_lose(self):
+    #     """ test win_draw_lose """
+    #     wdl = self.db_.dimension.get_win_draw_lose
+    #     self.assertIsInstance(wdl[0][0], Match)
+    #     self.assertIsInstance(wdl[1][0], Match)
+    #     self.assertIsInstance(wdl[2][0], Match)
+    #     self.assertIsInstance(self.db_.dimension.close_wl_factor, int)
+    # ==========================================================================
 
     def test_close_win_lose(self):
         """ test close_win_lose """
