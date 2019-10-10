@@ -8,5 +8,4 @@ cache: pip
 install:
   - pip install -r requirements.txt
 script:
-  - pylint imap_storage
-  - python -m unittest
+  - python manage.py test
