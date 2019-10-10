@@ -11,13 +11,17 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 import os
 from pathlib import Path
+from django.core.management.utils import get_random_secret_key
 
 __all__ = ['BASE_DIR', 'INSTALLED_APPS', 'MIDDLEWARE', 'ROOT_URLCONF',
            'TEMPLATES', 'WSGI_APPLICATION', 'DATABASES',
            'AUTH_PASSWORD_VALIDATORS', 'LANGUAGE_CODE', 'TIME_ZONE',
            'USE_I18N', 'USE_L10N', 'USE_TZ', 'STATIC_URL', 'STATIC_ROOT',
            'STATICFILES_DIRS', 'LOGIN_URL', 'LOGIN_REDIRECT_URL',
-           'LOGOUT_REDIRECT_URL']
+           'LOGOUT_REDIRECT_URL', 'SECRET_KEY']
+
+ALLOWED_HOSTS = []
+SECRET_KEY = get_random_secret_key()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
