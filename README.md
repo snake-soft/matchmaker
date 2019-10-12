@@ -1,5 +1,6 @@
 # matchmaker
 [![Build Status](https://travis-ci.org/snake-soft/matchmaker.svg?branch=master)](https://travis-ci.org/snake-soft/matchmaker)
+[![Coverage Status](https://coveralls.io/repos/github/snake-soft/matchmaker/badge.svg?branch=master)](https://coveralls.io/github/snake-soft/matchmaker?branch=master)
 
 Table Soccer ranking web-application
 
