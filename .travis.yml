@@ -14,8 +14,7 @@ install:
 
 script:
   - pylint -E --load-plugins pylint_django account config core match matchmaker player team
-  - python manage.py test
-  - coverage run --source=imap_storage -m unittest
+  - coverage run --source='.' manage.py test
 
 after_success:
   - coveralls
