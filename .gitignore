@@ -10,3 +10,4 @@ __ pycache __
 /config/db.sqlite3
 /static_root/
 /db.sqlite3
+/.coverage
