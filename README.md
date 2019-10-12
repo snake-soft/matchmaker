@@ -1,5 +1,6 @@
 # matchmaker
 [![Build Status](https://travis-ci.org/snake-soft/matchmaker.svg?branch=master)](https://travis-ci.org/snake-soft/matchmaker)
+
 Table Soccer ranking web-application
 
 There are two kinds of countings:
