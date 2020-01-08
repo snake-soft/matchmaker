@@ -23,4 +23,4 @@ python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 ```
 # Or use it online
-https://ts-matchmaker.com/
+https://matchmaker.hennige-it.de/
