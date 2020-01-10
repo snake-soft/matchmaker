@@ -117,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-US'
 
-TIME_ZONE = None  # 'Europe/Berlin'
+TIME_ZONE = 'Europe/Berlin'
 
 USE_I18N = True
 
